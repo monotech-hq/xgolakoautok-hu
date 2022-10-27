@@ -1,3 +1,37 @@
+
+# temp files
+environment/temp
+
+# log files
+environment/log
+
+# uploaded files
+environment/media/storage/*
+environment/media/thumbnails/*
+
+# default thumbnail & sample file
+!environment/media/thumbnails/default.png
+!environment/media/thumbnails/sample.png
+!environment/media/storage/sample.png
+
+# config files
+resources/public/x.app-build.edn
+
+# system files
+node_modules
+resources/public/js/core
+Procfile
+system.properties
+log
+.cpcache
+.shadow-cljs
+.idea
+monoset.iml
+
+# MacOS files
+.DS_Store
+
+# default
 pom.xml
 pom.xml.asc
 *.jar
@@ -6,9 +40,19 @@ pom.xml.asc
 /classes/
 /target/
 /checkouts/
+/node_modules
+
+#
 .lein-deps-sum
 .lein-repl-history
 .lein-plugins/
 .lein-failures
 .nrepl-port
 .cpcache/
+.shadow-cljs
+.idea
+**/.DS_Store
+.DS_Store
+
+# resources
+resources/public/js
