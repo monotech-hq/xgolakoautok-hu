@@ -1,0 +1,11 @@
+
+; A fájl tartalomváltozásainak érvénybe lépéséhez szükséges újraindítani
+; az applikációt!
+;
+; @edn (map)
+;  {...}
+
+{:current-price      "1"
+ :primary-currency   "EUR"
+ :secondary-currency "EUR"
+ :vat-value          "0"}

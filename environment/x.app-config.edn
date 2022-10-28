@@ -1,0 +1,79 @@
+
+; A fájl tartalomváltozásainak érvénybe lépéséhez szükséges újraindítani
+; az applikációt!
+;
+; @edn (map) app-config
+;  {:app-domain (string)
+;   :app-home (string)
+;   :app-languages (keywords in vector)
+;   :app-locale (keyword)
+;   :app-themes (maps in vector)
+;    [{:name (metamorphic-content)
+;      :id (keyword)}]
+;   :app-title (string)
+;   :author (string)
+;   :css-paths (maps in vector)(opt)
+;    [{:js-build (keyword)(opt)
+;       A fájl kiszolgálása hozzárendelhető egy megadott JS build-hez.
+;      :route-template (string)(opt)
+;       A fájl kiszolgálása hozzárendelhető egy megadott útvonalhoz.
+;      :uri (string)}]
+;   :favicon-paths (maps in vector)(opt)
+;    [{:js-build (string)(opt)
+;       A fájl kiszolgálása hozzárendelhető egy megadott JS build-hez.
+;      :route-template (string)(opt)
+;       A fájl kiszolgálása hozzárendelhető egy megadott útvonalhoz.
+;      :uri (string)}]
+;   :plugin-js-paths (maps in vector)(opt)
+;    [{:js-build (string)(opt)
+;       A fájl kiszolgálása hozzárendelhető egy megadott JS build-hez.
+;      :route-template (string)(opt)
+;       A fájl kiszolgálása hozzárendelhető egy megadott útvonalhoz.
+;      :uri (string)}]
+;   :theme-color (string)(opt)
+;    Theme color must be hex!
+;    https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta/name/theme-color
+;
+; @usage
+;  {:app-home      "/"
+;   :app-home      "/app"
+;   :app-themes    [{:id :my-theme :name "My theme"}
+;                   {:id :light    :name :light-theme}]
+;   :plugin-js-paths [{:uri "/js/plugins/external-plugin.js"}
+;                     {:uri "https://external-plugin.com/plugin.js"}]}
+
+{; App details
+ :app-domain    "https://my-app.com"
+ :app-home      "/app"
+ :app-languages [:en :hu]
+ :app-locale    :hu
+ :app-themes    [{:id :light :name :light-theme}
+                 {:id :dark  :name :dark-theme}]
+;:app-title     "Project-emulator"
+ :app-title     "Monotech.hu"
+ :author        "Monotech.hu"
+
+ ; Browser details
+ :theme-color "#111111"
+
+ ; CSS paths
+ :css-paths
+ [{:uri "/site/css/site.css"               :js-build :site}
+  {:uri "/plugins/slider/carousel.css"     :js-build :site}
+  {:uri "/plugins/slider/carousel.min.css" :js-build :site}]
+ ;{:uri "/plugins/full-calendar/common.css"    :js-build :app}
+ ;{:uri "/plugins/full-calendar/daygrid.css"   :js-build :app}
+ ;{:uri "/plugins/full-calendar/list.css"      :js-build :app}
+ ;{:uri "/plugins/full-calendar/timegrid.css"  :js-build :app}
+ ;{:uri "/plugins/full-calendar/CUSTOM.css"    :js-build :app}
+
+ ; Favicon paths
+ :favicon-paths
+ [{:uri "/favicon/blue/favicon-16.png"  :size "16x16"}
+  {:uri "/favicon/blue/favicon-32.png"  :size "32x32"}
+  {:uri "/favicon/blue/favicon-96.png"  :size "96x96"}
+  {:uri "/favicon/blue/favicon-144.png" :size "144x144"}]
+
+ ; JavaScript paths
+ :plugin-js-paths
+ []}

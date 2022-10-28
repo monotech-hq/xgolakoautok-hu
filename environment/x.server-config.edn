@@ -1,0 +1,35 @@
+
+; A fájl tartalomváltozásainak érvénybe lépéséhez szükséges újraindítani
+; az applikációt!
+;
+; @edn (map) server-config
+;  {:database-host (string)}
+;   :database-name (string)
+;   :database-port (integer)
+;   :default-port (integer)
+;   :docker-database-host (string)(opt)
+;   :max-body (B)
+;    Very important for projects which want to upload at least 1GB ...
+;   :max-upload-size (B)
+;   :resources (maps in vector)
+;    [{:path (string)
+;      :root (string)}]
+;   :storage-capacity (B)}
+
+{; Database details
+ :database-host "127.0.0.1"
+ :database-name "xgo"
+ :database-port 27017
+ :docker-database-host "mongo"
+
+ ; Resources details
+ :resources [{:path "/" :root "/monotech"}
+             {:path "/" :root "/public"}]
+
+ ; Storage details
+ :max-upload-size   1000000000
+ :storage-capacity 15000000000
+
+ ; ...
+ :default-port 3000
+ :max-body     1073741824}
