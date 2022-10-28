@@ -49,9 +49,9 @@
  :app-locale    :hu
  :app-themes    [{:id :light :name :light-theme}
                  {:id :dark  :name :dark-theme}]
-;:app-title     "Project-emulator"
- :app-title     "Monotech.hu"
- :author        "Monotech.hu"
+
+ :app-title   "Monotech.hu"
+ :author      "Monotech.hu"
 
  ; Browser details
  :theme-color "#111111"

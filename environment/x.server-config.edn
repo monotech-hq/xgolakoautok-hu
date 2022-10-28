@@ -23,8 +23,7 @@
  :docker-database-host "mongo"
 
  ; Resources details
- :resources [{:path "/" :root "/monotech"}
-             {:path "/" :root "/public"}]
+ :resources [{:path "/" :root "/public"}]
 
  ; Storage details
  :max-upload-size   1000000000
