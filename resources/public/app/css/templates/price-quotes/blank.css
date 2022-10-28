@@ -1,0 +1,246 @@
+
+/***** Imports *****/
+
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300&family=Montserrat:wght@200;300;400;500;600&display=swap');
+
+/***** Imports *****/
+
+
+
+/***** Notes *****/
+
+/* A body elem ...
+ * ... magassága 1122px
+ * ... szélessége 794px */
+
+/***** Notes *****/
+
+
+
+/***** Template *****/
+
+table {
+  width: 100% }
+
+/***** Template *****/
+
+
+
+/***** Text *****/
+
+h1 {
+  font-size:      20px;
+  font-weight:    600;
+  letter-spacing: .6px;
+  line-height:    30px }
+
+h2 {
+  font-size:      18px;
+  font-weight:    600;
+  letter-spacing: .6px;
+  line-height:    27px }
+
+h3 {
+  font-size:      13px;
+  font-weight:    600;
+  letter-spacing: .5px;
+  line-height:    20px }
+
+h4 {
+  font-size:      12px;
+  font-weight:    500;
+  letter-spacing: .4px;
+  line-height:    18px }
+
+h5 {
+  font-size:      11px;
+  font-weight:    500;
+  letter-spacing: .4px;
+  line-height:    17px }
+
+h6 {
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: .3px;
+  line-height: 17px }
+
+strong {
+  font-weight: 600 }
+
+/***** Text *****/
+
+
+
+/***** Cover page *****/
+
+#blk-cover-page {
+ -background-image: linear-gradient(0deg, #c7d9e0, #fff, #fff);
+  font-family:      "Montserrat";
+  height:           1122px;
+  width:            100% }
+
+/*** Issuer data ***/
+
+#blk-cover-page--issuer-data {
+  padding: 20px 0 0 20px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  text-align: left }
+
+#blk-cover-page--issuer-data td:last-child {
+  -width: 80px }
+
+/*** Issuer data ***/
+
+/*** Price quote data ***/
+
+#blk-cover-page--price-quote-data {
+  padding: 20px 20px 0 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  text-align: right }
+
+#blk-cover-page--price-quote-data td:last-child {
+  width: 80px }
+
+/*** Price quote data ***/
+
+/*** Image ***/
+
+#blk-cover-page--image {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  -border: 10px solid white;
+  height: 240px;
+  left: 0;
+  position: absolute;
+  top: 160px;
+  width: 100% }
+
+/*** Image ***/
+/***** Cover page *****/
+
+
+
+/***** Main page *****/
+
+#blk-main-page {
+  font-family: "Montserrat";
+  height: 1122px;
+  width:  100% }
+
+/*** Issuer ***/
+
+#blk-main-page--issuer {
+ -background: #f8f9fa;
+  padding: 20px 20px 0 20px }
+
+#blk-main-page--issuer td {
+  vertical-align: top }
+
+#blk-main-page--issuer-logo {
+  float: right;
+  width: 160px }
+
+/*** Issuer ***/
+
+/*** Price quote name ***/
+
+#blk-main-page--price-quote-name {
+ -background: #fafbfc;
+  padding-right: 20px;
+  text-align: right }
+
+/*** Price quote name ***/
+
+/*** Customer ***/
+
+#blk-main-page--customer {
+  padding: 20px 0 20px 20px }
+
+/*** Customer ***/
+
+/*** Validity ***/
+
+#blk-main-page--validity {
+  padding: 20px 20px 20px 0;
+  text-align: right }
+
+#blk-main-page--validity td {
+  -text-align: right }
+
+#blk-main-page--validity td:last-child {
+  width: 80px }
+
+/*** Validity ***/
+
+/*** Body title ***/
+
+#blk-main-page--body-title {
+  padding-left: 20px }
+
+/*** Body title ***/
+
+/*** Body subtitle ***/
+
+#blk-main-page--body-subtitle {
+  padding: 0 20px }
+
+/*** Body subtitle ***/
+
+/*** Body description ***/
+
+#blk-main-page--body-description {
+  padding: 20px 20px 0 20px }
+
+/*** Body description ***/
+
+/*** Items ***/
+
+#blk-main-page .blk-items {
+  padding: 20px 20px 0 20px }
+
+.blk-items--header {}
+
+.blk-items td {
+  height: 18px }
+
+/*** Items ***/
+
+/*** Footer ***/
+
+#blk-main-page--footer {
+  bottom: 0;
+  left: 0;
+  padding-bottom: 20px;
+  position: absolute;
+  text-align: center;
+  width: 100% }
+
+/*** Footer ***/
+/***** Main page *****/
+
+
+
+/***** Info page *****/
+
+#blk-info-page {
+  font-family: "Montserrat";
+  height:      1122px;
+  width:       100% }
+
+/*** Content ***/
+
+#blk-info-page--content {
+  -bottom: 0;
+  -left: 0;
+  padding: 20px;
+  -position: absolute;
+  -text-align: center;
+  -width: 100% }
+
+/*** Content ***/
+/***** Info page *****/
