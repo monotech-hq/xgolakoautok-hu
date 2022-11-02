@@ -1,0 +1,129 @@
+
+/******************************************************************************/
+/***** Website *****/
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;1,100;1,200&display=swap');
+
+#sp {
+  background-color: #f4f7f6;
+}
+
+/***** Website *****/
+/******************************************************************************/
+
+
+
+/******************************************************************************/
+/***** Navbar *****/
+
+#si-navbar {
+  height: 75px;
+  padding: 0 24px;
+  transition: background-color .2s;
+}
+
+#si-navbar[data-scrolled="false"] {
+  background-color: hsl(0deg 0% 100% / 0%);
+}
+
+#si-navbar[data-scrolled="true"] {
+  background-color: hsl(0deg 0% 100% / 80%);
+}
+
+#si-navbar--menu-items {
+  gap: 50px;
+}
+
+.si-navbar--menu-item {
+  color: #333;
+  font-family: 'Poppins';
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+#si-navbar .si-effect--underline::before {
+  bottom: 0px;
+  --underline-color: #333;
+}
+
+/***** Navbar *****/
+/******************************************************************************/
+
+
+
+/******************************************************************************/
+/***** Sidebar *****/
+
+#si-sidebar--content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#sp-sidebar--menu-items {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+.sp-sidebar--menu-item {
+  color: #333;
+  font-family: 'Poppins';
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+#si-sidebar .si-effect--underline::before {
+  --underline-color: #333;
+  bottom: 0px;
+}
+
+/***** Sidebar *****/
+/******************************************************************************/
+
+
+
+/******************************************************************************/
+/***** Section *****/
+
+.sp-section-body {
+  height: 100%;
+}
+
+.sp-section-title {
+
+}
+
+/***** Section *****/
+/******************************************************************************/
+
+
+
+/******************************************************************************/
+/***** Hero *****/
+
+#sp-hero {
+  background-image: linear-gradient(45deg, #99acad, transparent);
+  height: 95vh;
+}
+
+/***** Hero *****/
+/******************************************************************************/
+
+
+
+/******************************************************************************/
+/***** Contacts *****/
+
+#sp-contacts {
+  min-height: 50vh;
+}
+
+/***** Contacts *****/
+/******************************************************************************/

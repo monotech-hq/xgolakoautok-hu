@@ -1,0 +1,29 @@
+
+/******************************************************************************/
+/***** Effects *****/
+
+.si-effect--underline {
+  text-decoration: none;
+  --underline-color: white;
+}
+
+.si-effect--underline:hover::before,
+.si-effect--underline:focus::before {
+  transform: scale(1);
+}
+
+.si-effect--underline::before {
+  background-color: var(--underline-color);
+  bottom: -5px;
+  content: '';
+  left: 0;
+  position: absolute;
+  height: 1px;
+  width: 100%;
+  transition: transform 300ms;
+  transform: scale(0);
+  transform-origin: center;
+}
+
+/***** Effects *****/
+/******************************************************************************/
