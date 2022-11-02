@@ -1,0 +1,100 @@
+
+{:paths [
+         ; Project paths
+         "source-code"
+         "resources"
+
+         ; Submodule paths (required in all projects)
+         "submodules/ajax-api/source-code/cljs"
+         "submodules/dom-api/source-code/cljs"
+         "submodules/io-api/source-code/clj"
+         "submodules/io-api/source-code/cljc"
+         "submodules/io-api/source-code/cljs"
+         "submodules/mongo-db-api/source-code/clj"
+         "submodules/monoset/deps"
+         "submodules/monoset/source-code/clj"
+         "submodules/monoset/source-code/cljc"
+         "submodules/monoset/source-code/cljs"
+         "submodules/monoset/resources"
+         "submodules/pathom-api/source-code/clj"
+         "submodules/pathom-api/source-code/cljs"
+         "submodules/re-frame-api/source-code/cljc"
+         "submodules/time-api/source-code/clj"
+         "submodules/time-api/source-code/cljc"
+         "submodules/time-api/source-code/cljs"
+         "submodules/window-api/source-code/cljs"
+
+         ; Submodule paths (optional in projects)
+         "submodules/local-db-api/source-code/clj"]
+
+ ; Dependecies
+ :deps {buddy/buddy-auth                                {:mvn/version "2.1.0"}
+       ;buddy/buddy-core                                {:mvn/version "1.10.1"}
+        clj-http/clj-http                               {:mvn/version "3.12.3"}
+        clj-time/clj-time                               {:mvn/version "0.15.1"}
+        cljfmt/cljfmt                                   {:mvn/version "0.8.0"}
+        cljs-ajax/cljs-ajax                             {:mvn/version "0.8.0"}
+        cheshire/cheshire                               {:mvn/version "5.10.0"}
+        com.andrewmcveigh/cljs-time                     {:mvn/version "0.5.2"}
+        com.draines/postal                              {:mvn/version "2.0.4"}
+        com.novemberain/monger                          {:mvn/version "3.5.0"}
+        hiccup/hiccup                                   {:mvn/version "1.0.5"}
+        http-kit/http-kit                               {:mvn/version "2.3.0"}
+        io.methvin/directory-watcher                    {:mvn/version "0.15.0"}
+        metosin/reitit                                  {:mvn/version "0.3.10"}
+        org.clojure/clojure                             {:mvn/version "1.10.1"}
+        org.clojure/clojurescript                       {:mvn/version "1.10.891"}
+        org.clojure/data.codec                          {:mvn/version "0.1.1"}
+        org.clojars.paul-simple-code/reagent-hickory    {:mvn/version "0.3.7-no-escape-string"}
+        pez/clerk                                       {:mvn/version "1.0.0"}
+        re-frame/re-frame                               {:mvn/version "1.2.0"}
+        reagent/reagent                                 {:mvn/version "1.1.0"}
+        ring/ring                                       {:mvn/version "1.9.0"}
+        ring/ring-defaults                              {:mvn/version "0.3.2"}
+        ring/ring-json                                  {:mvn/version "0.5.1"}
+        ring-server/ring-server                         {:mvn/version "0.5.0"}
+        ring-transit/ring-transit                       {:mvn/version "0.1.6"}
+        tea-time/tea-time                               {:mvn/version "1.0.1"}
+        venantius/accountant                            {:mvn/version "0.2.5"}
+        yogthos/config                                  {:mvn/version "1.1.7"}
+
+        ; Shadow-cljs
+        thheller/shadow-cljs                            {:mvn/version "2.18.0"}
+
+        ; Pathom
+        com.wsscode/pathom3                             {:git/url "https://github.com/wilkerlucio/pathom3"
+                                                         :sha     "13e6dec387bd5b5c73e64ca82409a7440b4b1199"}
+
+        ;Clj-openhtmltopdf
+        ; XXX#0506 (monoset/deps/clj_htmltopdf/README.md)
+        com.openhtmltopdf/openhtmltopdf-core            {:mvn/version "1.0.10"}
+        com.openhtmltopdf/openhtmltopdf-pdfbox          {:mvn/version "1.0.10"}
+        com.openhtmltopdf/openhtmltopdf-rtl-support     {:mvn/version "1.0.10"}
+        com.openhtmltopdf/openhtmltopdf-svg-support     {:mvn/version "1.0.10"}
+        org.jsoup/jsoup                                 {:mvn/version "1.14.3"}
+        commons-io/commons-io                           {:mvn/version "2.6"}}
+ :aliases
+ {:site.dev  {:exec-fn    boot-loader.backend.main/dev
+              :exec-args  {:shadow-build :site
+                           :port         3000}
+              :jvm-opts ["-Dclojure.server.repl={:port,5555,:accept,clojure.core.server/repl}"]
+              :extra-deps {binaryage/devtools               {:mvn/version "1.0.0"}
+                           com.wsscode/pathom-viz-connector {:mvn/version "2021.01.25"}
+                           org.clojure/tools.namespace      {:mvn/version "1.0.0"}}}
+
+  :app.dev    {:exec-fn    boot-loader.backend.main/dev
+               :exec-args  {:shadow-build :app
+                            :port         3000}
+               :jvm-opts ["-Dclojure.server.repl={:port,5555,:accept,clojure.core.server/repl}"]
+               :extra-deps {binaryage/devtools               {:mvn/version "1.0.0"}
+                            com.github.seancorfield/depstar  {:mvn/version "2.0.211"}
+                            com.wsscode/pathom-viz-connector {:mvn/version "2021.01.25"}
+                            org.clojure/tools.namespace      {:mvn/version "1.0.0"}}}
+
+  :prod {:extra-deps {com.github.seancorfield/depstar {:mvn/version "2.0.211"}}
+         :exec-fn    compiler/compile-app!
+         :exec-args {:java-config {:aot true
+                                   :jar "xgo.jar"
+                                   :jar-type :uber
+                                   :main-class boot-loader.backend.main}
+                     :js-builds [:site-ready :app-ready]}}}}
