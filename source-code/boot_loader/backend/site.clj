@@ -8,5 +8,5 @@
               [layouts.surface-a.api]
               [pathom.api]
 
-              ; Site pages
-              [site.pages.api]))
+              ; XGO site
+              [site.xgo.api]))

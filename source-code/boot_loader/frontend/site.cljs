@@ -6,15 +6,16 @@
               [x.boot-loader.api   :as x.boot-loader]
 
               ; Site modules
-              [site.pages.api]
-              [site.modules.frontend.api :as modules]))
+              [site.xgo.api :as xgo]))
+              ; [site.pages.api]
+              ; [site.modules.frontend.api :as modules]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn- site-structure
   [ui-structure]
-  [:<> [modules/wrapper ui-structure]
+  [:<> [xgo/wrapper ui-structure]
        [developer-tools/magic-button]])
 
 ;; ----------------------------------------------------------------------------

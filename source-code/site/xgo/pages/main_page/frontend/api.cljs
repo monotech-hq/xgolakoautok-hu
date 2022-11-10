@@ -1,6 +1,6 @@
 
-(ns site.pages.main-page.frontend.api
-    (:require [site.pages.main-page.frontend.effects]))
+(ns site.xgo.pages.main-page.frontend.api
+    (:require [site.xgo.pages.main-page.frontend.effects]))
 
 ;; -----------------------------------------------------------------------------
 ;; -----------------------------------------------------------------------------

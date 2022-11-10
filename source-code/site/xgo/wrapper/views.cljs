@@ -1,5 +1,5 @@
 
-(ns site.modules.frontend.wrapper.views
+(ns site.xgo.wrapper.views
     (:require [re-frame.api                 :as r]
               [site.components.frontend.api :as components]))
 

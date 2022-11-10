@@ -1,7 +1,7 @@
 
-(ns site.pages.main-page.frontend.effects
+(ns site.xgo.pages.main-page.frontend.effects
     (:require [re-frame.api                        :as r]
-              [site.pages.main-page.frontend.views :as views]))
+              [site.xgo.pages.main-page.frontend.views :as views]))
 
 ;; -----------------------------------------------------------------------------
 ;; -----------------------------------------------------------------------------

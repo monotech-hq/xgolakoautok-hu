@@ -1,14 +1,14 @@
 
-(ns site.pages.main-page.frontend.sections.contacts)
+(ns site.xgo.pages.main-page.frontend.sections.contacts)
 
 ;; -----------------------------------------------------------------------------
 ;; -----------------------------------------------------------------------------
 
 (defn- contacts
   []
-  [:div {:class :sp-section-body}])
+  [:div {:class "xgo-section--body"}])
 
 (defn view
   []
-  [:section {:id :sp-contacts}
+  [:section {:id "xgo-contacts"}
             [contacts]])

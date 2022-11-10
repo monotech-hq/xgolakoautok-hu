@@ -1,5 +1,5 @@
 
-(ns site.pages.transfer
+(ns site.xgo.transfer
     (:require [io.api            :as io]
               [mongo-db.api      :as mongo-db]
               [x.server-core.api :as x.core]))
@@ -30,9 +30,15 @@
 ;; -----------------------------------------------------------------------------
 ;; -----------------------------------------------------------------------------
 
+(def categories-projection
+     #:category{:name        1
+                :order       1
+                :models      1
+                :description 1})
+
 (defn transfer-categories-f
   [request]
-  (mongo-db/get-collection "categories"))
+  (mongo-db/get-collection "categories" categories-projection))
 
 (x.core/reg-transfer! ::transfer-categories!
   {:data-f      transfer-categories-f
