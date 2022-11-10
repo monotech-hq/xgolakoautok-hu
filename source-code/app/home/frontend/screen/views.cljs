@@ -10,9 +10,9 @@
               [x.app-components.api             :as x.components]
 
               ; TEMP
-              [mid-fruits.string :as string]
-              [mid-fruits.syntax :as syntax]))
- 
+              [mid-fruits.string :as string]))
+              ; [mid-fruits.syntax :as syntax]))
+
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
