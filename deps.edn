@@ -4,12 +4,14 @@
          "source-code"
          "resources"
 
-         ; Submodule paths (required in all projects)
+         ; Submodules
          "submodules/ajax-api/source-code/cljs"
          "submodules/dom-api/source-code/cljs"
+         "submodules/fruits/source-code/cljc"
          "submodules/io-api/source-code/clj"
          "submodules/io-api/source-code/cljc"
          "submodules/io-api/source-code/cljs"
+         "submodules/local-db-api/source-code/clj"
          "submodules/mongo-db-api/source-code/clj"
          "submodules/monoset/deps"
          "submodules/monoset/source-code/clj"
@@ -22,10 +24,7 @@
          "submodules/time-api/source-code/clj"
          "submodules/time-api/source-code/cljc"
          "submodules/time-api/source-code/cljs"
-         "submodules/window-api/source-code/cljs"
-
-         ; Submodule paths (optional in projects)
-         "submodules/local-db-api/source-code/clj"]
+         "submodules/window-api/source-code/cljs"]
 
  ; Dependecies
  :deps {buddy/buddy-auth                                {:mvn/version "2.1.0"}
