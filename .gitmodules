@@ -28,3 +28,6 @@
 [submodule "submodules/window-api"]
 	path = submodules/window-api
 	url = git@github.com:bithandshake/window-api.git
+[submodule "submodules/fruits"]
+	path = submodules/fruits
+	url = git@github.com:bithandshake/fruits.git
