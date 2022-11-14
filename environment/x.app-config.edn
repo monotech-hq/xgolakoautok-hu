@@ -59,8 +59,8 @@
  ; CSS paths
  :css-paths
  [{:uri "/site/css/site.css"               :js-build :site}
-  {:uri "/plugins/slider/carousel.css"     :js-build :site}
-  {:uri "/plugins/slider/carousel.min.css" :js-build :site}]
+  ;{:uri "/plugins/carousel/carousel.css"     :js-build :site}
+  {:uri "/plugins/carousel/carousel.min.css" :js-build :site}]
  ;{:uri "/plugins/full-calendar/common.css"    :js-build :app}
  ;{:uri "/plugins/full-calendar/daygrid.css"   :js-build :app}
  ;{:uri "/plugins/full-calendar/list.css"      :js-build :app}
