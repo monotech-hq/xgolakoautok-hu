@@ -7,4 +7,8 @@
                                  [:router/add-route! :main-page/route
                                                      {:client-event   [:main-page/load-page!]
                                                       :js-build       :site
-                                                      :route-template "/"}]]}})
+                                                      :route-template "/"}]
+                                 [:router/add-route! :main-page/route
+                                                     {:client-event   [:main-page/load-page!]
+                                                      :js-build       :site
+                                                      :route-template "/:category"}]]}})
