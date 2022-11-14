@@ -161,7 +161,7 @@
   background-color: #46d2ff;
 }
 
-#xgo-category--description {
+#xgo-categories--description {
   color: var( --grey-dark );
   display: flex;
   flex-direction: row;

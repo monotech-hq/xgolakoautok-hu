@@ -1,8 +1,10 @@
 
 {:source-paths ["source-code" "monoset/source-code" "submodules"]
+
  :builds
  {:site        {:asset-path "/site/core"
-                :devtools {:watch-dir  "resources"
+                :devtools {;:watch-dir  "resources"
+                           :watch-dir "site"
                            :after-load boot-loader.frontend.site/render-site!}
                 :modules {:site {:init-fn boot-loader.frontend.site/start-site!}}
                 :output-dir "resources/public/js/core"
