@@ -1,5 +1,5 @@
 
-(ns site.xgo.pages.main-page.frontend.sections.categories.subs
+(ns site.xgo.pages.main-page.frontend.sections.categories.effects
   (:require [re-frame.api :as r]
             [mid-fruits.normalize :as normalize]))
 
@@ -14,15 +14,14 @@
 ;; -----------------------------------------------------------------------------
 ;; -----------------------------------------------------------------------------
 
-(r/reg-sub
-  :category/description
-  (fn [db [_]]
-    (let [category-name (get-in db [:filters :category] "dynamic")]
-        (get-in db [:site :categories category-name]))))
+(r/reg-fx
+  ::set-url!
+  (fn [url]
+    (r/dispatch [:router/swap-to! url])))
 
-(r/reg-sub
-  :categories/selected?
-  (fn [db [_ category-name]]
-    (-> db
-        (get-in [:filters :category] "dynamic")
-        (= (normalize-str category-name)))))
+(r/reg-event-fx
+  :categories/select!
+  (fn [_ [_ name]]
+    {:dispatch-n [[:db/set-item! [:filters :category] (normalize-str name)]]
+     ; ::set-url!  (str "/" (normalize-str name))}))
+     :url/set-url! (str "/" (normalize-str name))}))
