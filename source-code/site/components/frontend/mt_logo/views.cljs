@@ -1,6 +1,6 @@
 
 (ns site.components.frontend.mt-logo.views
-    (:require [mid-fruits.css    :as css]
+    (:require [css.api           :as css]
               [mid-fruits.random :as random]))
 
 ;; ----------------------------------------------------------------------------

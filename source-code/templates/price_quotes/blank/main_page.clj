@@ -1,6 +1,6 @@
 
 (ns templates.price-quotes.blank.main-page
-    (:require [mid-fruits.css                     :as css]
+    (:require [css.api                            :as css]
               [re-frame.api                       :as r]
               [server-fruits.base64               :as base64]
               [templates.price-quotes.blank.items :as items]))

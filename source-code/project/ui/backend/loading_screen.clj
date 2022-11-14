@@ -1,7 +1,7 @@
 
 (ns project.ui.backend.loading-screen
     (:require [mid-fruits.candy  :refer [param]]
-              [mid-fruits.css    :as css]
+              [css.api    :as css]
               [re-frame.api      :as r]
               [x.server-user.api :as x.user]))
 

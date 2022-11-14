@@ -1,7 +1,7 @@
 
 (ns app.price-quotes.frontend.viewer.helpers
     (:require [mid-fruits.candy :refer [return]]
-              [mid-fruits.math  :as math]
+              [math.api  :as math]
               [re-frame.api     :as r]))
 
 ;; ----------------------------------------------------------------------------

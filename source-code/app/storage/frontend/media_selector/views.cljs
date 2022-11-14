@@ -6,7 +6,7 @@
               [engines.item-browser.api         :as item-browser]
               [io.api                           :as io]
               [layouts.popup-a.api              :as popup-a]
-              [mid-fruits.format                :as format]
+              [format.api                :as format]
               [re-frame.api                     :as r]
               [x.app-components.api             :as x.components]
               [x.app-media.api                  :as x.media]))

@@ -6,7 +6,7 @@
               [mid-fruits.candy                         :refer [return]]
               [mid-fruits.keyword                       :as keyword]
               [mid-fruits.map                           :as map]
-              [mid-fruits.math                          :as math]
+              [math.api                          :as math]
               [mongo-db.api                             :as mongo-db]
               [pathom.api                               :as pathom]))
 

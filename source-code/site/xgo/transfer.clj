@@ -1,21 +1,13 @@
 
 (ns site.xgo.transfer
-    (:require [io.api            :as io]
-              [x.server-core.api :as x.core]
-              [mongo-db.api      :as mongo-db]
+    (:require [io.api               :as io]
+              [x.server-core.api    :as x.core]
+              [mongo-db.api         :as mongo-db]
               [mid-fruits.normalize :as normalize]))
 
 (defn convert [key-fn data]
   (letfn [(vec->map [m v] (assoc m (key-fn v) v))]
          (reduce vec->map {} data)))
-
-;; TEMP
-(defn normalize-str [text]
-  (-> text (str)
-           (normalize/deaccent)
-           (normalize/cut-special-chars "-+")
-           (normalize/space->separator)
-           (clojure.string/lower-case)))
 
 ;; -----------------------------------------------------------------------------
 ;; -----------------------------------------------------------------------------
@@ -52,7 +44,7 @@
 (defn transfer-categories-f
   [request]
   (let [data (mongo-db/get-collection "categories" categories-projection)]
-    (convert #(-> % :category/name normalize-str) data)))
+    (convert #(-> % :category/name (normalize/clean-text "-+")) data)))
 
 (x.core/reg-transfer! ::transfer-categories!
   {:data-f      transfer-categories-f

@@ -5,7 +5,7 @@
               [elements.api                          :as elements]
               [engines.item-lister.api               :as item-lister]
               [layouts.popup-a.api                   :as popup-a]
-              [mid-fruits.hiccup                     :as hiccup]
+              [hiccup.api                     :as hiccup]
               [re-frame.api                          :as r]))
 
 ;; ----------------------------------------------------------------------------

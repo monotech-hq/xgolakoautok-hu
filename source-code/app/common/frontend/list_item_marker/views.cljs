@@ -1,7 +1,7 @@
 
 (ns app.common.frontend.list-item-marker.views
     (:require [elements.api    :as elements]
-              [mid-fruits.math :as math]
+              [math.api :as math]
               [mid-fruits.css  :as css]
               [re-frame.api    :as r]))
 

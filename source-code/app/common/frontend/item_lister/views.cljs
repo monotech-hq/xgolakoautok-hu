@@ -8,7 +8,7 @@
               [mid-fruits.css                           :as css]
               [mid-fruits.keyword                       :as keyword]
               [mid-fruits.logical                       :refer [nor]]
-              [mid-fruits.math                          :as math]
+              [math.api                          :as math]
               [re-frame.api                             :as r]
               [x.app-components.api                     :as x.components]))
 

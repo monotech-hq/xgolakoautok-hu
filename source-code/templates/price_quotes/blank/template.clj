@@ -1,7 +1,7 @@
 
 (ns templates.price-quotes.blank.template
     (:require [hiccup.page                             :refer [html5]]
-              [mid-fruits.hiccup                       :as hiccup]
+              [hiccup.api                       :as hiccup]
               [templates.price-quotes.blank.cover-page :as cover-page]
               [templates.price-quotes.blank.info-page  :as info-page]
               [templates.price-quotes.blank.main-page  :as main-page]))

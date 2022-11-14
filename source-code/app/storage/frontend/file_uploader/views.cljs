@@ -7,8 +7,8 @@
               [io.api                                     :as io]
               [layouts.popup-a.api                        :as popup-a]
               [mid-fruits.css                             :as css]
-              [mid-fruits.format                          :as format]
-              [mid-fruits.math                            :as math]
+              [format.api                          :as format]
+              [math.api                            :as math]
               [mid-fruits.string                          :as string]
               [re-frame.api                               :as r]))
 

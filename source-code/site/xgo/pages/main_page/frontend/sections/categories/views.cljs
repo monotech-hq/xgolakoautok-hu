@@ -1,7 +1,7 @@
 
 (ns site.xgo.pages.main-page.frontend.sections.categories.views
-  (:require [re-frame.api :as r]
-            [mid-fruits.normalize :as normalize]
+  (:require [re-frame.api         :as r]
+
             [site.xgo.pages.main-page.frontend.sections.categories.subs]))
 
 ;; -----------------------------------------------------------------------------
@@ -21,6 +21,7 @@
 (defn- category-description [{:keys [description]}]
   [:div {:id "xgo-categories--description"}
     description])
+
 ;; -----------------------------------------------------------------------------
 ;; -----------------------------------------------------------------------------
 

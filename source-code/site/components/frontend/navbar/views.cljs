@@ -1,7 +1,7 @@
 
 (ns site.components.frontend.navbar.views
     (:require [elements.api                                 :as elements]
-              [mid-fruits.hiccup                            :as hiccup]
+              [hiccup.api                            :as hiccup]
               [mid-fruits.random                            :as random]
               [re-frame.api                                 :as r]
               [site.components.frontend.navbar.helpers      :as navbar.helpers]

@@ -7,7 +7,7 @@
               [engines.item-browser.api                   :as item-browser]
               [io.api                                     :as io]
               [layouts.surface-a.api                      :as surface-a]
-              [mid-fruits.format                          :as format]
+              [format.api                          :as format]
               [mid-fruits.keyword                         :as keyword]
               [re-frame.api                               :as r]
               [x.app-components.api                       :as x.components]
