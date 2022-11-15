@@ -251,7 +251,7 @@
                                :disabled? editor-disabled?
                                :font-size :xs
                                :label     :open-link!
-                               :on-click  {:fx [:environment/open-new-browser-tab! company-address-link]}
+                               :on-click  {:fx [:x.environment/open-new-browser-tab! company-address-link]}
                                :indent    {:vertical :s}}]]))
 
 (defn- address-group-box

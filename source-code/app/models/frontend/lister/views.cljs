@@ -32,7 +32,7 @@
   [lister-id item-dex {:keys [id] :as model-item}]
   [elements/toggle {:content     [model-item-structure lister-id item-dex model-item]
                     :hover-color :highlight
-                    :on-click    [:router/go-to! (str "/@app-home/models/"id)]}])
+                    :on-click    [:x.router/go-to! (str "/@app-home/models/"id)]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

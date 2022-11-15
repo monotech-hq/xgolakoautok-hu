@@ -6,4 +6,4 @@
 ;; ----------------------------------------------------------------------------
 
 (x.core/reg-lifecycles! ::lifecycles
-  {:on-server-boot [:environment/add-css! {:uri "/site/css/components.css"}]})
+  {:on-server-boot [:x.environment/add-css! {:uri "/site/css/components.css"}]})

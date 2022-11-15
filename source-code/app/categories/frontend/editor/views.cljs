@@ -174,7 +174,7 @@
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :categories.editor])
         category-name    @(r/subscribe [:db/get-item [:categories :editor/edited-item :name]])
-        category-id      @(r/subscribe [:router/get-current-route-path-param :item-id])
+        category-id      @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         category-uri      (str "/@app-home/categories/" category-id)]
        [common/surface-breadcrumbs :categories.editor/view
                                    {:crumbs (if category-id [{:label :app-home     :route "/@app-home"}

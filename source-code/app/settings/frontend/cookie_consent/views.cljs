@@ -12,7 +12,7 @@
                     :preset   :close-button
                     :variant  :transparent
                     :on-click {:dispatch-n [[:ui/remove-popup! :settings.cookie-consent/view]
-                                            [:environment/cookie-settings-changed]]}}])
+                                            [:x.environment/cookie-settings-changed]]}}])
 
 (defn header
   [_]

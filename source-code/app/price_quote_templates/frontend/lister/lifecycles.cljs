@@ -11,11 +11,11 @@
                                                             :icon       :description
                                                             :icon-color "#5da7d9"
                                                             :label      :price-quote-templates
-                                                            :on-click   [:router/go-to! "/@app-home/price-quote-templates"]
+                                                            :on-click   [:x.router/go-to! "/@app-home/price-quote-templates"]
                                                             :horizontal-weight 0}]
                               [:home.sidebar/add-menu-item! {:group      :business
                                                              :icon       :description
                                                              :icon-color "#5da7d9"
                                                              :label      :price-quote-templates
-                                                             :on-click   [:router/go-to! "/@app-home/price-quote-templates"]
+                                                             :on-click   [:x.router/go-to! "/@app-home/price-quote-templates"]
                                                              :vertical-weight 0}]]}})

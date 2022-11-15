@@ -138,7 +138,7 @@
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :contents.editor])
         content-name     @(r/subscribe [:db/get-item [:contents :editor/edited-item :name]])
-        content-id       @(r/subscribe [:router/get-current-route-path-param :item-id])
+        content-id       @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         content-uri       (str "/@app-home/contents/" content-id)]
        [common/surface-breadcrumbs :contents.editor/view
                                    {:crumbs (if content-id [{:label :app-home    :route "/@app-home"}

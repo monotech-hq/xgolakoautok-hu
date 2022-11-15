@@ -288,7 +288,7 @@
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :clients.editor])
         client-name      @(r/subscribe [:clients.editor/get-client-name])
-        client-id        @(r/subscribe [:router/get-current-route-path-param :item-id])
+        client-id        @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         client-uri        (str "/@app-home/clients/" client-id)]
        [common/surface-breadcrumbs :clients.editor/view
                                    {:crumbs (if client-id [{:label :app-home   :route "/@app-home"}

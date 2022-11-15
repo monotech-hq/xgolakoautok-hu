@@ -37,7 +37,7 @@
   [elements/toggle {:background-color (if isDragging :highlight)
                     :content          [category-item-structure lister-id item-dex category-item dnd-kit-props]
                     :hover-color      :highlight
-                    :on-click         [:router/go-to! (str "/@app-home/categories/"id)]}])
+                    :on-click         [:x.router/go-to! (str "/@app-home/categories/"id)]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

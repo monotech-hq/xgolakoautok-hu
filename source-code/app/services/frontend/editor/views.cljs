@@ -127,7 +127,7 @@
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :services.editor])
         service-name     @(r/subscribe [:db/get-item [:services :editor/edited-item :name]])
-        service-id       @(r/subscribe [:router/get-current-route-path-param :item-id])
+        service-id       @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         service-uri       (str "/@app-home/services/" service-id)]
        [common/surface-breadcrumbs :services.editor/view
                                    {:crumbs (if service-id [{:label :app-home    :route "/@app-home"}

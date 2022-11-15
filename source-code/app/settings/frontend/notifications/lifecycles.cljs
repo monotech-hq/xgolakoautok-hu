@@ -13,5 +13,5 @@
                                               :icon-color  "#8eb155"
                                               :icon-family :material-icons-outlined
                                               :label       :notifications
-                                              :on-click    [:router/go-to! "/@app-home/settings/notifications"]
+                                              :on-click    [:x.router/go-to! "/@app-home/settings/notifications"]
                                               :horizontal-weight 2}]})

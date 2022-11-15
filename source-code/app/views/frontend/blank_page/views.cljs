@@ -16,7 +16,8 @@
                   :font-size        :xs
                   :font-weight      :bold
                   :horizontal-align :center
-                  :indent           {:top :xxl :vertical :xs}}])
+                  :indent           {:top :xxl :vertical :xs}
+                  :line-height      :block}])
 
 
 (defn- breadcrumbs
@@ -37,7 +38,7 @@
 
 (defn- view-structure
   [surface-id page-props]
-  (if-let [page-loaded? @(r/subscribe [:db/get-item [:views :blank-page/page-loaded?]])]
+  (if-let [page-loaded? @(r/subscribe [:x.db/get-item [:views :blank-page/page-loaded?]])]
           [:<> [title       surface-id page-props]
                [breadcrumbs surface-id page-props]
                [content     surface-id page-props]]

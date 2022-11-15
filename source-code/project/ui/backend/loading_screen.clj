@@ -22,7 +22,7 @@
 
 (defn- app-title
   [_]
-  (let [title @(r/subscribe [:core/get-app-config-item :app-title])]
+  (let [title @(r/subscribe [:x.core/get-app-config-item :app-title])]
        [:div {:style (css/unparse {:font-size           (css/var "font-size-xs")
                                    :font-weight         "600"
                                    :line-height         "24px"

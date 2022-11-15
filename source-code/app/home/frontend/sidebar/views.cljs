@@ -103,7 +103,7 @@
 (defn- view-structure
   ; @param (keyword) sidebar-id
   [_]
-  (if @(r/subscribe [:environment/viewport-min? 1024])
+  (if @(r/subscribe [:x.environment/viewport-min? 1024])
        [:<> ;[label]
             [elements/horizontal-separator {:size :xs}]
             [menu-groups]]))
@@ -114,7 +114,7 @@
 
   ; TEMP
   ; BUG
-  (let [js-build @(r/subscribe [:router/get-current-js-build])]
+  (let [js-build @(r/subscribe [:x.router/get-current-js-build])]
        (if (= js-build :app)
 
            [sidebar-a/layout sidebar-id

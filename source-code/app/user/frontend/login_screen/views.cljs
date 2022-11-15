@@ -9,7 +9,7 @@
 (defn- app-title-label
   []
   (let [synchronizing? @(r/subscribe [:sync/listening-to-request? :user/authenticate!])
-        app-title      @(r/subscribe [:core/get-app-config-item :app-title])]
+        app-title      @(r/subscribe [:x.core/get-app-config-item :app-title])]
        [elements/label ::app-title-label
                        {:content          app-title
                         :disabled?        synchronizing?
@@ -61,7 +61,7 @@
                                :font-size :xs
                                :indent    {:vertical :s}
                                :label     :forgot-password
-                               :on-click  [:router/go-to! "/@app-home/forgot-password"]}]]))
+                               :on-click  [:x.router/go-to! "/@app-home/forgot-password"]}]]))
 
 (defn- login-button
   []
@@ -88,7 +88,7 @@
                          :hover-color      :highlight
                          :indent           {:bottom :xs :vertical :xs}
                          :label            :create-account!
-                         :on-click         [:router/go-to! "/@app-home/create-account"]}]))
+                         :on-click         [:x.router/go-to! "/@app-home/create-account"]}]))
 
 (defn- login-form
   []
@@ -121,7 +121,7 @@
                          :hover-color :highlight
                          :indent      {:vertical :xs}
                          :label       {:content :continue-as! :suffix user-name}
-                         :on-click    [:router/go-home!]}]))
+                         :on-click    [:x.router/go-home!]}]))
 
 (defn- user-name-label
   []
@@ -156,7 +156,7 @@
 
 (defn- body
   []
-  (let [viewport-small? @(r/subscribe [:environment/viewport-small?])]
+  (let [viewport-small? @(r/subscribe [:x.environment/viewport-small?])]
        [:div#login-screen--body {:style (if viewport-small? {:background-color "var( --fill-color )"
                                                              :width            "320px"}
                                                             {:background-color "var( --fill-color )"

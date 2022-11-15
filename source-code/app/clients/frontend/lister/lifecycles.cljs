@@ -11,11 +11,11 @@
                                                             :icon       :people
                                                             :icon-color "#805dd9"
                                                             :label      :clients
-                                                            :on-click   [:router/go-to! "/@app-home/clients"]
+                                                            :on-click   [:x.router/go-to! "/@app-home/clients"]
                                                             :horizontal-weight 3}]
                               [:home.sidebar/add-menu-item! {:group      :business
                                                              :icon       :people
                                                              :icon-color "#805dd9"
                                                              :label      :clients
-                                                             :on-click   [:router/go-to! "/@app-home/clients"]
+                                                             :on-click   [:x.router/go-to! "/@app-home/clients"]
                                                              :vertical-weight 3}]]}})

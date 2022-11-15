@@ -14,7 +14,7 @@
                                                              :item-namespace  :model
                                                              :on-route        [:models.viewer/load-viewer!]
                                                              :route-title     :models}]
-                                 [:router/add-route! :models.viewer/types
+                                 [:x.router/add-route! :models.viewer/types
                                                      {:client-event   [:models.viewer/load-viewer! :types]
                                                       :restricted?    true
                                                       :route-parent   "/@app-home/models"

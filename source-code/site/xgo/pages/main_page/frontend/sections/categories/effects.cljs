@@ -9,7 +9,7 @@
 (r/reg-fx
   ::set-url!
   (fn [url]
-    (r/dispatch [:router/swap-to! url])))
+    (r/dispatch [:x.router/swap-to! url])))
 
 (r/reg-event-fx
   :categories/select!

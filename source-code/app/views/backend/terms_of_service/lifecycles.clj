@@ -6,7 +6,8 @@
 ;; ----------------------------------------------------------------------------
 
 (x.core/reg-lifecycles! ::lifecycles
-  {:on-server-boot [:router/add-route! :views.terms-of-service/route
-                                       {:client-event   [:views.terms-of-service/load-page!]
-                                        :restricted?    true
-                                        :route-template "/@app-home/terms-of-service"}]})
+  {:on-server-boot [:x.router/add-route! :views.terms-of-service/route
+                                         {:client-event   [:views.terms-of-service/load-page!]
+                                          :js-build       :app
+                                          :restricted?    true
+                                          :route-template "/@app-home/terms-of-service"}]})

@@ -33,7 +33,7 @@
   [lister-id item-dex {:keys [id] :as package-item}]
   [elements/toggle {:content     [package-item-structure lister-id item-dex package-item]
                     :hover-color :highlight
-                    :on-click    [:router/go-to! (str "/@app-home/packages/"id)]}])
+                    :on-click    [:x.router/go-to! (str "/@app-home/packages/"id)]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

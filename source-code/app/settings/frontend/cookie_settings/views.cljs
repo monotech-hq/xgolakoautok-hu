@@ -17,7 +17,7 @@
                    {:preset   :save-button
                     :variant  :transparent
                     :on-click {:dispatch-n [[:ui/remove-popup! :settings.cookie-settings/view]
-                                            [:environment/cookie-settings-changed]]}}])
+                                            [:x.environment/cookie-settings-changed]]}}])
 
 (defn header-label
   [])
@@ -37,13 +37,13 @@
   []
   [elements/button ::policy-button
                    {:label :privacy-policy :preset :primary-button :layout :fit
-                    :on-click [:router/go-to! "/@app-home/privacy-policy"]}])
+                    :on-click [:x.router/go-to! "/@app-home/privacy-policy"]}])
 
 (defn terms-of-service-button
   []
   [elements/button ::terms-of-service-button
                    {:label :terms-of-service :preset :primary-button :layout :fit
-                    :on-click [:router/go-to! "/@app-home/terms-of-service"]}])
+                    :on-click [:x.router/go-to! "/@app-home/terms-of-service"]}])
 
 (defn body
   [_]
@@ -74,15 +74,15 @@
                         {:initial-value true
                          :label         :user-experience-cookies
                          :value-path [:environment :cookie-handler/meta-items :user-experience-cookies-enabled?]
-                         :on-check   [:environment/cookie-settings-changed]
-                         :on-uncheck [:environment/cookie-settings-changed]}]
+                         :on-check   [:x.environment/cookie-settings-changed]
+                         :on-uncheck [:x.environment/cookie-settings-changed]}]
        ; BUG#1294
        [elements/switch ;::analytics-cookies-switch
                         {:initial-value true
                          :label         :analytics-cookies
                          :value-path [:environment :cookie-handler/meta-items :analytics-cookies-enabled?]
-                         :on-check   [:environment/cookie-settings-changed]
-                         :on-uncheck [:environment/cookie-settings-changed]}]
+                         :on-check   [:x.environment/cookie-settings-changed]
+                         :on-uncheck [:x.environment/cookie-settings-changed]}]
        ; Remove stored cookies
        [elements/horizontal-separator {:size :s}]
        [elements/button {:label :remove-stored-cookies! :preset :secondary-button :layout :row

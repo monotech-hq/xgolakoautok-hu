@@ -23,10 +23,10 @@
 
 (defn- model-item
   [lister-id item-dex {:keys [id] :as model-item}]
-  (let [category-id @(r/subscribe [:router/get-current-route-path-param :item-id])]
+  (let [category-id @(r/subscribe [:x.router/get-current-route-path-param :item-id])]
        [elements/toggle {:content     [model-item-structure lister-id item-dex model-item]
                          :hover-color :highlight
-                         :on-click    [:router/go-to! (str "/@app-home/models/"id)
+                         :on-click    [:x.router/go-to! (str "/@app-home/models/"id)
                                                       {:route-parent (str "/@app-home/categories/"category-id"/models")}]}]))
 
 ;; ----------------------------------------------------------------------------
@@ -211,7 +211,7 @@
 (defn- controls
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :categories.viewer])
-        category-id      @(r/subscribe [:router/get-current-route-path-param :item-id])
+        category-id      @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         edit-item-uri     (str "/@app-home/categories/"category-id"/edit")]
        [common/item-viewer-controls :categories.viewer
                                     {:disabled?      viewer-disabled?

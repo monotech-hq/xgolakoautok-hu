@@ -369,7 +369,7 @@
 (defn- controls
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])
-        price-quote-id   @(r/subscribe [:router/get-current-route-path-param :item-id])
+        price-quote-id   @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         edit-item-uri     (str "/@app-home/price-quotes/"price-quote-id"/edit")]
        [common/item-viewer-controls :price-quotes.viewer
                                     {:disabled?     viewer-disabled?

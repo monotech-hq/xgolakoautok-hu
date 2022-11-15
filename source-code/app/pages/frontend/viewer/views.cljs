@@ -34,7 +34,7 @@
 (defn- controls
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :pages.viewer])
-        page-id          @(r/subscribe [:router/get-current-route-path-param :item-id])
+        page-id          @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         edit-item-uri     (str "/@app-home/pages/"page-id"/edit")]
        [common/item-viewer-controls :pages.viewer
                                     {:disabled?     viewer-disabled?

@@ -11,5 +11,5 @@
                                 {:title :terms-of-service :helper :the-content-is-not-available}])
 
 (r/reg-event-fx :views.terms-of-service/render-page!
-  [:ui/render-surface! :views.privacy-policy/view
-                       {:content #'terms-of-service.views/view}])
+  [:x.ui/render-surface! :views.privacy-policy/view
+                         {:content #'terms-of-service.views/view}])

@@ -683,7 +683,7 @@
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])
         price-quote-name @(r/subscribe [:db/get-item [:price-quotes :editor/edited-item :name]])
-        price-quote-id   @(r/subscribe [:router/get-current-route-path-param :item-id])
+        price-quote-id   @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         price-quote-uri   (str "/@app-home/price-quotes/" price-quote-id)]
        [common/surface-breadcrumbs :price-quotes.editor/view
                                    {:crumbs (if price-quote-id [{:label :app-home        :route "/@app-home"}

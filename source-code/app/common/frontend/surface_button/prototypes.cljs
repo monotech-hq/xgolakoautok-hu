@@ -13,7 +13,7 @@
   ; @return (map)
   ;  {}
   [button-props]
-  (let [viewport-large? @(r/subscribe [:environment/viewport-large?])]
+  (let [viewport-large? @(r/subscribe [:x.environment/viewport-large?])]
        (merge {:border-radius :m
                :font-size     :xs
                :font-weight   :extra-bold}

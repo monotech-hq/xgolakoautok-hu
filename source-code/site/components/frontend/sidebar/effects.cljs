@@ -10,11 +10,11 @@
   ;  [:site.components/show-sidebar!]
   (fn [{:keys [db]} _]
       {:db       (assoc-in db [:site.components :sidebar/meta-items :visible?] true)
-       :dispatch [:environment/add-scroll-prohibition! ::prohibition]}))
+       :dispatch [:x.environment/add-scroll-prohibition! ::prohibition]}))
 
 (r/reg-event-fx :site.components/hide-sidebar!
   ; @usage
   ;  [:site.components/hide-sidebar!]
   (fn [{:keys [db]} _]
       {:db       (assoc-in db [:site.components :sidebar/meta-items :visible?] false)
-       :dispatch [:environment/enable-scroll!]}))
+       :dispatch [:x.environment/enable-scroll!]}))

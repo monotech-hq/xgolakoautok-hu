@@ -6,4 +6,4 @@
 ;; ----------------------------------------------------------------------------
 
 (x.core/reg-lifecycles! ::lifecycles
-  {:on-server-boot [:views/set-error-screen! [:views.error-screen/render!]]})
+  {:on-server-boot [:x.views/set-error-screen! [:views.error-screen/render!]]})

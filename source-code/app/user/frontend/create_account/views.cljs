@@ -20,7 +20,7 @@
 
 (defn- body
   []
-  (let [viewport-small? @(r/subscribe [:environment/viewport-small?])]
+  (let [viewport-small? @(r/subscribe [:x.environment/viewport-small?])]
        [:div#create-account--body {:style (if viewport-small? {:width         "320px"}
                                                               {:border-color  "var( --border-color-highlight )"
                                                                :border-radius "var( --border-radius-m )"

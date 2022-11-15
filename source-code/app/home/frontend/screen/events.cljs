@@ -44,5 +44,5 @@
 ; @usage
 ;  [:home.screen/add-menu-item! {:label    "My item"
 ;                                :icon     :festival
-;                                :on-click [:router/go-to! "/@app-home/my-item"]}]
+;                                :on-click [:x.router/go-to! "/@app-home/my-item"]}]
 (r/reg-event-db :home.screen/add-menu-item! add-menu-item!)

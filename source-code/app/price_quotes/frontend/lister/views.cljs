@@ -31,7 +31,7 @@
   [lister-id item-dex {:keys [id] :as price-quote-item}]
   [elements/toggle {:content     [price-quote-item-structure lister-id item-dex price-quote-item]
                     :hover-color :highlight
-                    :on-click    [:router/go-to! (str "/@app-home/price-quotes/"id)]}])
+                    :on-click    [:x.router/go-to! (str "/@app-home/price-quotes/"id)]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

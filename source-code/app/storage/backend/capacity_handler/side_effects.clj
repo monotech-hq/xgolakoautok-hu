@@ -9,11 +9,11 @@
 
 (defn get-max-upload-size
   []
-  @(r/subscribe [:core/get-server-config-item :max-upload-size]))
+  @(r/subscribe [:x.core/get-server-config-item :max-upload-size]))
 
 (defn get-total-capacity
   []
-  @(r/subscribe [:core/get-server-config-item :storage-capacity]))
+  @(r/subscribe [:x.core/get-server-config-item :storage-capacity]))
 
 (defn get-used-capacity
   []
@@ -23,7 +23,7 @@
 (defn get-free-capacity
   []
   (if-let [used-capacity (get-used-capacity)]
-          (if-let [total-capacity @(r/subscribe [:core/get-server-config-item :storage-capacity])]
+          (if-let [total-capacity @(r/subscribe [:x.core/get-server-config-item :storage-capacity])]
                   (- total-capacity used-capacity))))
 
 ;; ----------------------------------------------------------------------------

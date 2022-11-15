@@ -18,7 +18,7 @@
   ; @usage
   ;  [copyright-label]
   [_ {:keys [theme]}]
-  (let [server-year          @(r/subscribe [:core/get-server-year])
+  (let [server-year          @(r/subscribe [:x.core/get-server-year])
         copyright-information (x.details/copyright-information server-year)]
        [elements/label ::copyright-label
                        {:color            (case theme :dark :invert :default)

@@ -11,11 +11,11 @@
                                                             :icon       :fiber_manual_record
                                                             :icon-color "#449997"
                                                             :label      :products
-                                                            :on-click   [:router/go-to! "/@app-home/products"]
+                                                            :on-click   [:x.router/go-to! "/@app-home/products"]
                                                             :horizontal-weight 0}]
                               [:home.sidebar/add-menu-item! {:group      :products-and-services
                                                              :icon       :fiber_manual_record
                                                              :icon-color "#449997"
                                                              :label      :products
-                                                             :on-click   [:router/go-to! "/@app-home/products"]
+                                                             :on-click   [:x.router/go-to! "/@app-home/products"]
                                                              :vertical-weight 0}]]}})

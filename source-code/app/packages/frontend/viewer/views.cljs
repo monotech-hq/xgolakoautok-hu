@@ -29,12 +29,12 @@
 
 (defn- service-item
   [lister-id item-dex {:keys [id] :as service-item}]
-  (let [package-id   @(r/subscribe [:router/get-current-route-path-param :item-id])
+  (let [package-id   @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         service-route (str "/@app-home/services/"id)
         route-parent  (str "/@app-home/packages/"package-id"/services")]
        [elements/toggle {:content     [service-item-structure lister-id item-dex service-item]
                          :hover-color :highlight
-                         :on-click    [:router/go-to! service-route {:route-parent route-parent}]}]))
+                         :on-click    [:x.router/go-to! service-route {:route-parent route-parent}]}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -108,12 +108,12 @@
 
 (defn- product-item
   [lister-id item-dex {:keys [id] :as product-item}]
-  (let [package-id   @(r/subscribe [:router/get-current-route-path-param :item-id])
+  (let [package-id   @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         product-route (str "/@app-home/products/"id)
         route-parent  (str "/@app-home/packages/"package-id"/products")]
        [elements/toggle {:content     [product-item-structure lister-id item-dex product-item]
                          :hover-color :highlight
-                         :on-click    [:router/go-to! product-route {:route-parent route-parent}]}]))
+                         :on-click    [:x.router/go-to! product-route {:route-parent route-parent}]}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -368,7 +368,7 @@
 (defn- controls
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :packages.viewer])
-        package-id       @(r/subscribe [:router/get-current-route-path-param :item-id])
+        package-id       @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         edit-item-uri     (str "/@app-home/packages/"package-id"/edit")]
        [common/item-viewer-controls :packages.viewer
                                     {:disabled?     viewer-disabled?

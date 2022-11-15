@@ -157,7 +157,7 @@
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :models.editor])
         model-name       @(r/subscribe [:db/get-item [:models :editor/edited-item :name]])
-        model-id         @(r/subscribe [:router/get-current-route-path-param :item-id])
+        model-id         @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         model-uri         (str "/@app-home/models/" model-id)]
        [common/surface-breadcrumbs :models.editor/view
                                    {:crumbs (if model-id [{:label :app-home  :route "/@app-home"}

@@ -9,5 +9,5 @@
   ; @return (vector)
   []
   ; XXX#4800
-  (let [model-id @(r/subscribe [:router/get-current-route-path-param :model-id])]
+  (let [model-id @(r/subscribe [:x.router/get-current-route-path-param :model-id])]
        [`(~:types.handler/get-model-name ~{:model-id model-id})]))

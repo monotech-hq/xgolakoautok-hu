@@ -196,8 +196,8 @@
 (defn- controls
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :types.viewer])
-        type-id          @(r/subscribe [:router/get-current-route-path-param :item-id])
-        model-id         @(r/subscribe [:router/get-current-route-path-param :model-id])
+        type-id          @(r/subscribe [:x.router/get-current-route-path-param :item-id])
+        model-id         @(r/subscribe [:x.router/get-current-route-path-param :model-id])
         edit-item-uri     (str "/@app-home/models/"model-id"/types/"type-id"/edit")]
        [common/item-viewer-controls :types.viewer
                                     {:disabled?     viewer-disabled?
@@ -208,7 +208,7 @@
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :types.viewer])
         type-name        @(r/subscribe [:db/get-item [:types :viewer/viewed-item :name]])
         model-name       @(r/subscribe [:db/get-item [:types :handler/model-item :name]])
-        model-id         @(r/subscribe [:router/get-current-route-path-param :model-id])
+        model-id         @(r/subscribe [:x.router/get-current-route-path-param :model-id])
         model-uri         (str "/@app-home/models/" model-id "/types")]
        [common/surface-breadcrumbs :types.viewer/view
                                    {:crumbs [{:label :app-home  :route "/@app-home"}

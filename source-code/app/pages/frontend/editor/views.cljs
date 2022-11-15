@@ -33,7 +33,7 @@
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :pages.editor])
         page-name        @(r/subscribe [:db/get-item [:pages :editor/edited-item :name]])
-        page-id          @(r/subscribe [:router/get-current-route-path-param :item-id])
+        page-id          @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         page-uri          (str "/@app-home/pages/" page-id)]
        [common/surface-breadcrumbs :pages.editor/view
                                    {:crumbs (if page-id [{:label :app-home :route "/@app-home"}

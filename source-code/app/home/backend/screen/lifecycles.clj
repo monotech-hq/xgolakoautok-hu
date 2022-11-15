@@ -6,7 +6,7 @@
 ;; ----------------------------------------------------------------------------
 
 (x.core/reg-lifecycles! ::lifecycles
-  {:on-server-boot [:router/add-route! :home.screen/route
+  {:on-server-boot [:x.router/add-route! :home.screen/route
                                        {:client-event   [:home.screen/load-screen!]
                                         :restricted?    true
                                         :route-template "/@app-home"}]})

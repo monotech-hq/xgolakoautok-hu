@@ -239,8 +239,8 @@
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :types.editor])
         type-name        @(r/subscribe [:db/get-item [:types :editor/edited-item :name]])
         model-name       @(r/subscribe [:db/get-item [:types :handler/model-item :name]])
-        type-id          @(r/subscribe [:router/get-current-route-path-param :item-id])
-        model-id         @(r/subscribe [:router/get-current-route-path-param :model-id])
+        type-id          @(r/subscribe [:x.router/get-current-route-path-param :item-id])
+        model-id         @(r/subscribe [:x.router/get-current-route-path-param :model-id])
         model-uri         (str "/@app-home/models/" model-id "/types")
         type-uri          (str "/@app-home/models/" model-id "/types/" type-id)]
        [common/surface-breadcrumbs :types.editor/view
@@ -283,7 +283,7 @@
 
 (defn- type-editor
   []
-  (let [model-id         @(r/subscribe [:router/get-current-route-path-param :model-id])
+  (let [model-id         @(r/subscribe [:x.router/get-current-route-path-param :model-id])
         scheme-field-ids @(r/subscribe [:schemes.form-handler/get-scheme-field-ids :types.technical-data])]
        [item-editor/body :types.editor
                          {:auto-title?      true

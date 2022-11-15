@@ -144,7 +144,7 @@
 
 (defn- label
   []
-  (let [app-title @(r/subscribe [:core/get-app-config-item :app-title])]
+  (let [app-title @(r/subscribe [:x.core/get-app-config-item :app-title])]
        [common/surface-label :home.screen/view
                              {:label app-title}]))
 

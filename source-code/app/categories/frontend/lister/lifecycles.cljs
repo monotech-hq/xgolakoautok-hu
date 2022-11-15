@@ -11,11 +11,11 @@
                                                             :icon       :list
                                                             :icon-color "#4a8bbf"
                                                             :label      :categories
-                                                            :on-click   [:router/go-to! "/@app-home/categories"]
+                                                            :on-click   [:x.router/go-to! "/@app-home/categories"]
                                                             :horizontal-weight 0}]
                               [:home.sidebar/add-menu-item! {:group      :vehicles
                                                              :icon       :list
                                                              :icon-color "#4a8bbf"
                                                              :label      :categories
-                                                             :on-click   [:router/go-to! "/@app-home/categories"]
+                                                             :on-click   [:x.router/go-to! "/@app-home/categories"]
                                                              :vertical-weight 0}]]}})

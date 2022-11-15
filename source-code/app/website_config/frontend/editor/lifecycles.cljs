@@ -10,11 +10,11 @@
                                                             :icon       :tune
                                                             :icon-color "#8655b1"
                                                             :label      :website-config
-                                                            :on-click   [:router/go-to! "/@app-home/website-config"]
+                                                            :on-click   [:x.router/go-to! "/@app-home/website-config"]
                                                             :horizontal-weight 2}]
                               [:home.sidebar/add-menu-item! {:group      :website
                                                              :icon       :tune
                                                              :icon-color "#8655b1"
                                                              :label      :website-config
-                                                             :on-click   [:router/go-to! "/@app-home/website-config"]
+                                                             :on-click   [:x.router/go-to! "/@app-home/website-config"]
                                                              :vertical-weight 2}]]}})

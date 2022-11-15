@@ -52,7 +52,7 @@
   ;   :info-text (metamorphic-content)(opt)
   ;   :label (metamorphic-content)}
   [_ {:keys [disabled? helper info-text label]}]
-  (if label (let [viewport-large? @(r/subscribe [:environment/viewport-large?])]
+  (if label (let [viewport-large? @(r/subscribe [:x.environment/viewport-large?])]
                  [elements/label {:content   label
                                   :disabled? disabled?
                                   :helper    helper
@@ -65,7 +65,7 @@
   ; @param (map) box-props
   ;  {}
   [box-id {:keys [icon icon-family] :as box-props}]
-  (if icon (if-let [viewport-large? @(r/subscribe [:environment/viewport-large?])]
+  (if icon (if-let [viewport-large? @(r/subscribe [:x.environment/viewport-large?])]
                    [:div {:style {:top "0" :position "absolute" :right "0" :height "100%"
                                   :display "flex" :align-items "center" :padding "0 96px"}}
                          [:i {:data-icon-family icon-family :style {:line-height "100%"
@@ -78,7 +78,7 @@
   ; @param (map) box-props
   ;  {}
   [box-id {:keys [content overflow] :as box-props}]
-  (let [viewport-small? @(r/subscribe [:environment/viewport-small?])]
+  (let [viewport-small? @(r/subscribe [:x.environment/viewport-small?])]
        [:div {:style {:background-color "var( --fill-color )"
                       :border           "1px solid var( --border-color-highlight )"
                       :border-radius    (if viewport-small? "0" "var( --border-radius-m )")

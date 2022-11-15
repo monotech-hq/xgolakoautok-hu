@@ -11,5 +11,5 @@
                                 {:title :privacy-policy :helper :the-content-is-not-available}])
 
 (r/reg-event-fx :views.privacy-policy/render-page!
-  [:ui/render-surface! :views.privacy-policy/view
-                       {:content #'privacy-policy.views/view}])
+  [:x.ui/render-surface! :views.privacy-policy/view
+                         {:content #'privacy-policy.views/view}])

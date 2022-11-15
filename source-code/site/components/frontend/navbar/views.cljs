@@ -56,7 +56,7 @@
   ;   :style (map)(opt)
   ;   :threshold (px)(opt)}
   [component-id {:keys [class style threshold] :as component-props}]
-  (let [threshold? (<= threshold @(r/subscribe [:environment/get-viewport-width]))]
+  (let [threshold? (<= threshold @(r/subscribe [:x.environment/get-viewport-width]))]
        [:<> [:div {:style {:left 0 :position :absolute :top 0}}
                   [scroll-sensor.views/component ::scroll-sensor navbar.helpers/scroll-f]]
             [:div {:id :si-navbar :class class :style style

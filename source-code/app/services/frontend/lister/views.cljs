@@ -31,7 +31,7 @@
   [lister-id item-dex {:keys [id] :as service-item}]
   [elements/toggle {:content     [service-item-structure lister-id item-dex service-item]
                     :hover-color :highlight
-                    :on-click    [:router/go-to! (str "/@app-home/services/"id)]}])
+                    :on-click    [:x.router/go-to! (str "/@app-home/services/"id)]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

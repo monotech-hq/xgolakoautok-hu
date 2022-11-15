@@ -13,7 +13,7 @@
                                                             :icon-color  "#5564b1"
                                                             :icon-family :material-icons-outlined
                                                             :label       :pages
-                                                            :on-click    [:router/go-to! "/@app-home/pages"]
+                                                            :on-click    [:x.router/go-to! "/@app-home/pages"]
                                                             :horizontal-weight 0}]
                               [:home.sidebar/add-menu-item! {:disabled?   true
                                                              :group       :content
@@ -21,5 +21,5 @@
                                                              :icon-color  "#805dd9"
                                                              :icon-family :material-icons-outlined
                                                              :label       :pages
-                                                             :on-click    [:router/go-to! "/@app-home/pages"]
+                                                             :on-click    [:x.router/go-to! "/@app-home/pages"]
                                                              :vertical-weight 0}]]}})

@@ -280,7 +280,7 @@
 (defn- controls
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :clients.viewer])
-        client-id        @(r/subscribe [:router/get-current-route-path-param :item-id])
+        client-id        @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         edit-item-uri     (str "/@app-home/clients/"client-id"/edit")]
        [common/item-viewer-controls :clients.viewer
                                     {:disabled?     viewer-disabled?

@@ -174,7 +174,7 @@
                                  :disabled?        disabled?
                                  :icon             :edit
                                  :label            :edit!
-                                 :on-click         [:router/go-to! edit-item-uri]}])
+                                 :on-click         [:x.router/go-to! edit-item-uri]}])
 
 (defn item-viewer-controls
   ; @param (keyword) viewer-id

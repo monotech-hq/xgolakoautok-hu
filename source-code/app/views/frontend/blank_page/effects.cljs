@@ -11,11 +11,11 @@
   [r/event-vector<-id]
   (fn [{:keys [db]} [_ page-id page-props]]
       {:db             (r blank-page.events/load-page! db)
-       :dispatch-n     [[:ui/simulate-process!]
+       :dispatch-n     [[:x.ui/simulate-process!]
                         [:views.blank-page/render-page! page-id page-props]]
        :dispatch-later [{:ms 500 :dispatch [:views.blank-page/page-loaded]}]}))
 
 (r/reg-event-fx :views.blank-page/render-page!
   (fn [_ [_ page-id page-props]]
-      [:ui/render-surface! page-id
-                           {:content [blank-page.views/view page-id page-props]}]))
+      [:x.ui/render-surface! page-id
+                             {:content [blank-page.views/view page-id page-props]}]))

@@ -10,11 +10,11 @@
                                                             {:collection-name "user_settings"
                                                              :handler-key     :settings.editor
                                                              :item-namespace  :user-settings}]
-                                 [:router/add-route! :settings.editor/base-route
+                                 [:x.router/add-route! :settings.editor/base-route
                                                      {:client-event   [:settings.editor/load-editor!]
                                                       :restricted?    true
                                                       :route-template "/@app-home/settings"}]
-                                 [:router/add-route! :settings.editor/extended-route
+                                 [:x.router/add-route! :settings.editor/extended-route
                                                      {:client-event   [:settings.editor/load-editor!]
                                                       :restricted?    true
                                                       :route-parent   "/@app-home"

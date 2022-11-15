@@ -90,7 +90,7 @@
 (defn- controls
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :contents.viewer])
-        content-id       @(r/subscribe [:router/get-current-route-path-param :item-id])
+        content-id       @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         edit-item-uri     (str "/@app-home/contents/"content-id"/edit")]
        [common/item-viewer-controls :contents.viewer
                                     {:disabled?     viewer-disabled?

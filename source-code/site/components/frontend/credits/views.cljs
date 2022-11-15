@@ -37,7 +37,7 @@
   ;  [created-by]
   [component-id component-props]
   [elements/toggle ::created-by
-                   {:on-click {:fx [:environment/open-new-browser-tab! "https://www.monotech.hu"]}
+                   {:on-click {:fx [:x.environment/open-new-browser-tab! "https://www.monotech.hu"]}
                     :content  [:div {:style {:align-items "center" :display "flex" :flex-direction "column"}}
                                     [mt-logo.views/component component-id component-props]
                                     [created-by-label        component-id component-props]]

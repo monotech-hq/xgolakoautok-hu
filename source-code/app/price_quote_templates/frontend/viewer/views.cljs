@@ -323,7 +323,7 @@
 (defn- controls
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :price-quote-templates.viewer])
-        template-id      @(r/subscribe [:router/get-current-route-path-param :item-id])
+        template-id      @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         edit-item-uri     (str "/@app-home/price-quote-templates/"template-id"/edit")]
        [common/item-viewer-controls :price-quote-templates.viewer
                                     {:disabled?     viewer-disabled?

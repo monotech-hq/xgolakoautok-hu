@@ -335,7 +335,7 @@
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :price-quote-templates.editor])
         template-name    @(r/subscribe [:db/get-item [:price-quote-templates :editor/edited-item :name]])
-        template-id      @(r/subscribe [:router/get-current-route-path-param :item-id])
+        template-id      @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         template-uri      (str "/@app-home/price-quote-templates/" template-id)]
        [common/surface-breadcrumbs :price-quote-templates.editor/view
                                    {:crumbs (if template-id [{:label :app-home              :route "/@app-home"}

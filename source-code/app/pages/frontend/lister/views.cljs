@@ -30,7 +30,7 @@
   [lister-id item-dex {:keys [id] :as page-item}]
   [elements/toggle {:page        [page-item-structure lister-id item-dex page-item]
                     :hover-color :highlight
-                    :on-click    [:router/go-to! (str "/@app-home/pages/"id)]}])
+                    :on-click    [:x.router/go-to! (str "/@app-home/pages/"id)]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

@@ -7,6 +7,6 @@
 ;; ----------------------------------------------------------------------------
 
 (x.core/reg-lifecycles! ::lifecycles
-  {:on-server-init [:router/add-route! :contents.handler/download-content
+  {:on-server-init [:x.router/add-route! :contents.handler/download-content
                                        {:route-template "/contents/:content-id"
                                         :get {:handler handler.routes/download-content}}]})

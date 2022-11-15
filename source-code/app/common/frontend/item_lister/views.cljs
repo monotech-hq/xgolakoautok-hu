@@ -160,7 +160,7 @@
   ; @usage
   ;  [item-lister-search-field :my-lister {...}]
   [lister-id {:keys [disabled? placeholder search-keys]}]
-  (let [viewport-small? @(r/subscribe [:environment/viewport-small?])
+  (let [viewport-small? @(r/subscribe [:x.environment/viewport-small?])
         search-event     [:item-lister/search-items! lister-id {:search-keys search-keys}]]
        [elements/search-field ::item-lister-search-field
                               {:autoclear?    true
@@ -275,7 +275,7 @@
   ; @usage
   ;  [item-lister-wrapper :my-lister {...}]
   [lister-id {:keys [body header]}]
-  (let [viewport-small? @(r/subscribe [:environment/viewport-small?])]
+  (let [viewport-small? @(r/subscribe [:x.environment/viewport-small?])]
        [:div {:style {:display "flex" :flex-direction "column-reverse"
                       :background-color "var( --fill-color )" :border "1px solid var( --border-color-highlight )"
                       :border-radius (if viewport-small? "0" "var( --border-radius-m )")}}
@@ -333,7 +333,7 @@
                                  :disabled?        disabled?
                                  :icon             :add
                                  :label            :add!
-                                 :on-click         [:router/go-to! create-item-uri]}])
+                                 :on-click         [:x.router/go-to! create-item-uri]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

@@ -205,7 +205,7 @@
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :products.editor])
         product-name        @(r/subscribe [:db/get-item [:products :editor/edited-item :name]])
-        product-id          @(r/subscribe [:router/get-current-route-path-param :item-id])
+        product-id          @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         product-uri          (str "/@app-home/products/" product-id)]
        [common/surface-breadcrumbs :products.editor/view
                                    {:crumbs (if product-id [{:label :app-home    :route "/@app-home"}

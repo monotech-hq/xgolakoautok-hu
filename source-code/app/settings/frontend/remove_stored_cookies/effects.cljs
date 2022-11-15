@@ -11,7 +11,7 @@
   (fn [{:keys [db]} _]
       (let [message (r x.dictionary/look-up db :just-a-moment...)]
            {:dispatch-later [{:ms   0 :dispatch [:ui/set-shield! {:content message}]}
-                             {:ms  50 :dispatch [:environment/remove-cookies!]}
+                             {:ms  50 :dispatch [:x.environment/remove-cookies!]}
                              {:ms 500 :dispatch [:boot-loader/refresh-app!]}]})))
 
 ;; ----------------------------------------------------------------------------

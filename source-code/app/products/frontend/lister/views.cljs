@@ -31,7 +31,7 @@
   [lister-id item-dex {:keys [id] :as product-item}]
   [elements/toggle {:content     [product-item-structure lister-id item-dex product-item]
                     :hover-color :highlight
-                    :on-click    [:router/go-to! (str "/@app-home/products/"id)]}])
+                    :on-click    [:x.router/go-to! (str "/@app-home/products/"id)]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

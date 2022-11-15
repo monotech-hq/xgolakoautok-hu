@@ -13,5 +13,5 @@
                                               :icon-color  "#ab55b1"
                                               :icon-family :material-icons-outlined
                                               :label       :appearance
-                                              :on-click    [:router/go-to! "/@app-home/settings/appearance"]
+                                              :on-click    [:x.router/go-to! "/@app-home/settings/appearance"]
                                               :horizontal-weight 1}]})

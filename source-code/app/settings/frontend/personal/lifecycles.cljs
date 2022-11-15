@@ -13,5 +13,5 @@
                                               :icon-color  "#55a3b1"
                                               :icon-family :material-icons-outlined
                                               :label       :user-profile
-                                              :on-click    [:router/go-to! "/@app-home/settings/personal"]
+                                              :on-click    [:x.router/go-to! "/@app-home/settings/personal"]
                                               :horizontal-weight 0}]})

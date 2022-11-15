@@ -15,7 +15,7 @@
                           :hover-color   :highlight
                           :indent        {:top :m}
                           :label         :back!
-                          :on-click      [:router/go-back!]}]])
+                          :on-click      [:x.router/go-back!]}]])
 
 ;; -- Breadcrumbs components --------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -50,7 +50,7 @@
   ; Ha nem egy közös elemben (pl. div) volt a sensor és a label, akkor bizonoyos
   ; esetekben (pl. horizontal-polarity elemben) nem megfelelő helyen érzékelt a sensor
   [:div [surface-a/title-sensor {:title label :offset -12}]
-        (let [viewport-large? @(r/subscribe [:environment/viewport-large?])]
+        (let [viewport-large? @(r/subscribe [:x.environment/viewport-large?])]
              [elements/label ::surface-label
                              {:content     label
                               :disabled?   disabled?

@@ -14,7 +14,7 @@
                                                              :item-namespace  :category
                                                              :on-route        [:categories.viewer/load-viewer!]
                                                              :route-title     :categories}]
-                                 [:router/add-route! :categories.viewer/models
+                                 [:x.router/add-route! :categories.viewer/models
                                                      {:client-event   [:categories.viewer/load-viewer! :models]
                                                       :restricted?    true
                                                       :route-parent   "/@app-home/categories"

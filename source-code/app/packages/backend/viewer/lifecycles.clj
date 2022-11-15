@@ -14,7 +14,7 @@
                                                              :item-namespace  :package
                                                              :on-route        [:packages.viewer/load-viewer!]
                                                              :route-title     :packages}]
-                                 [:router/add-route! :packages.viewer/products
+                                 [:x.router/add-route! :packages.viewer/products
                                                      {:client-event   [:packages.viewer/load-viewer! :products]
                                                       :restricted?    true
                                                       :route-parent   "/@app-home/packages"

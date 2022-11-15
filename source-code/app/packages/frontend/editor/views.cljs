@@ -232,7 +232,7 @@
   []
   (let [editor-disabled?   @(r/subscribe [:item-editor/editor-disabled? :packages.editor])
         package-name @(r/subscribe [:db/get-item [:packages :editor/edited-item :name]])
-        package-id   @(r/subscribe [:router/get-current-route-path-param :item-id])
+        package-id   @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         package-uri   (str "/@app-home/packages/" package-id)]
        [common/surface-breadcrumbs :packages.editor/view
                                    {:crumbs (if package-id [{:label :app-home    :route "/@app-home"}
