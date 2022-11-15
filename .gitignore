@@ -53,6 +53,7 @@ pom.xml.asc
 .idea
 **/.DS_Store
 .DS_Store
+.calva
 .clj-kondo
 .lsp
 
