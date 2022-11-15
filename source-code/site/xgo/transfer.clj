@@ -55,7 +55,8 @@
 
 (defn transfer-models-f
   [request]
-  (mongo-db/get-collection "models"))
+  (let [data (mongo-db/get-collection "models")]
+    (convert #(-> % :model/id) data)))
 
 (x.core/reg-transfer! ::transfer-models!
   {:data-f      transfer-models-f

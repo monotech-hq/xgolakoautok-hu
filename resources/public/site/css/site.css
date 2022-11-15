@@ -179,14 +179,14 @@
 /******************************************************************************/
 /***** Models *****/
 
-#xgo--models {
+#xgo-models {
   display: flex;
   justify-content: center;
   gap: 15px;
   flex-wrap: wrap;
 }
 
-.xgo--model-card {
+.xgo-model-card {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -196,32 +196,32 @@
   background-color: #d3d3d3;
 }
 
-.xgo--model-card--name {
+.xgo-model-card--name {
   font-size: 20px;
   font-weight: 500;
 }
 
-.xgo--model-card--dimensions {
+.xgo-model-card--dimensions {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
   width: 100%;
 }
 
-.xgo--model-card--dimension {
+.xgo-model-card--dimension {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.xgo--model-card--dimension-icon {
+.xgo-model-card--dimension-icon {
   font-size: 32px;
 }
 
-.xgo--model-card--dimension-label {
+.xgo-model-card--dimension-label {
 }
 
-.xgo--model-card--thumbnail {
+.xgo-model-card--thumbnail {
   width: 300px;
 }
 

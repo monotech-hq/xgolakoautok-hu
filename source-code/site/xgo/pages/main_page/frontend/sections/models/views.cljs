@@ -1,21 +1,47 @@
 
 (ns site.xgo.pages.main-page.frontend.sections.models.views
   (:require [re-frame.api :as r]
-            [mid-fruits.normalize :as normalize]
-            [site.xgo.pages.main-page.frontend.sections.categories.subs]))
+            [elements.api :as x.elements]))
 
 ;; -----------------------------------------------------------------------------
 ;; -----------------------------------------------------------------------------
 
-(defn- models [view-props]
+(defn dimension [icon num]
+  [:div {:class "xgo-model-card--dimension"}
+    [x.elements/icon {:icon  icon
+                      :class :xgo-model-card--dimension-icon}]
+    [:div {:class "xgo-model-card--label"} num]])
+
+(defn model-dimensions []
+ [:div {:class "xgo-model-card--dimensions"}
+   [dimension "airline_seat_recline_normal" 4]
+   [dimension "airline_seat_flat" 2]]) 
+
+(defn model-name [name]
+  [:p {:class "xgo-model-card--name"}
+    name])
+
+(defn model-thumbnail [{:media/keys [uri]}]
+   [:img {:class "xgo-model-card--thumbnail"
+          :src   uri}])
+
+(defn- model [[id {:model/keys [name thumbnail] :as model-data}]]
+ [:button {:key   id
+           :on-click #(r/dispatch [:models/select! id])}
+   [:div {:class "xgo-model-card"}
+     [model-dimensions model-data]
+     [model-name       name]
+     [model-thumbnail  thumbnail]]])
+  
+
+(defn- models [{:keys [models-data]}]
   [:div {:id "xgo-models"}
-        (str view-props)])
+    (doall (map model models-data))])
 
 ;; -----------------------------------------------------------------------------
 ;; -----------------------------------------------------------------------------
 
 (defn view []
-  (let [view-props {:models @(r/subscribe [:x.db/get-item [:site :models]])}]
+  (let [view-props {:models-data @(r/subscribe [:models/all])}]
     [:section {:id "xgo-models--container"}
               [models view-props]]))
-              ; [category-description]]]))
