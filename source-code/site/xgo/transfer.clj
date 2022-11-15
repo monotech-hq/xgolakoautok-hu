@@ -67,7 +67,8 @@
 
 (defn transfer-types-f
   [request]
-  (mongo-db/get-collection "types"))
+  (let [data (mongo-db/get-collection "types")]
+    (convert #(-> % :type/model-id) data)))
 
 (x.core/reg-transfer! ::transfer-types!
   {:data-f      transfer-types-f
