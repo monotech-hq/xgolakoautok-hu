@@ -15,7 +15,8 @@
                                                              :on-route        [:packages.viewer/load-viewer!]
                                                              :route-title     :packages}]
                                  [:x.router/add-route! :packages.viewer/products
-                                                     {:client-event   [:packages.viewer/load-viewer! :products]
-                                                      :restricted?    true
-                                                      :route-parent   "/@app-home/packages"
-                                                      :route-template "/@app-home/packages/:item-id/products"}]]}})
+                                                       {:client-event   [:packages.viewer/load-viewer! :products]
+                                                        :js-build       :app
+                                                        :restricted?    true
+                                                        :route-parent   "/@app-home/packages"
+                                                        :route-template "/@app-home/packages/:item-id/products"}]]}})

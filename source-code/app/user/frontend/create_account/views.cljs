@@ -27,13 +27,14 @@
                                                                :border-style  "solid"
                                                                :border-width  "1px"
                                                                :width         "320px"})}
-                                  (if-let [user-identified? @(r/subscribe [:user/user-identified?])]
+                                  (if-let [user-identified? @(r/subscribe [:x.user/user-identified?])]
                                           [logged-in-form]
                                           [create-account-form])]))
 
 (defn- create-account
   []
-  [elements/label {:content "Create account"}])
+  [elements/label {:content "Create account"
+                   :line-height :block}])
 
 (defn view
   [surface-id]

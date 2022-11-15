@@ -13,8 +13,24 @@
   ; @param (keyword) picker-id
   ; @param (map) picker-props
   [picker-id picker-props]
+  ; BUG#0889
+  ; Ha egy felületen több product-picker komponens van megjelenítve és az általuk
+  ; megjelenített product-preview komponensek megegyező azonosítóval rendelkeznek,
+  ; akkor a product-preview komponensek által megjelenített dnd-kit/body komponensek
+  ; is megegyező azonosítót kapnának, ami hibás működéshez vezethet!
+  ; Pl.: A 0.1.7.8 verzióban a types.editor szerkesztő "Images" és "Files" felületén
+  ;      is megjelenik egy-egy media-picker komponens (különböző azonosítókkal),
+  ;      de a media-picker komponensek által megjelenített media-preview komponensek
+  ;      megegyező azonosítókkal rendelkeznek (::media-picker-previews), ami miatt
+  ;      ha az egyik felületen (pl. "Images") a dnd-kit/body komponens használatával
+  ;      a felhasználó módosítja az elemek sorrendjét, majd a másik felületen (pl. "Files")
+  ;      is módosítja az ott megjelenített elemek sorrendjét, akkor a megegyező azonosítóval
+  ;      rendelkező dnd-kit/body komponensek a második módosításnál ("Files" felületen)
+  ;      az első módosításkor ("Images" felületen) használt elem-azonosítókat használják
+  ;      a drag-end-f függvény event paraméterének "over" kulcsához tartozó térképben!
   (let [preview-props (picker.prototypes/preview-props-prototype picker-id picker-props)]
-       [preview.views/element ::product-picker-previews preview-props]))
+      ;[preview.views/element ::product-picker-previews preview-props]
+       [preview.views/element picker-id preview-props]))
 
 (defn- product-picker-button
   ; @param (keyword) picker-id
@@ -38,10 +54,11 @@
   ;   :label (metamorphic-content)(opt)
   ;   :required? (boolean)(opt)}
   [_ {:keys [disabled? info-text label required?]}]
-  (if label [elements/label {:content   label
-                             :disabled? disabled?
-                             :info-text info-text
-                             :required? required?}]))
+  (if label [elements/label {:content     label
+                             :disabled?   disabled?
+                             :info-text   info-text
+                             :line-height :block
+                             :required?   required?}]))
 
 (defn- product-picker-body
   ; @param (keyword) picker-id
@@ -81,6 +98,8 @@
   ;   :required? (boolean)(opt)
   ;    Default: false
   ;   :placeholder (metamorphic-content)(opt)
+  ;   :sortable? (boolean)(opt)
+  ;    Default: false
   ;   :value-path (vector)}
   ;
   ; @usage

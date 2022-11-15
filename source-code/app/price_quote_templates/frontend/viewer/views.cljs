@@ -13,10 +13,18 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn- footer
+  []
+  (if-let [data-received? @(r/subscribe [:item-viewer/data-received? :price-quote-templates.viewer])]
+          [common/item-viewer-item-info :price-quote-templates.viewer {}]))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
 (defn- template-default-currency
   []
   (let [viewer-disabled?          @(r/subscribe [:item-viewer/viewer-disabled? :price-quote-templates.viewer])
-        template-default-currency @(r/subscribe [:db/get-item [:price-quote-templates :viewer/viewed-item :default-currency]])]
+        template-default-currency @(r/subscribe [:x.db/get-item [:price-quote-templates :viewer/viewed-item :default-currency]])]
        [common/data-element ::template-default-currency
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -27,7 +35,7 @@
 (defn- template-language
   []
   (let [viewer-disabled?  @(r/subscribe [:item-viewer/viewer-disabled? :price-quote-templates.viewer])
-        template-language @(r/subscribe [:db/get-item [:price-quote-templates :viewer/viewed-item :language]])]
+        template-language @(r/subscribe [:x.db/get-item [:price-quote-templates :viewer/viewed-item :language]])]
        [common/data-element ::template-language
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -63,7 +71,7 @@
 (defn- template-informations-preview
   []
   (let [viewer-disabled?      @(r/subscribe [:item-viewer/viewer-disabled? :price-quote-templates.viewer])
-        template-informations @(r/subscribe [:db/get-item [:price-quote-templates :viewer/viewed-item :informations]])]
+        template-informations @(r/subscribe [:x.db/get-item [:price-quote-templates :viewer/viewed-item :informations]])]
        [contents/content-preview ::template-informations-preview
                                  {:color       :muted
                                   :disabled?   viewer-disabled?
@@ -97,7 +105,7 @@
 (defn- template-footer-content
   []
   (let [viewer-disabled?        @(r/subscribe [:item-viewer/viewer-disabled? :price-quote-templates.viewer])
-        template-footer-content @(r/subscribe [:db/get-item [:price-quote-templates :viewer/viewed-item :footer-content]])]
+        template-footer-content @(r/subscribe [:x.db/get-item [:price-quote-templates :viewer/viewed-item :footer-content]])]
        [common/data-element ::template-footer-content
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -130,7 +138,7 @@
 (defn- template-body-title
   []
   (let [viewer-disabled?    @(r/subscribe [:item-viewer/viewer-disabled? :price-quote-templates.viewer])
-        template-body-title @(r/subscribe [:db/get-item [:price-quote-templates :viewer/viewed-item :body-title]])]
+        template-body-title @(r/subscribe [:x.db/get-item [:price-quote-templates :viewer/viewed-item :body-title]])]
        [common/data-element ::template-body-title
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -141,7 +149,7 @@
 (defn- template-body-subtitle
   []
   (let [viewer-disabled?       @(r/subscribe [:item-viewer/viewer-disabled? :price-quote-templates.viewer])
-        template-body-subtitle @(r/subscribe [:db/get-item [:price-quote-templates :viewer/viewed-item :body-subtitle]])]
+        template-body-subtitle @(r/subscribe [:x.db/get-item [:price-quote-templates :viewer/viewed-item :body-subtitle]])]
        [common/data-element ::template-body-subtitle
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -152,7 +160,7 @@
 (defn- template-body-description
   []
   (let [viewer-disabled?          @(r/subscribe [:item-viewer/viewer-disabled? :price-quote-templates.viewer])
-        template-body-description @(r/subscribe [:db/get-item [:price-quote-templates :viewer/viewed-item :body-description]])]
+        template-body-description @(r/subscribe [:x.db/get-item [:price-quote-templates :viewer/viewed-item :body-description]])]
        [common/data-element ::template-body-description
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -191,7 +199,7 @@
 (defn- template-issuer-details
   []
   (let [viewer-disabled?        @(r/subscribe [:item-viewer/viewer-disabled? :price-quote-templates.viewer])
-        template-issuer-details @(r/subscribe [:db/get-item [:price-quote-templates :viewer/viewed-item :issuer-details]])]
+        template-issuer-details @(r/subscribe [:x.db/get-item [:price-quote-templates :viewer/viewed-item :issuer-details]])]
        [common/data-element ::template-issuer-details
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -202,7 +210,7 @@
 (defn- template-issuer-name
   []
   (let [viewer-disabled?     @(r/subscribe [:item-viewer/viewer-disabled? :price-quote-templates.viewer])
-        template-issuer-name @(r/subscribe [:db/get-item [:price-quote-templates :viewer/viewed-item :issuer-name]])]
+        template-issuer-name @(r/subscribe [:x.db/get-item [:price-quote-templates :viewer/viewed-item :issuer-name]])]
        [common/data-element ::template-issuer-name
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -231,7 +239,7 @@
 (defn- template-issuer-logo-preview
   []
   (let [viewer-disabled?     @(r/subscribe [:item-viewer/viewer-disabled? :price-quote-templates.viewer])
-        template-issuer-logo @(r/subscribe [:db/get-item [:price-quote-templates :viewer/viewed-item :issuer-logo]])]
+        template-issuer-logo @(r/subscribe [:x.db/get-item [:price-quote-templates :viewer/viewed-item :issuer-logo]])]
        [storage/media-preview ::template-issuer-logo-preview
                               {:disabled?   viewer-disabled?
                                :indent      {:top :m :vertical :s}
@@ -262,7 +270,7 @@
 (defn- template-name
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :price-quote-templates.viewer])
-        template-name    @(r/subscribe [:db/get-item [:price-quote-templates :viewer/viewed-item :name]])]
+        template-name    @(r/subscribe [:x.db/get-item [:price-quote-templates :viewer/viewed-item :name]])]
        [common/data-element ::template-name
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -307,7 +315,7 @@
 
 (defn- body
   []
-  (let [current-view-id @(r/subscribe [:gestures/get-current-view-id :price-quote-templates.viewer])]
+  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :price-quote-templates.viewer])]
        (case current-view-id :overview [template-overview])))
 
 ;; ----------------------------------------------------------------------------
@@ -332,7 +340,7 @@
 (defn- breadcrumbs
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :price-quote-templates.viewer])
-        template-name    @(r/subscribe [:db/get-item [:price-quote-templates :viewer/viewed-item :name]])]
+        template-name    @(r/subscribe [:x.db/get-item [:price-quote-templates :viewer/viewed-item :name]])]
        [common/surface-breadcrumbs :price-quote-templates.viewer/view
                                    {:crumbs [{:label :app-home :route "/@app-home"}
                                              {:label :price-quote-templates    :route "/@app-home/price-quote-templates"}
@@ -342,7 +350,7 @@
 (defn- label
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :price-quote-templates.viewer])
-        template-name    @(r/subscribe [:db/get-item [:price-quote-templates :viewer/viewed-item :name]])]
+        template-name    @(r/subscribe [:x.db/get-item [:price-quote-templates :viewer/viewed-item :name]])]
        [common/surface-label :price-quote-templates.viewer/view
                              {:disabled?   viewer-disabled?
                               :label       template-name
@@ -363,9 +371,10 @@
 (defn- view-structure
   []
   [:<> [header]
-       [body]])
+       [body]
+       [footer]])
 
-(defn- price-quote-template-viewer
+(defn- template-viewer
   []
   [item-viewer/body :price-quote-templates.viewer
                     {:auto-title?   true
@@ -378,4 +387,4 @@
 (defn view
   [surface-id]
   [surface-a/layout surface-id
-                    {:content #'price-quote-template-viewer}])
+                    {:content #'template-viewer}])

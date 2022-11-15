@@ -1,14 +1,15 @@
 
 (ns app.storage.frontend.media-preview.views
     (:require [app.storage.frontend.media-preview.prototypes :as media-preview.prototypes]
+              [candy.api                                     :refer [return]]
               [elements.api                                  :as elements]
               [io.api                                        :as io]
-              [candy.api                              :refer [return]]
               [mid-fruits.random                             :as random]
               [mid-fruits.vector                             :as vector]
 
               ; TEMP
-              [plugins.dnd-kit.api :as dnd-kit]))
+              [plugins.dnd-kit.api :as dnd-kit]
+              [re-frame.api :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -18,7 +19,7 @@
   ; @param (map) preview-props
   ;  {:disabled? (boolean)(opt)
   ;   :thumbnail (map)
-  ; @param (string) media-link
+  ; @param (namespaced map) media-link
   [preview-id {:keys [disabled?] {:keys [height width]} :thumbnail} {:media/keys [uri]}]
   [elements/thumbnail {:border-radius :s
                        :disabled?     disabled?
@@ -29,10 +30,13 @@
 (defn- media-preview-sortable-body
   ; @param (keyword) preview-id
   ; @param (map) preview-props
-  ; @param (string) media-link
-  ; @param (map) dnd-kit-props
-  [preview-id preview-props item-dex media-link {:keys [attributes listeners]}]
-  [:div (merge attributes listeners {:style {:cursor :grab}})
+  ; @param (integer) item-dex
+  ; @param (namespaced map) media-link
+  ; @param (map) drag-props
+  ;  {:handle-attributes (map)}
+  [preview-id preview-props item-dex media-link {:keys [handle-attributes item-attributes]}]
+  [:div (-> handle-attributes (merge item-attributes)
+                              (update :style merge {:cursor :grab}))
         [media-preview-static-body preview-id preview-props media-link]])
 
 ;; ----------------------------------------------------------------------------
@@ -58,7 +62,7 @@
                        :items            items
                        :item-id-f        :media/id
                        :item-element     #'media-preview-sortable-body
-                       :on-order-changed [:db/set-item! value-path]}]])
+                       :on-order-changed (fn [_ _ %] (r/dispatch-sync [:x.db/set-item! value-path %]))}]])
 
 (defn- media-preview-list
   ; @param (keyword) preview-id
@@ -75,9 +79,10 @@
   ;   :info-text (metamorphic-content)(opt)
   ;   :label (metamorphic-content)(opt)}
   [_ {:keys [disabled? info-text label]}]
-  (if label [elements/label {:content   label
-                             :disabled? disabled?
-                             :info-text info-text}]))
+  (if label [elements/label {:content     label
+                             :disabled?   disabled?
+                             :info-text   info-text
+                             :line-height :block}]))
 
 (defn- media-preview-placeholder-thumbnail
   ; @param (keyword) preview-id
@@ -100,7 +105,8 @@
                    :content             placeholder
                    :disabled?           disabled?
                    :font-size           :xs
-                   :horizontal-position :left}])
+                   :horizontal-position :left
+                   :line-height         :block}])
 
 (defn- media-preview-placeholder
   ; @param (keyword) preview-id
@@ -149,8 +155,8 @@
   ;     :width (keyword)(opt)
   ;      :xxs, :xs, :s, :m, :l, :xl, :xxl, :3xl, :4xl, :5xl
   ;      Default: :5xl}
-  ;    :value-path (vector)(opt)
-  ;     W/ {:sortable? true}}
+  ;   :value-path (vector)(opt)
+  ;    W/ {:sortable? true}}
   ;
   ; @usage
   ;  [media-preview {...}]

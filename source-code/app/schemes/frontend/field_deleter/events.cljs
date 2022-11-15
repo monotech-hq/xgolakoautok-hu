@@ -1,6 +1,6 @@
 
 (ns app.schemes.frontend.field-deleter.events
-    (:require [candy.api  :refer [return]]
+    (:require [candy.api         :refer [return]]
               [mid-fruits.map    :refer [dissoc-in]]
               [mid-fruits.vector :as vector]
               [re-frame.api      :as r :refer [r]]))

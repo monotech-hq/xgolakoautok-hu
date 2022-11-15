@@ -5,7 +5,7 @@
               [engines.item-lister.api :as item-lister]
               [layouts.popup-a.api     :as popup-a]
               [re-frame.api            :as r]
-              [x.app-components.api    :as components]))
+              [x.components.api        :as components]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -23,12 +23,12 @@
 
 (defn- template-item-structure
   [selector-id item-dex {:keys [id issuer-logo modified-at name] :as template-item}]
-  (let [timestamp @(r/subscribe [:activities/get-actual-timestamp modified-at])]
-       [common/list-item-structure selector-id item-dex
-                                   {:cells [[common/list-item-thumbnail    selector-id item-dex {:thumbnail (:media/uri issuer-logo)}]
-                                            [common/list-item-primary-cell selector-id item-dex {:label name :timestamp timestamp :stretch? true
-                                                                                                 :placeholder :unnamed-price-quote-template}]
-                                            [common/selector-item-marker   selector-id item-dex {:item-id id}]]}]))
+  (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+        item-last? @(r/subscribe [:item-lister/item-last? selector-id item-dex])]
+       [common/list-item-structure {:cells [[common/list-item-thumbnail    {:thumbnail (:media/uri issuer-logo)}]
+                                            [common/list-item-primary-cell {:label name :timestamp timestamp :stretch? true :placeholder :unnamed-price-quote-template}]
+                                            [common/selector-item-marker   selector-id item-dex {:item-id id}]]
+                                    :separator (if-not item-last? :bottom)}]))
 
 (defn- template-item
   [selector-id item-dex {:keys [id] :as template-item}]
@@ -75,7 +75,7 @@
                           {:primary-button   {:label :save! :on-click [:item-selector/save-selection! :price-quote-templates.selector]}
                            :secondary-button (if-let [autosaving? @(r/subscribe [:item-selector/autosaving? :price-quote-templates.selector])]
                                                      {:label :abort!  :on-click [:item-selector/abort-autosave! :price-quote-templates.selector]}
-                                                     {:label :cancel! :on-click [:ui/remove-popup! :price-quote-templates.selector/view]})
+                                                     {:label :cancel! :on-click [:x.ui/remove-popup! :price-quote-templates.selector/view]})
                            :label            :select-price-quote-template!}])
 
 (defn- header

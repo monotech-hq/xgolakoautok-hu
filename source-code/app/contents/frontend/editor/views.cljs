@@ -120,7 +120,7 @@
 
 (defn- body
   []
-  (let [current-view-id @(r/subscribe [:gestures/get-current-view-id :contents.editor])]
+  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :contents.editor])]
        (case current-view-id :data     [content-data]
                              :content  [content-content]
                              :settings [content-settings])))
@@ -137,7 +137,7 @@
 (defn- breadcrumbs
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :contents.editor])
-        content-name     @(r/subscribe [:db/get-item [:contents :editor/edited-item :name]])
+        content-name     @(r/subscribe [:x.db/get-item [:contents :editor/edited-item :name]])
         content-id       @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         content-uri       (str "/@app-home/contents/" content-id)]
        [common/surface-breadcrumbs :contents.editor/view
@@ -153,7 +153,7 @@
 (defn- label
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :contents.editor])
-        content-name     @(r/subscribe [:db/get-item [:contents :editor/edited-item :name]])]
+        content-name     @(r/subscribe [:x.db/get-item [:contents :editor/edited-item :name]])]
        [common/surface-label :contents.editor/view
                              {:disabled?   editor-disabled?
                               :label       content-name
@@ -177,7 +177,8 @@
        [body]])
 
 (defn- content-editor
-  []
+  ; @param (keyword) surface-id
+  [_]
   [item-editor/body :contents.editor
                     {:auto-title?      true
                      :form-element     #'view-structure
@@ -190,6 +191,7 @@
                      :suggestions-path [:contents :editor/suggestions]}])
 
 (defn view
+  ; @param (keyword) surface-id
   [surface-id]
   [surface-a/layout surface-id
                     {:content #'content-editor}])

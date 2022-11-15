@@ -9,8 +9,8 @@
 
 (r/reg-event-fx :services.selector/render-selector!
   ; @param (keyword) selector-id
-  [:ui/render-popup! :services.selector/view
-                     {:content #'selector.views/view}])
+  [:x.ui/render-popup! :services.selector/view
+                       {:content #'selector.views/view}])
 
 (r/reg-event-fx :services.selector/load-selector!
   ; @param (keyword)(opt) selector-id
@@ -28,7 +28,7 @@
   ;   :value-path (vector)}
   ;
   ; @usage
-  ;  [:services.selector/load-selector! {...}]
+  ;  [:services.selector/load-sel:x.uiector! {...}]
   ;
   ; @usage
   ;  [:services.selector/load-selector! :my-selector {...}]
@@ -50,4 +50,4 @@
   ; @param (maps in vector) exported-items
   (fn [_ [_ on-save exported-items]]
       (let [on-save (r/metamorphic-event<-params on-save exported-items)]
-           {:dispatch-n [on-save [:ui/remove-popup! :services.selector/view]]})))
+           {:dispatch-n [on-save [:x.ui/remove-popup! :services.selector/view]]})))

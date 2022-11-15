@@ -4,7 +4,7 @@
               [elements.api                               :as elements]
               [mid-fruits.random                          :as random]
               [re-frame.api                               :as r]
-              [x.app-components.api                       :as x.components]))
+              [x.components.api                           :as x.components]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -15,7 +15,8 @@
                    :content          :downloading...
                    :font-size        :xs
                    :horizontal-align :center
-                   :indent           {:bottom :s}}])
+                   :indent           {:bottom :s}
+                   :line-height      :block}])
 
 (defn- surface-box-query-content
   ; @param (keyword) box-id
@@ -53,12 +54,13 @@
   ;   :label (metamorphic-content)}
   [_ {:keys [disabled? helper info-text label]}]
   (if label (let [viewport-large? @(r/subscribe [:x.environment/viewport-large?])]
-                 [elements/label {:content   label
-                                  :disabled? disabled?
-                                  :helper    helper
-                                  :info-text info-text
-                                  :indent    {:top :xs :vertical :s}
-                                  :font-size (if viewport-large? :l :m)}])))
+                 [elements/label {:content     label
+                                  :disabled?   disabled?
+                                  :helper      helper
+                                  :info-text   info-text
+                                  :indent      {:top :xs :vertical :s}
+                                  :font-size   (if viewport-large? :l :m)
+                                  :line-height :block}])))
 
 (defn- surface-box-icon
   ; @param (keyword) box-id
@@ -90,16 +92,21 @@
 (defn- surface-box
   ; @param (keyword) box-id
   ; @param (map) box-props
-  ;  {:indent (map)(opt)}
-  [box-id {:keys [indent] :as box-props}]
+  ;  {:class (keyword or keywords in vector)(opt)
+  ;   :indent (map)(opt)
+  ;   :style (map)(opt)}
+  [box-id {:keys [class indent style] :as box-props}]
   [elements/blank box-id
-                  {:indent  indent
-                   :content [surface-box-body box-id box-props]}])
+                  {:class   class
+                   :indent  indent
+                   :content [surface-box-body box-id box-props]
+                   :style   style}])
 
 (defn element
   ; @param (keyword)(opt) box-id
   ; @param (map) box-props
-  ;  {:content (metamorphic-content)
+  ;  {:class (keyword or keywords in vector)(opt)
+  ;   :content (metamorphic-content)
   ;   :disabled? (boolean)(opt)
   ;    Default: false
   ;   :helper (metamorphic-content)(opt)
@@ -114,7 +121,8 @@
   ;    Default: :visible
   ;   :query (vector)(opt)
   ;   :refresh-interval (ms)(opt)
-  ;    W/ {:query ...}}
+  ;    W/ {:query ...}
+  ;   :style (map)(opt)}
   ;
   ; @usage
   ;  [surface-box {...}]

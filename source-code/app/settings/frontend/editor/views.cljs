@@ -6,7 +6,7 @@
               [forms.api               :as forms]
               [layouts.surface-a.api   :as surface-a]
               [re-frame.api            :as r]
-              [x.app-locales.api       :as x.locales]))
+              [x.locales.api           :as x.locales]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -14,7 +14,7 @@
 (defn- settings-primary-currency-select
   []
   (let [editor-disabled?   @(r/subscribe [:item-editor/editor-disabled? :settings.editor])
-        secondary-currency @(r/subscribe [:db/get-item [:settings :editor/edited-item :secondary-currency]])]
+        secondary-currency @(r/subscribe [:x.db/get-item [:settings :editor/edited-item :secondary-currency]])]
        [elements/select ::settings-primary-currency-select
                         {:disabled?  editor-disabled?
                          :indent     {:top :m :vertical :s}
@@ -26,7 +26,7 @@
 (defn- settings-secondary-currency-select
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :settings.editor])
-        primary-currency @(r/subscribe [:db/get-item [:settings :editor/edited-item :primary-currency]])]
+        primary-currency @(r/subscribe [:x.db/get-item [:settings :editor/edited-item :primary-currency]])]
        [elements/select ::settings-secondary-currency-select
                         {:disabled?  editor-disabled?
                          :indent     {:top :m :vertical :s}
@@ -40,7 +40,7 @@
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :settings.editor])]
        [elements/text-field ::settings-vat-value-field
                             {:disabled?      editor-disabled?
-                             :end-adornments [{:label "%"}]
+                             :end-adornments [{:label "%" :color :muted}]
                              :indent         {:top :m :vertical :s}
                              :label          :vat-value
                              :required?      true
@@ -49,11 +49,11 @@
 (defn- settings-current-price-field
   []
   (let [editor-disabled?   @(r/subscribe [:item-editor/editor-disabled? :settings.editor])
-        primary-currency   @(r/subscribe [:db/get-item [:settings :editor/edited-item :primary-currency]])
-        secondary-currency @(r/subscribe [:db/get-item [:settings :editor/edited-item :secondary-currency]])]
+        primary-currency   @(r/subscribe [:x.db/get-item [:settings :editor/edited-item :primary-currency]])
+        secondary-currency @(r/subscribe [:x.db/get-item [:settings :editor/edited-item :secondary-currency]])]
        [elements/text-field ::settings-current-price-field
                             {:disabled?      editor-disabled?
-                             :end-adornments [{:label (str primary-currency" / " secondary-currency)}]
+                             :end-adornments [{:label (str primary-currency" / " secondary-currency) :color :muted}]
                              :indent         {:top :m :vertical :s}
                              :label          :current-price
                              :required?      true
@@ -91,7 +91,7 @@
 
 (defn- body
   []
-  (let [current-view-id @(r/subscribe [:gestures/get-current-view-id :settings.editor])]
+  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :settings.editor])]
        (case current-view-id :sales [settings-sales])))
 
 ;; ----------------------------------------------------------------------------

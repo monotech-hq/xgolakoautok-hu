@@ -7,5 +7,6 @@
 
 (x.core/reg-lifecycles! ::lifecycles
   {:on-server-boot [:x.router/add-route! :user.create-account/route
-                                       {:client-event   [:user.create-account/render!]
-                                        :route-template "/@app-home/create-account"}]})
+                                         {:client-event   [:user.create-account/render!]
+                                          :js-build       :app
+                                          :route-template "/@app-home/create-account"}]})

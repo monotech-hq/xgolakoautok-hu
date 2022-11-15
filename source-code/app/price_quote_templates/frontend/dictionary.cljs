@@ -45,17 +45,17 @@
            {:en "Price quote templates"
             :hu "Árajánlat sablonok"}
            :price-quote-template-name-placeholder
-           {:en "Template name"
-            :hu "Sablon neve"}
+           {:en "Price quote template name"
+            :hu "Árajánlat sablon neve"}
            :search-in-price-quote-templates
-           {:en "Search in templates"
-            :hu "Keresés a sablonok között"}
+           {:en "Search in price quote templates"
+            :hu "Keresés az árajánlat sablonok között"}
            :select-price-quote-template!
-           {:en "Select template"
-            :hu "Sablon kiválasztása"}
+           {:en "Select price quote template"
+            :hu "Árajánlat sablon kiválasztása"}
            :select-price-quote-templates!
-           {:en "Select templates"
-            :hu "Sablonok kiválasztása"}
+           {:en "Select price quote templates"
+            :hu "Árajánlat sablonok kiválasztása"}
            :unnamed-price-quote-template
-           {:en "Unnamed template"
-            :hu "Névtelen sablon"}})
+           {:en "Unnamed price quote template"
+            :hu "Névtelen árajánlat sablon"}})

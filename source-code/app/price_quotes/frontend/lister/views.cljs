@@ -19,13 +19,14 @@
 
 (defn- price-quote-item-structure
   [lister-id item-dex {:keys [modified-at name thumbnail]}]
-  (let [timestamp       @(r/subscribe [:activities/get-actual-timestamp modified-at])
+  (let [timestamp       @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+        item-last?      @(r/subscribe [:item-lister/item-last? lister-id item-dex])
         price-quote-name {:content :price-quote-n :replacements [name]}]
-       [common/list-item-structure lister-id item-dex
-                                   {:cells [[common/list-item-thumbnail-icon lister-id item-dex {:icon :request_quote :icon-family :material-icons-outlined}]
-                                            [common/list-item-label          lister-id item-dex {:content price-quote-name :stretch? true :placeholder :unnamed-price-quote}]
-                                            [common/list-item-detail         lister-id item-dex {:content timestamp :width "160px"}]
-                                            [common/list-item-marker         lister-id item-dex {:icon :navigate_next}]]}]))
+       [common/list-item-structure {:cells [[common/list-item-thumbnail {:icon :request_quote :icon-family :material-icons-outlined}]
+                                            [common/list-item-label     {:content price-quote-name :stretch? true :placeholder :unnamed-price-quote}]
+                                            [common/list-item-detail    {:content timestamp :width "160px"}]
+                                            [common/list-item-marker    {:icon :navigate_next}]]
+                                    :separator (if-not item-last? :bottom)}]))
 
 (defn- price-quote-item
   [lister-id item-dex {:keys [id] :as price-quote-item}]

@@ -2,11 +2,11 @@
 (ns app.price-quotes.backend.viewer.resolvers
     (:require [app.common.backend.api                   :as common]
               [app.price-quotes.backend.handler.helpers :as handler.helpers]
+              [candy.api                                :refer [return]]
               [com.wsscode.pathom3.connect.operation    :refer [defresolver]]
-              [candy.api                         :refer [return]]
               [mid-fruits.keyword                       :as keyword]
               [mid-fruits.map                           :as map]
-              [math.api                          :as math]
+              [math.api                                 :as math]
               [mongo-db.api                             :as mongo-db]
               [pathom.api                               :as pathom]))
 

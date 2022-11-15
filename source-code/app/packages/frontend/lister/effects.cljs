@@ -7,5 +7,5 @@
 ;; ----------------------------------------------------------------------------
 
 (r/reg-event-fx :packages.lister/load-lister!
-  [:ui/render-surface! :packages.lister/view
-                       {:content #'lister.views/view}])
+  [:x.ui/render-surface! :packages.lister/view
+                         {:content #'lister.views/view}])

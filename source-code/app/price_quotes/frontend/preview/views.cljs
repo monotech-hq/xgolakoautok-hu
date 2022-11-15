@@ -2,9 +2,9 @@
 (ns app.price-quotes.frontend.preview.views
     (:require [app.common.frontend.api                 :as common]
               [app.price-quotes.frontend.handler.state :as handler.state]
+              [css.api                                 :as css]
               [elements.api                            :as elements]
               [layouts.popup-b.api                     :as popup-b]
-              [mid-fruits.css                          :as css]
               [re-frame.api                            :as r]))
 
 ;; ----------------------------------------------------------------------------
@@ -16,7 +16,7 @@
         [elements/icon-button ::close-icon-button
                               {:color    :invert
                                :keypress {:key-code 27}
-                               :on-click [:ui/remove-popup! :price-quotes.preview/view]
+                               :on-click [:x.ui/remove-popup! :price-quotes.preview/view]
                                :preset   :close}]])
 
 (defn- preview-download-error-label
@@ -27,6 +27,7 @@
                         :content          :download-error
                         :disabled?        editor-disabled?
                         :horizontal-align :center
+                        :line-height      :block
                         :selectable?      true}]))
 
 (defn- preview-downloading-label
@@ -36,7 +37,8 @@
                        {:color            :invert
                         :content          :downloading...
                         :disabled?        editor-disabled?
-                        :horizontal-align :center}]))
+                        :horizontal-align :center
+                        :line-height      :block}]))
 
 (defn- preview-pdf
   []

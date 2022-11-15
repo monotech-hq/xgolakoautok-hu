@@ -3,7 +3,7 @@
     (:require [app.clients.frontend.api                 :as clients]
               [app.common.frontend.api                  :as common]
               [app.contents.frontend.api                :as contents]
-              [app.models.frontend.api                  :as models]
+              [app.vehicle-models.frontend.api          :as vehicle-models]
               [app.packages.frontend.api                :as packages]
               [app.price-quote-templates.frontend.api   :as price-quote-templates]
               [app.price-quotes.frontend.handler.state  :as handler.state]
@@ -12,16 +12,16 @@
               [app.price-quotes.mid.handler.config      :as handler.config]
               [app.products.frontend.api                :as products]
               [app.services.frontend.api                :as services]
-              [app.types.frontend.api                   :as types]
+              [app.vehicle-types.frontend.api           :as vehicle-types]
               [elements.api                             :as elements]
               [engines.item-editor.api                  :as item-editor]
               [forms.api                                :as forms]
               [layouts.surface-a.api                    :as surface-a]
-              [mixed.api                         :as mixed]
+              [mixed.api                                :as mixed]
               [mid-fruits.string                        :as string]
               [mid-fruits.vector                        :as vector]
               [re-frame.api                             :as r]
-              [x.app-components.api                     :as x.components]))
+              [x.components.api                         :as x.components]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -35,6 +35,7 @@
                         :disabled?        editor-disabled?
                         :font-size        :xs
                         :horizontal-align :center
+                        :line-height      :block
                         :selectable?      true}]))
 
 (defn- download-preview-button
@@ -47,7 +48,7 @@
 (defn- price-quote-preview-box
   []
   (let [editor-disabled?     @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])
-        price-quote-template @(r/subscribe [:db/get-item [:price-quotes :editor/edited-item :template]])]
+        price-quote-template @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :template]])]
        [common/surface-box ::price-quote-preview-box
                            {:content [:<> (if price-quote-template [download-preview-button]
                                                                    [select-price-quote-template-helper])
@@ -101,7 +102,7 @@
 (defn- price-quote-vehicle-unique-price
   []
   (let [editor-disabled?     @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])
-        vehicle-unique-price @(r/subscribe [:db/get-item [:price-quotes :editor/edited-item :vehicle-unique-price]])]
+        vehicle-unique-price @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :vehicle-unique-price]])]
        [common/data-element ::price-quote-vehicle-unique-price
                             {:disabled?   editor-disabled?
                              :indent      {:top :m :vertical :s}
@@ -112,7 +113,7 @@
 (defn- price-quote-vehicle-unit-price
   []
   (let [editor-disabled?               @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])
-        price-quote-vehicle-unit-price @(r/subscribe [:db/get-item [:price-quotes :editor/vehicle-unit-price]])]
+        price-quote-vehicle-unit-price @(r/subscribe [:x.db/get-item [:price-quotes :editor/vehicle-unit-price]])]
        [common/data-element ::price-quote-vehicle-unit-price
                             {:disabled?   editor-disabled?
                              :indent      {:top :m :vertical :s}
@@ -124,7 +125,7 @@
 (defn- price-quote-vehicle-count
   []
   (let [editor-disabled?          @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])
-        price-quote-vehicle-count @(r/subscribe [:db/get-item [:price-quotes :editor/edited-item :vehicle-count]])]
+        price-quote-vehicle-count @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :vehicle-count]])]
        [common/data-element ::price-quote-vehicle-count
                             {:disabled?   editor-disabled?
                              :indent      {:top :m :vertical :s}
@@ -135,7 +136,7 @@
 (defn- price-quote-more-items-price
   []
   (let [editor-disabled?             @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])
-        price-quote-more-items-price @(r/subscribe [:db/get-item [:price-quotes :editor/more-items-price]])]
+        price-quote-more-items-price @(r/subscribe [:x.db/get-item [:price-quotes :editor/more-items-price]])]
        [common/data-element ::price-quote-more-items-price
                             {:disabled?   editor-disabled?
                              :indent      {:top :m :vertical :s}
@@ -193,12 +194,12 @@
                                                 [:div (forms/form-block-attributes {:ratio 33})
                                                       [price-quote-vehicle-unit-price]]
                                                 [:div (forms/form-block-attributes {:ratio 34})
-                                                      (if-let [vehicle-unique-pricing? @(r/subscribe [:db/get-item [:price-quotes :editor/edited-item :vehicle-unique-pricing?]])]
+                                                      (if-let [vehicle-unique-pricing? @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :vehicle-unique-pricing?]])]
                                                               [price-quote-vehicle-unique-price]
                                                               [price-quote-more-items-price])]]
                                           [:div (forms/form-row-attributes)
                                                 [:div (forms/form-block-attributes {:ratio 33})
-                                                      (if-let [vehicle-unique-pricing? @(r/subscribe [:db/get-item [:price-quotes :editor/edited-item :vehicle-unique-pricing?]])]
+                                                      (if-let [vehicle-unique-pricing? @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :vehicle-unique-pricing?]])]
                                                               [price-quote-more-items-price])]
                                                 [:div (forms/form-block-attributes {:ratio 67})]]
                                           [elements/horizontal-line {:color :highlight :indent {:top :m}}]
@@ -231,11 +232,11 @@
 (defn- price-quote-vehicle-unique-price-field
   []
   (let [editor-disabled?        @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])
-        vehicle-unique-pricing? @(r/subscribe [:db/get-item [:price-quotes :editor/edited-item :vehicle-unique-pricing?]])
-        vehicle-unit-price      @(r/subscribe [:db/get-item [:price-quotes :editor/vehicle-unit-price]])]
+        vehicle-unique-pricing? @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :vehicle-unique-pricing?]])
+        vehicle-unit-price      @(r/subscribe [:x.db/get-item [:price-quotes :editor/vehicle-unit-price]])]
        [elements/text-field ::price-quote-vehicle-unique-price-field
                             {:disabled?      (or editor-disabled? (not vehicle-unique-pricing?))
-                             :end-adornments [{:label "EUR"}]
+                             :end-adornments [{:label "EUR" :color :muted}]
                              :indent         {:top :m :vertical :s}
                              :label          :unique-price
                              :placeholder    vehicle-unit-price
@@ -279,6 +280,7 @@
                                  :indent        {:vertical :s}
                                  :multi-select? true
                                  :placeholder   "-"
+                                 :sortable?     true
                                  :value-path    [:price-quotes :editor/edited-item :services]}]))
 
 (defn- price-quote-services-box
@@ -305,6 +307,7 @@
                                  :indent        {:vertical :s}
                                  :multi-select? true
                                  :placeholder   "-"
+                                 :sortable?     true
                                  :value-path    [:price-quotes :editor/edited-item :products]}]))
 
 (defn- price-quote-products-box
@@ -330,6 +333,7 @@
                                  :indent        {:vertical :s}
                                  :multi-select? true
                                  :placeholder   "-"
+                                 :sortable?     true
                                  :value-path    [:price-quotes :editor/edited-item :packages]}]))
 
 (defn- price-quote-packages-box
@@ -359,7 +363,7 @@
 (defn- price-quote-manufacturer-price
   []
   (let [editor-disabled?        @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])
-        type-manufacturer-price @(r/subscribe [:db/get-item [:types :preview/downloaded-items ::price-quote-type-picker :manufacturer-price]])]
+        type-manufacturer-price @(r/subscribe [:x.db/get-item [:vehicle-types :preview/downloaded-items ::price-quote-type-picker :manufacturer-price]])]
        [common/data-element ::price-quote-manufacturer-price
                             {:disabled?   editor-disabled?
                              :indent      {:top :m :vertical :s}
@@ -370,7 +374,7 @@
 (defn- price-quote-price-margin
   []
   (let [editor-disabled?  @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])
-        type-price-margin @(r/subscribe [:db/get-item [:types :preview/downloaded-items ::price-quote-type-picker :price-margin]])]
+        type-price-margin @(r/subscribe [:x.db/get-item [:vehicle-types :preview/downloaded-items ::price-quote-type-picker :price-margin]])]
        [common/data-element ::price-quote-price-margin
                             {:disabled?   editor-disabled?
                              :indent      {:top :m :vertical :s}
@@ -381,7 +385,7 @@
 (defn- price-quote-dealer-rebate
   []
   (let [editor-disabled?   @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])
-        type-dealer-rebate @(r/subscribe [:db/get-item [:types :preview/downloaded-items ::price-quote-type-picker :dealer-rebate]])]
+        type-dealer-rebate @(r/subscribe [:x.db/get-item [:vehicle-types :preview/downloaded-items ::price-quote-type-picker :dealer-rebate]])]
        [common/data-element ::price-quote-dealer-rebate
                             {:disabled?   editor-disabled?
                              :indent      {:top :m :vertical :s}
@@ -392,8 +396,8 @@
 (defn- price-quote-vehicle-name
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])
-        model-name       @(r/subscribe [:db/get-item [:models :preview/downloaded-items ::price-quote-model-picker :name]])
-        type-name        @(r/subscribe [:db/get-item [:types  :preview/downloaded-items ::price-quote-type-picker  :name]])]
+        model-name       @(r/subscribe [:x.db/get-item [:vehicle-models :preview/downloaded-items ::price-quote-model-picker :name]])
+        type-name        @(r/subscribe [:x.db/get-item [:vehicle-types  :preview/downloaded-items ::price-quote-type-picker  :name]])]
        [common/data-element ::price-quote-vehicle-name
                             {:autosave?     true
                              :disabled?     editor-disabled?
@@ -442,27 +446,27 @@
 (defn- price-quote-type-picker
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])
-        model-link       @(r/subscribe [:db/get-item [:price-quotes :editor/edited-item :model]])]
-       [types/type-picker ::price-quote-type-picker
-                          {:autosave?     true
-                           :disabled?     (or editor-disabled? (not model-link))
-                           :indent        {:vertical :s}
-                           :model-id      (:model/id model-link)
-                           :multi-select? false
-                           :placeholder   "-"
-                           :value-path    [:price-quotes :editor/edited-item :type]}]))
+        model-link       @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :model]])]
+       [vehicle-types/type-picker ::price-quote-type-picker
+                                  {:autosave?     true
+                                   :disabled?     (or editor-disabled? (not model-link))
+                                   :indent        {:vertical :s}
+                                   :model-id      (:model/id model-link)
+                                   :multi-select? false
+                                   :placeholder   "-"
+                                   :value-path    [:price-quotes :editor/edited-item :type]}]))
 
-(defn- price-quote-type-box
+(defn- price-quote-vehicle-type-box
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])]
-       [common/surface-box ::price-quote-type-box
+       [common/surface-box ::price-quote-vehicle-type-box
                            {:indent  {:top :m}
                             :content [:<> [:div (forms/form-row-attributes)
                                                 [:div (forms/form-block-attributes {:ratio 100})
                                                       [price-quote-type-picker]]]
                                           [elements/horizontal-separator {:size :s}]]
                             :disabled? editor-disabled?
-                            :label     :type}]))
+                            :label     :vehicle-type}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -470,36 +474,36 @@
 (defn- price-quote-model-picker
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])]
-       [models/model-picker ::price-quote-model-picker
-                            {:autosave?     true
-                             :disabled?     editor-disabled?
-                             :indent        {:vertical :s}
-                             :multi-select? false
-                             :on-change     [:db/remove-item! [:price-quotes :editor/edited-item :type]]
-                             :placeholder    "-"
-                             :value-path    [:price-quotes :editor/edited-item :model]}]))
+       [vehicle-models/model-picker ::price-quote-model-picker
+                                    {:autosave?     true
+                                     :disabled?     editor-disabled?
+                                     :indent        {:vertical :s}
+                                     :multi-select? false
+                                     :on-change     [:x.db/remove-item! [:price-quotes :editor/edited-item :type]]
+                                     :placeholder    "-"
+                                     :value-path    [:price-quotes :editor/edited-item :model]}]))
 
-(defn- price-quote-model-box
+(defn- price-quote-vehicle-model-box
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])]
-       [common/surface-box ::price-quote-model-box
+       [common/surface-box ::price-quote-vehicle-model-box
                            {:content [:<> [:div (forms/form-row-attributes)
                                                 [:div (forms/form-block-attributes {:ratio 100})
                                                       [price-quote-model-picker]]]
                                           [elements/horizontal-separator {:size :s}]]
                             :disabled? editor-disabled?
-                            :label     :model}]))
+                            :label     :vehicle-model}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn- price-quote-vehicle
   []
-  (let [model-link @(r/subscribe [:db/get-item [:price-quotes :editor/edited-item :model]])
-        type-link  @(r/subscribe [:db/get-item [:price-quotes :editor/edited-item :type]])]
+  (let [model-link @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :model]])
+        type-link  @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :type]])]
        [:<> (if type-link  ^{:key ::price-quote-vehicle-box} [price-quote-vehicle-box])
-            (if :always    ^{:key ::price-quote-model-box}   [price-quote-model-box])
-            (if model-link ^{:key ::price-quote-type-box}    [price-quote-type-box])]))
+            (if :always    ^{:key ::price-quote-model-box}   [price-quote-vehicle-model-box])
+            (if model-link ^{:key ::price-quote-type-box}    [price-quote-vehicle-type-box])]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -540,7 +544,7 @@
 (defn- price-quote-issue-year
   []
   (let [editor-disabled?       @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])
-        price-quote-issue-year @(r/subscribe [:db/get-item [:price-quotes :editor/edited-item :issue-year]])]
+        price-quote-issue-year @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :issue-year]])]
        [common/data-element ::price-quote-issue-year
                             {:disabled?   editor-disabled?
                              :indent      {:top :m :vertical :s}
@@ -551,7 +555,7 @@
 (defn- price-quote-index
   []
   (let [editor-disabled?  @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])
-        price-quote-index @(r/subscribe [:db/get-item [:price-quotes :editor/edited-item :index]])]
+        price-quote-index @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :index]])]
        [common/data-element ::price-quote-index
                             {:disabled?   editor-disabled?
                              :indent      {:top :m :vertical :s}
@@ -610,7 +614,7 @@
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])]
        [elements/text-field ::price-quote-validity-interval-field
                             {:disabled?  editor-disabled?
-                             :end-adornments [{:label :day-unit}]
+                             :end-adornments [{:label :day-unit :color :muted}]
                              :indent     {:top :m :vertical :s}
                              :label      :validity-interval
                              :required?  true
@@ -648,7 +652,7 @@
 
 (defn- body
   []
-  (let [current-view-id @(r/subscribe [:gestures/get-current-view-id :price-quotes.editor])]
+  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :price-quotes.editor])]
        (case current-view-id :client   [price-quote-client]
                              :vehicle  [price-quote-vehicle]
                              :items    [price-quote-items]
@@ -682,7 +686,7 @@
 (defn- breadcrumbs
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])
-        price-quote-name @(r/subscribe [:db/get-item [:price-quotes :editor/edited-item :name]])
+        price-quote-name @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :name]])
         price-quote-id   @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         price-quote-uri   (str "/@app-home/price-quotes/" price-quote-id)]
        [common/surface-breadcrumbs :price-quotes.editor/view
@@ -697,7 +701,7 @@
 
 (defn- label
   []
-  (let [price-quote-name @(r/subscribe [:db/get-item [:price-quotes :editor/edited-item :name]])
+  (let [price-quote-name @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :name]])
         editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])]
        [common/surface-label :price-quotes.editor/view
                              {:disabled?   editor-disabled?
@@ -738,7 +742,7 @@
 
 (defn- preloader
   [_]
-  [x.components/querier ::preloader
+  [x.components/querier :price-quotes.editor/preloader
                         {:content     #'price-quote-editor
                          :placeholder #'common/item-editor-ghost-element
                          :query       (editor.queries/request-server-date-query)}])

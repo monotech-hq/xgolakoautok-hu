@@ -44,7 +44,7 @@
 (r/reg-event-fx :storage.file-uploader/cancel-uploader!
   (fn [{:keys [db]} [_ uploader-id]]
       {:db       (r file-uploader.events/clean-uploader! db uploader-id)
-       :dispatch [:ui/remove-popup! :storage.file-uploader/view]}))
+       :dispatch [:x.ui/remove-popup! :storage.file-uploader/view]}))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -71,7 +71,7 @@
 (r/reg-event-fx :storage.file-uploader/progress-started
   (fn [_ [_ uploader-id]]
       {:dispatch-n [[:storage.file-uploader/render-progress-notification! uploader-id]
-                    [:ui/remove-popup! :storage.file-uploader/view]]}))
+                    [:x.ui/remove-popup! :storage.file-uploader/view]]}))
 
 (r/reg-event-fx :storage.file-uploader/progress-successed
   (fn [{:keys [db]} [_ uploader-id]]
@@ -100,18 +100,18 @@
       ;    közötti időben is indítható új feltöltési folyamat!)
       {:dispatch-later [{:ms 500 :dispatch [:storage.file-uploader/clean-uploader! uploader-id]}]
        :dispatch-if [(not (r file-uploader.subs/file-upload-in-progress? db))
-                     [:ui/remove-bubble! :storage.file-uploader/progress-notification]]}))
+                     [:x.ui/remove-bubble! :storage.file-uploader/progress-notification]]}))
 
 (r/reg-event-fx :storage.file-uploader/render-uploader!
   (fn [_ [_ uploader-id]]
-      [:ui/render-popup! :storage.file-uploader/view
-                         {:content [file-uploader.views/view uploader-id]}]))
+      [:x.ui/render-popup! :storage.file-uploader/view
+                           {:content [file-uploader.views/view uploader-id]}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (r/reg-event-fx :storage.file-uploader/render-progress-notification!
-  [:ui/render-bubble! :storage.file-uploader/progress-notification
-                      {:body        #'file-uploader.views/progress-notification-body
-                       :autoclose?  false
-                       :user-close? false}])
+  [:x.ui/render-bubble! :storage.file-uploader/progress-notification
+                        {:body        #'file-uploader.views/progress-notification-body
+                         :autoclose?  false
+                         :user-close? false}])

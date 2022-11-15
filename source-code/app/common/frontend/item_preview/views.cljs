@@ -12,9 +12,10 @@
   ; @usage
   ;  [item-editor-ghost-element :my-editor {...}]
   [preview-id _]
-  [elements/label {:color     :muted
-                   :content   :downloading...
-                   :font-size :xs}])
+  [elements/label {:color       :muted
+                   :content     :downloading...
+                   :font-size   :xs
+                   :line-height :block}])
 
 ;; -- Error components --------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -28,6 +29,7 @@
   ;  [item-preview-error-content :my-preview {...}]
   [preview-id element-props]
   (let [element-props (merge {:error :the-item-has-been-broken} element-props)]
-       [elements/label {:color     :warning
-                        :content   (:error element-props)
-                        :font-size :xs}]))
+       [elements/label {:color       :warning
+                        :content     (:error element-props)
+                        :font-size   :xs
+                        :line-height :block}]))

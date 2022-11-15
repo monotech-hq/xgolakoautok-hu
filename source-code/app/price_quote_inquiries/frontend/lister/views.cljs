@@ -19,12 +19,13 @@
 
 (defn- price-quote-template-item-structure
   [lister-id item-dex {:keys [modified-at name issuer-logo]}]
-  (let [timestamp @(r/subscribe [:activities/get-actual-timestamp modified-at])]
-       [common/list-item-structure lister-id item-dex
-                                   {:cells [[common/list-item-thumbnail lister-id item-dex {:thumbnail (:media/uri issuer-logo)}]
-                                            [common/list-item-label     lister-id item-dex {:content name :stretch? true :placeholder :unnamed-price-quote-template}]
-                                            [common/list-item-detail    lister-id item-dex {:content timestamp :width "160px"}]
-                                            [common/list-item-marker    lister-id item-dex {:icon :navigate_next}]]}]))
+  (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+        item-last? @(r/subscribe [:item-lister/item-last? lister-id item-dex])]
+       [common/list-item-structure {:cells [[common/list-item-thumbnail {:thumbnail (:media/uri issuer-logo)}]
+                                            [common/list-item-label     {:content name :stretch? true :placeholder :unnamed-price-quote-template}]
+                                            [common/list-item-detail    {:content timestamp :width "160px"}]
+                                            [common/list-item-marker    {:icon :navigate_next}]]
+                                    :separator (if-not item-last? :bottom)}]))
 
 (defn- price-quote-template-item
   [lister-id item-dex {:keys [id] :as price-quote-template-item}]

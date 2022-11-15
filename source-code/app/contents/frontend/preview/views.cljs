@@ -7,7 +7,10 @@
               [engines.item-preview.api                 :as item-preview]
               [mid-fruits.random                        :as random]
               [mid-fruits.vector                        :as vector]
-              [re-frame.api                             :as r]))
+              [re-frame.api                             :as r]
+
+              ; TEMP
+              [plugins.dnd-kit.api :as dnd-kit]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -19,11 +22,12 @@
   ;   :disabled? (boolean)(opt)
   ;   :font-size (keyword)
   ;   :font-weight (keyword)
-  ;   :max-lines (integer)(opt)}
+  ;   :max-lines (integer)(opt)
+  ;   :style (map)(op)}
   ; @param (namespaced map) content-link
   ;  {:content/id (string)}
   [_ {:keys [color disabled? font-size font-weight max-lines style] :as preview-props} {:content/keys [id]}]
-  (let [content-body @(r/subscribe [:db/get-item [:contents :preview/downloaded-items id :body]])]
+  (let [content-body @(r/subscribe [:x.db/get-item [:contents :preview/downloaded-items id :body]])]
        [elements/text {:color       color
                        :content     (handler.helpers/parse-content-body content-body)
                        :disabled?   disabled?
@@ -39,7 +43,7 @@
   [preview-id preview-props content-link]
   [content-preview-data preview-id preview-props content-link])
 
-(defn- content-preview-body
+(defn- content-preview-static-body
   ; @param (keyword) preview-id
   ; @param (map) preview-props
   ; @param (namespaced map) content-link
@@ -55,16 +59,53 @@
                              :item-path       [:contents :preview/downloaded-items id]
                              :transfer-id     :contents.preview}]))
 
+(defn- content-preview-sortable-body
+  ; @param (keyword) preview-id
+  ; @param (map) preview-props
+  ; @param (integer) item-dex
+  ; @param (namespaced map) content-link
+  ;  {:content/id (string)}
+  ; @param (map) drag-props
+  ;  {:handle-attributes (map)
+  ;   :item-attributes (map)}
+  [preview-id preview-props item-dex {:content/keys [id] :as content-link} {:keys [handle-attributes item-attributes]}]
+  [:div (update item-attributes :style merge {:align-items "center" :display "flex" :grid-column-gap "18px"})
+        (if @(r/subscribe [:item-preview/data-received? (keyword id)])
+             [common/list-item-drag-handle {:drag-attributes handle-attributes}])
+        [content-preview-static-body preview-id preview-props content-link]])
+
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- content-preview-list
+(defn- content-preview-static-list
   ; @param (keyword) preview-id
   ; @param (map) preview-props
   ;  {:items (namespaced maps in vector)}
   [preview-id {:keys [items] :as preview-props}]
-  (letfn [(f [preview-list content-link] (conj preview-list [content-preview-body preview-id preview-props content-link]))]
+  (letfn [(f [preview-list content-link] (conj preview-list [content-preview-static-body preview-id preview-props content-link]))]
          (reduce f [:div {:style {:display "flex" :flex-direction "column" :grid-row-gap "24px"}}] items)))
+
+(defn- content-preview-sortable-list
+  ; @param (keyword) preview-id
+  ; @param (map) preview-props
+  ;  {:items (namespaced maps in vector)
+  ;   :value-path (vector)}
+  [preview-id {:keys [items value-path] :as preview-props}]
+  [:div {:style {:display "flex" :flex-direction "column" :grid-row-gap "24px"}}
+        [dnd-kit/body preview-id
+                      {:common-props     preview-props
+                       :items            items
+                       :item-id-f        :content/id
+                       :item-element     #'content-preview-sortable-body
+                       :on-order-changed (fn [_ _ %] (r/dispatch-sync [:x.db/set-item! value-path %]))}]])
+
+(defn- content-preview-list
+  ; @param (keyword) preview-id
+  ; @param (map) preview-props
+  ;  {:sortable? (boolean)(opt)}
+  [preview-id {:keys [sortable?] :as preview-props}]
+  (if sortable? [content-preview-sortable-list preview-id preview-props]
+                [content-preview-static-list   preview-id preview-props]))
 
 (defn- content-preview-label
   ; @param (keyword) preview-id
@@ -73,9 +114,10 @@
   ;   :info-text (metamorphic-content)(opt)
   ;   :label (metamorphic-content)(opt)}
   [_ {:keys [disabled? info-text label]}]
-  (if label [elements/label {:content   label
-                             :disabled? disabled?
-                             :info-text info-text}]))
+  (if label [elements/label {:content     label
+                             :disabled?   disabled?
+                             :info-text   info-text
+                             :line-height :block}]))
 
 (defn- content-preview-placeholder
   ; @param (keyword) preview-id
@@ -87,6 +129,7 @@
                                    :content     placeholder
                                    :disabled?   disabled?
                                    :font-size   :xs
+                                   :line-height :block
                                    :selectable? true}]))
 
 (defn- content-preview
@@ -128,7 +171,11 @@
   ;   :multi-select? (boolean)(opt)
   ;    Default: false
   ;   :placeholder (metamorphic-content)(opt)
-  ;   :style (map)(opt)}
+  ;   :sortable? (boolean)(opt)
+  ;    Default: false
+  ;   :style (map)(opt)
+  ;   :value-path (vector)(opt)
+  ;    W/ {:sortable? true}}
   ;
   ; @usage
   ;  [content-preview {...}]

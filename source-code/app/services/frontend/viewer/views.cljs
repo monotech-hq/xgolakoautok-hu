@@ -12,10 +12,18 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn- footer
+  []
+  (if-let [data-received? @(r/subscribe [:item-viewer/data-received? :services.viewer])]
+          [common/item-viewer-item-info :services.viewer {}]))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
 (defn- service-quantity-unit
   []
   (let [viewer-disabled?      @(r/subscribe [:item-viewer/viewer-disabled? :services.viewer])
-        service-quantity-unit @(r/subscribe [:db/get-item [:services :viewer/viewed-item :quantity-unit :label]])]
+        service-quantity-unit @(r/subscribe [:x.db/get-item [:services :viewer/viewed-item :quantity-unit :label]])]
        [common/data-element ::service-quantity-unit
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -26,7 +34,7 @@
 (defn- service-description
   []
   (let [viewer-disabled?    @(r/subscribe [:item-viewer/viewer-disabled? :services.viewer])
-        service-description @(r/subscribe [:db/get-item [:services :viewer/viewed-item :description]])]
+        service-description @(r/subscribe [:x.db/get-item [:services :viewer/viewed-item :description]])]
        [common/data-element ::service-description
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -37,7 +45,7 @@
 (defn- service-item-number
   []
   (let [viewer-disabled?    @(r/subscribe [:item-viewer/viewer-disabled? :services.viewer])
-        service-item-number @(r/subscribe [:db/get-item [:services :viewer/viewed-item :item-number]])]
+        service-item-number @(r/subscribe [:x.db/get-item [:services :viewer/viewed-item :item-number]])]
        [common/data-element ::service-item-number
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -48,18 +56,18 @@
 (defn- service-price
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :services.viewer])
-        service-price    @(r/subscribe [:db/get-item [:services :viewer/viewed-item :price]])]
+        service-price    @(r/subscribe [:x.db/get-item [:services :viewer/viewed-item :unit-price]])]
        [common/data-element ::service-price
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
-                             :label       :price
+                             :label       :unit-price
                              :placeholder "-"
                              :value       {:content service-price :suffix " EUR"}}]))
 
 (defn- service-name
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :services.viewer])
-        service-name     @(r/subscribe [:db/get-item [:services :viewer/viewed-item :name]])]
+        service-name     @(r/subscribe [:x.db/get-item [:services :viewer/viewed-item :name]])]
        [common/data-element ::service-name
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -100,7 +108,7 @@
 
 (defn- body
   []
-  (let [current-view-id @(r/subscribe [:gestures/get-current-view-id :services.viewer])]
+  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :services.viewer])]
        (case current-view-id :overview [service-overview])))
 
 ;; ----------------------------------------------------------------------------
@@ -125,7 +133,7 @@
 (defn- breadcrumbs
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :services.viewer])
-        service-name     @(r/subscribe [:db/get-item [:services :viewer/viewed-item :name]])]
+        service-name     @(r/subscribe [:x.db/get-item [:services :viewer/viewed-item :name]])]
        [common/surface-breadcrumbs :services.viewer/view
                                    {:crumbs [{:label :app-home    :route "/@app-home"}
                                              {:label :services    :route "/@app-home/services"}
@@ -135,7 +143,7 @@
 (defn- label
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :services.viewer])
-        service-name     @(r/subscribe [:db/get-item [:services :viewer/viewed-item :name]])]
+        service-name     @(r/subscribe [:x.db/get-item [:services :viewer/viewed-item :name]])]
        [common/surface-label :services.viewer/view
                              {:disabled?   viewer-disabled?
                               :label       service-name
@@ -156,7 +164,8 @@
 (defn- view-structure
   []
   [:<> [header]
-       [body]])
+       [body]
+       [footer]])
 
 (defn- service-viewer
   []

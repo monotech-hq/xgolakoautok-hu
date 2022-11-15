@@ -2,6 +2,7 @@
 (ns app.schemes.backend.api
     (:require [app.schemes.backend.field-deleter.mutations]
               [app.schemes.backend.field-editor.mutations]
+              [app.schemes.backend.field-sorter.mutations]
               [app.schemes.backend.form-handler.resolvers]
               [app.schemes.backend.field-editor.side-effects :as field-editor.side-effects]
               [app.schemes.backend.form-handler.helpers      :as form-handler.helpers]

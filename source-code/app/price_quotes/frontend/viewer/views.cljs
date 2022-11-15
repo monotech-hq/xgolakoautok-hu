@@ -3,13 +3,13 @@
     (:require [app.common.frontend.api                  :as common]
               [app.contents.frontend.api                :as contents]
               [app.clients.frontend.api                 :as clients]
-              [app.models.frontend.api                  :as models]
               [app.packages.frontend.api                :as packages]
               [app.price-quote-templates.frontend.api   :as price-quote-templates]
               [app.price-quotes.frontend.viewer.helpers :as viewer.helpers]
               [app.products.frontend.api                :as products]
               [app.services.frontend.api                :as services]
-              [app.types.frontend.api                   :as types]
+              [app.vehicle-models.frontend.api          :as vehicle-models]
+              [app.vehicle-types.frontend.api           :as vehicle-types]
               [elements.api                             :as elements]
               [engines.item-lister.api                  :as item-lister]
               [engines.item-viewer.api                  :as item-viewer]
@@ -22,10 +22,18 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn- footer
+  []
+  (if-let [data-received? @(r/subscribe [:item-viewer/data-received? :price-quotes.viewer])]
+          [common/item-viewer-item-info :price-quotes.viewer {}]))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
 (defn- price-quote-release-date
   []
   (let [viewer-disabled?         @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])
-        price-quote-release-date @(r/subscribe [:db/get-item [:price-quotes :viewer/viewed-item :release-date]])]
+        price-quote-release-date @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :release-date]])]
        [common/data-element ::price-quote-release-date
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -36,7 +44,7 @@
 (defn- price-quote-validity-interval
   []
   (let [viewer-disabled?              @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])
-        price-quote-validity-interval @(r/subscribe [:db/get-item [:price-quotes :viewer/viewed-item :validity-interval]])]
+        price-quote-validity-interval @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :validity-interval]])]
        [common/data-element ::price-quote-validity-interval
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -65,7 +73,7 @@
 (defn- price-quote-more-items-price
   []
   (let [viewer-disabled?         @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])
-        vehicle-more-items-price @(r/subscribe [:db/get-item [:price-quotes :viewer/viewed-item :more-items-price]])]
+        vehicle-more-items-price @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :more-items-price]])]
        [common/data-element ::price-quote-more-items-price
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -76,7 +84,7 @@
 (defn- price-quote-vehicle-count
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])
-        vehicle-count    @(r/subscribe [:db/get-item [:price-quotes :viewer/viewed-item :vehicle-count]])]
+        vehicle-count    @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :vehicle-count]])]
        [common/data-element ::price-quote-vehicle-count
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -87,7 +95,7 @@
 (defn- price-quote-vehicle-unique-price
   []
   (let [viewer-disabled?     @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])
-        vehicle-unique-price @(r/subscribe [:db/get-item [:price-quotes :viewer/viewed-item :vehicle-unique-price]])]
+        vehicle-unique-price @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :vehicle-unique-price]])]
        [common/data-element ::price-quote-vehicle-unique-price
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -98,7 +106,7 @@
 (defn- price-quote-vehicle-unit-price
   []
   (let [viewer-disabled?   @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])
-        vehicle-unit-price @(r/subscribe [:db/get-item [:price-quotes :viewer/viewed-item :vehicle-unit-price]])]
+        vehicle-unit-price @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :vehicle-unit-price]])]
        [common/data-element ::price-quote-vehicle-unit-price
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -150,12 +158,12 @@
                                                 [:div (forms/form-block-attributes {:ratio 33})
                                                       [price-quote-vehicle-unit-price]]
                                                 [:div (forms/form-block-attributes {:ratio 34})
-                                                      (if-let [vehicle-unique-pricing? @(r/subscribe [:db/get-item [:price-quotes :viewer/viewed-item :vehicle-unique-pricing?]])]
+                                                      (if-let [vehicle-unique-pricing? @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :vehicle-unique-pricing?]])]
                                                               [price-quote-vehicle-unique-price]
                                                               [price-quote-more-items-price])]]
                                           [:div (forms/form-row-attributes)
                                                 [:div (forms/form-block-attributes {:ratio 33})
-                                                      (if-let [vehicle-unique-pricing? @(r/subscribe [:db/get-item [:price-quotes :viewer/viewed-item :vehicle-unique-pricing?]])]
+                                                      (if-let [vehicle-unique-pricing? @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :vehicle-unique-pricing?]])]
                                                               [price-quote-more-items-price])]
                                                 [:div (forms/form-block-attributes {:ratio 67})]]
                                           [elements/horizontal-line {:color :highlight :indent {:top :m}}]
@@ -178,7 +186,7 @@
 (defn- price-quote-product-previews
   []
   (let [viewer-disabled?     @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])
-        price-quote-products @(r/subscribe [:db/get-item [:price-quotes :viewer/viewed-item :products]])]
+        price-quote-products @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :products]])]
        [products/product-preview ::price-quote-product-previews
                                  {:disabled?   viewer-disabled?
                                   :indent      {:top :m :vertical :s}
@@ -201,7 +209,7 @@
 (defn- price-quote-service-previews
   []
   (let [viewer-disabled?     @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])
-        price-quote-services @(r/subscribe [:db/get-item [:price-quotes :viewer/viewed-item :services]])]
+        price-quote-services @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :services]])]
        [services/service-preview ::price-quote-service-previews
                                  {:indent      {:top :m :vertical :s}
                                   :items       price-quote-services
@@ -223,7 +231,7 @@
 (defn- price-quote-package-previews
   []
   (let [viewer-disabled?     @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])
-        price-quote-packages @(r/subscribe [:db/get-item [:price-quotes :viewer/viewed-item :packages]])]
+        price-quote-packages @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :packages]])]
        [packages/package-preview ::price-quote-package-previews
                                  {:indent      {:top :m :vertical :s}
                                   :items       price-quote-packages
@@ -245,7 +253,7 @@
 (defn- price-quote-template-preview
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])
-        template-link    @(r/subscribe [:db/get-item [:price-quotes :viewer/viewed-item :template]])]
+        template-link    @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :template]])]
        [price-quote-templates/template-preview ::price-quote-template-preview
                                                {:disabled?   viewer-disabled?
                                                 :items       [template-link]
@@ -267,7 +275,7 @@
 (defn- price-quote-client-preview
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])
-        client-link      @(r/subscribe [:db/get-item [:price-quotes :viewer/viewed-item :client]])]
+        client-link      @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :client]])]
        [clients/client-preview ::price-quote-client-preview
                                {:disabled?   viewer-disabled?
                                 :items       [client-link]
@@ -289,13 +297,13 @@
 
 (defn- price-quote-type-preview
   []
-  (let [vehicle-count @(r/subscribe [:db/get-item [:price-quotes :viewer/viewed-item :vehicle-count]])
-        type-link     @(r/subscribe [:db/get-item [:price-quotes :viewer/viewed-item :type]])]
-       [types/type-preview ::price-quote-type-preview
-                           {:item-count  vehicle-count
-                            :items       [type-link]
-                            :indent      {:top :m :vertical :s}
-                            :placeholder "-"}]))
+  (let [vehicle-count @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :vehicle-count]])
+        type-link     @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :type]])]
+       [vehicle-types/type-preview ::price-quote-type-preview
+                                   {:item-count  vehicle-count
+                                    :items       [type-link]
+                                    :indent      {:top :m :vertical :s}
+                                    :placeholder "-"}]))
 
 (defn- price-quote-type-box
   []
@@ -306,7 +314,7 @@
                             :disabled? viewer-disabled?
                             :indent    {:top :m}
                             :icon      :view_list
-                            :label     :type}]))
+                            :label     :vehicle-type}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -314,12 +322,12 @@
 (defn- price-quote-model-preview
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])
-        model-link       @(r/subscribe [:db/get-item [:price-quotes :viewer/viewed-item :model]])]
-       [models/model-preview ::price-quote-model-preview
-                             {:disabled? viewer-disabled?
-                              :items       [model-link]
-                              :indent      {:top :m :vertical :s}
-                              :placeholder "-"}]))
+        model-link       @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :model]])]
+       [vehicle-models/model-preview ::price-quote-model-preview
+                                     {:disabled? viewer-disabled?
+                                      :items       [model-link]
+                                      :indent      {:top :m :vertical :s}
+                                      :placeholder "-"}]))
 
 (defn- price-quote-model-box
   []
@@ -330,7 +338,7 @@
                             :disabled? viewer-disabled?
                             :indent    {:top :m}
                             :icon      :view_agenda
-                            :label     :model}]))
+                            :label     :vehicle-model}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -352,7 +360,7 @@
 
 (defn- body
   []
-  (let [current-view-id @(r/subscribe [:gestures/get-current-view-id :price-quotes.viewer])]
+  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :price-quotes.viewer])]
        (case current-view-id :overview [price-quote-overview])))
 
 ;; ----------------------------------------------------------------------------
@@ -378,7 +386,7 @@
 (defn- breadcrumbs
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])
-        price-quote-name @(r/subscribe [:db/get-item [:price-quotes :viewer/viewed-item :name]])]
+        price-quote-name @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :name]])]
        [common/surface-breadcrumbs :price-quotes.viewer/view
                                    {:crumbs [{:label :app-home     :route "/@app-home"}
                                              {:label :price-quotes :route "/@app-home/price-quotes"}
@@ -388,7 +396,7 @@
 (defn- label
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])
-        price-quote-name @(r/subscribe [:db/get-item [:price-quotes :viewer/viewed-item :name]])]
+        price-quote-name @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :name]])]
        [common/surface-label :price-quotes.viewer/view
                              {:disabled?   viewer-disabled?
                               :label       {:content :price-quote-n :replacements [price-quote-name]}}]))
@@ -408,7 +416,8 @@
 (defn- view-structure
   []
   [:<> [header]
-       [body]])
+       [body]
+       [footer]])
 
 (defn- price-quote-viewer
   []

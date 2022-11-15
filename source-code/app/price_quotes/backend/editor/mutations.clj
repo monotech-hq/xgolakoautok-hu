@@ -3,8 +3,8 @@
     (:require [app.common.backend.api                     :as common]
               [app.price-quotes.backend.editor.prototypes :as editor.prototypes]
               [app.price-quotes.backend.handler.helpers   :as handler.helpers]
+              [candy.api                                  :refer [return]]
               [com.wsscode.pathom3.connect.operation      :as pathom.co :refer [defmutation]]
-              [candy.api                           :refer [return]]
               [mongo-db.api                               :as mongo-db]
               [pathom.api                                 :as pathom]))
 

@@ -4,12 +4,13 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-; @constant (keywords in vector)
-(def GROUP-ORDER [:business
-                  :crypto-currencies
-                  :products-and-services
-                  :vehicles
-                  :content
-                  :website
-                  :settings
-                  :other])
+; @constant (maps in vector)
+;  [{:name (metamorphic-content)}]
+(def GROUP-ORDER [{:name :business}
+                  {:name :crypto-currencies}
+                  {:name :products-and-services}
+                  {:name :vehicles}
+                  {:name :content}
+                  {:name :website}
+                  {:name :settings}
+                  {:name :other}])

@@ -19,13 +19,14 @@
 
 (defn- product-item-structure
   [lister-id item-dex {:keys [item-number modified-at name thumbnail]}]
-  (let [timestamp @(r/subscribe [:activities/get-actual-timestamp modified-at])]
-       [common/list-item-structure lister-id item-dex
-                                   {:cells [[common/list-item-thumbnail lister-id item-dex {:thumbnail (:media/uri thumbnail)}]
-                                            [common/list-item-label     lister-id item-dex {:content name :stretch? true}]
-                                            [common/list-item-detail    lister-id item-dex {:content item-number :width "160px"}]
-                                            [common/list-item-detail    lister-id item-dex {:content timestamp :width "160px"}]
-                                            [common/list-item-marker    lister-id item-dex {:icon :navigate_next}]]}]))
+  (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+        item-last? @(r/subscribe [:item-lister/item-last? lister-id item-dex])]
+       [common/list-item-structure {:cells [[common/list-item-thumbnail {:thumbnail (:media/uri thumbnail)}]
+                                            [common/list-item-label     {:content name :stretch? true}]
+                                            [common/list-item-detail    {:content item-number :width "160px"}]
+                                            [common/list-item-detail    {:content timestamp :width "160px"}]
+                                            [common/list-item-marker    {:icon :navigate_next}]]
+                                    :separator (if-not item-last? :bottom)}]))
 
 (defn- product-item
   [lister-id item-dex {:keys [id] :as product-item}]

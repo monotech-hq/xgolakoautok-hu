@@ -10,8 +10,8 @@
 (r/reg-event-fx :contents.selector/render-selector!
   ; @param (keyword) selector-id
   (fn [_ [_ selector-id]]
-      [:ui/render-popup! :contents.selector/view
-                         {:content [selector.views/view selector-id]}]))
+      [:x.ui/render-popup! :contents.selector/view
+                           {:content [selector.views/view selector-id]}]))
 
 (r/reg-event-fx :contents.selector/load-selector!
   ; @param (keyword)(opt) selector-id
@@ -50,4 +50,4 @@
   ; @param (map) exported-item
   (fn [_ [_ on-save exported-item]]
       (let [on-save (r/metamorphic-event<-params on-save exported-item)]
-           {:dispatch-n [on-save [:ui/remove-popup! :contents.selector/view]]})))
+           {:dispatch-n [on-save [:x.ui/remove-popup! :contents.selector/view]]})))

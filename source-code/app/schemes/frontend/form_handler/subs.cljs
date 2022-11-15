@@ -1,8 +1,8 @@
 
 (ns app.schemes.frontend.form-handler.subs
-    (:require [mid-fruits.vector :as vector]
-              [candy.api  :refer [return]]
-              [re-frame.api      :as r :refer [r]]))
+    (:require [candy.api         :refer [return]]
+              [re-frame.api      :as r :refer [r]]
+              [mid-fruits.vector :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -25,7 +25,7 @@
   ; @param (keyword) scheme-id
   ; @param (keyword) field-id
   ;
-  ; @return (namespaced maps in vector)
+  ; @return (namespaced map)
   [db [_ scheme-id field-id]]
   (let [scheme-fields (r get-scheme-fields db scheme-id)]
        (letfn [(f [field-props] (if (= field-id (:field/field-id field-props))

@@ -1,12 +1,16 @@
 
 (ns app.price-quote-templates.frontend.preview.views
-    (:require [app.common.frontend.api  :as common]
-              [app.storage.frontend.api :as storage]
-              [elements.api             :as elements]
-              [engines.item-preview.api :as item-preview]
-              [mid-fruits.random        :as random]
-              [mid-fruits.vector        :as vector]
-              [re-frame.api             :as r]))
+    (:require [app.common.frontend.api                               :as common]
+              [app.price-quote-templates.frontend.preview.prototypes :as preview.prototypes]
+              [app.storage.frontend.api                              :as storage]
+              [elements.api                                          :as elements]
+              [engines.item-preview.api                              :as item-preview]
+              [mid-fruits.random                                     :as random]
+              [mid-fruits.vector                                     :as vector]
+              [re-frame.api                                          :as r]
+
+              ; TEMP
+              [plugins.dnd-kit.api :as dnd-kit]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -18,10 +22,10 @@
   ; @param (namespaced map) template-link
   ;  {:id (string)}
   [_ {:keys [disabled?] :as preview-props} {:template/keys [id]}]
-  (let [template-name             @(r/subscribe [:db/get-item [:price-quote-templates :preview/downloaded-items id :name]])
-        template-issuer-name      @(r/subscribe [:db/get-item [:price-quote-templates :preview/downloaded-items id :issuer-name]])
-        template-default-currency @(r/subscribe [:db/get-item [:price-quote-templates :preview/downloaded-items id :default-currency]])
-        template-language         @(r/subscribe [:db/get-item [:price-quote-templates :preview/downloaded-items id :language]])]
+  (let [template-name             @(r/subscribe [:x.db/get-item [:price-quote-templates :preview/downloaded-items id :name]])
+        template-issuer-name      @(r/subscribe [:x.db/get-item [:price-quote-templates :preview/downloaded-items id :issuer-name]])
+        template-default-currency @(r/subscribe [:x.db/get-item [:price-quote-templates :preview/downloaded-items id :default-currency]])
+        template-language         @(r/subscribe [:x.db/get-item [:price-quote-templates :preview/downloaded-items id :language]])]
        [common/data-table {:disabled? disabled?
                            :rows [[{:content :name}              {:content template-name             :color :muted :placeholder :unnamed-price-quote-template}]
                                   [{:content :issuer-name}       {:content template-issuer-name      :color :muted :placeholder "-"}]
@@ -35,7 +39,8 @@
   ; @param (namespaced map) template-link
   ;  {:template/id (string)}
   [_ {:keys [disabled?]} {:template/keys [id]}]
-  (let [issuer-logo @(r/subscribe [:db/get-item [:price-quote-templates :preview/downloaded-items id :issuer-logo]])]
+  (let [issuer-logo @(r/subscribe [:x.db/get-item [:price-quote-templates :preview/downloaded-items id :issuer-logo]])]
+       ; XXX#0059 (app.clients.frontend.preview.views)
        [storage/media-preview {:disabled?   disabled?
                                :items       [issuer-logo]
                                :placeholder :empty-thumbnail
@@ -47,11 +52,11 @@
   ; @param (map) preview-props
   ; @param (namespaced map) template-link
   [preview-id preview-props template-link]
-  [:div {:style {:display "flex" :flex-wrap "wrap" :grid-column-gap "12px" :align-items "flex-start"}}
+  [:div {:style {:display "flex" :flex-wrap "wrap" :grid-gap "12px" :align-items "flex-start"}}
         [template-preview-thumbnail preview-id preview-props template-link]
         [template-preview-data      preview-id preview-props template-link]])
 
-(defn- template-preview-body
+(defn- template-preview-static-body
   ; @param (keyword) preview-id
   ; @param (map) preview-props
   ; @param (namespaced map) template-link
@@ -67,16 +72,53 @@
                              :item-path       [:price-quote-templates :preview/downloaded-items id]
                              :transfer-id     :price-quote-templates.preview}]))
 
+(defn- template-preview-sortable-body
+  ; @param (keyword) preview-id
+  ; @param (map) preview-props
+  ; @param (integer) item-dex
+  ; @param (namespaced map) template-link
+  ;  {:template/id (string)}
+  ; @param (map) drag-props
+  ;  {:handle-attributes (map)
+  ;   :item-attributes (map)
+  [preview-id preview-props item-dex {:template/keys [id] :as template-link} {:keys [handle-attributes item-attributes]}]
+  [:div (update item-attributes :style merge {:align-items "center" :display "flex" :grid-column-gap "18px"})
+        (if @(r/subscribe [:item-preview/data-received? (keyword id)])
+             [common/list-item-drag-handle {:drag-attributes handle-attributes}])
+        [template-preview-static-body preview-id preview-props template-link]])
+
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- template-preview-list
+(defn- template-preview-static-list
   ; @param (keyword) preview-id
   ; @param (map) preview-props
   ;  {:items (namespaced maps in vector)}
   [preview-id {:keys [items] :as preview-props}]
-  (letfn [(f [preview-list template-link] (conj preview-list [template-preview-body preview-id preview-props template-link]))]
+  (letfn [(f [preview-list template-link] (conj preview-list [template-preview-static-body preview-id preview-props template-link]))]
          (reduce f [:div {:style {:display "flex" :flex-direction "column" :grid-row-gap "24px"}}] items)))
+
+(defn- template-preview-sortable-list
+  ; @param (keyword) preview-id
+  ; @param (map) preview-props
+  ;  {:items (namespaced maps in vector)
+  ;   :value-path (vector)}
+  [preview-id {:keys [items value-path] :as preview-props}]
+  [:div {:style {:display "flex" :flex-direction "column" :grid-row-gap "24px"}}
+        [dnd-kit/body preview-id
+                      {:common-props     preview-props
+                       :items            items
+                       :item-id-f        :template/id
+                       :item-element     #'template-preview-sortable-body
+                       :on-order-changed (fn [_ _ %] (r/dispatch-sync [:x.db/set-item! value-path %]))}]])
+
+(defn- template-preview-list
+  ; @param (keyword) preview-id
+  ; @param (map) preview-props
+  ;  {:sortable? (boolean)(opt)}
+  [preview-id {:keys [sortable?] :as preview-props}]
+  (if sortable? [template-preview-sortable-list preview-id preview-props]
+                [template-preview-static-list   preview-id preview-props]))
 
 (defn- template-preview-label
   ; @param (keyword) preview-id
@@ -85,9 +127,10 @@
   ;   :info-text (metamorphic-content)(opt)
   ;   :label (metamorphic-content)(opt)}
   [_ {:keys [disabled? info-text label]}]
-  (if label [elements/label {:content   label
-                             :disabled? disabled?
-                             :info-text info-text}]))
+  (if label [elements/label {:content     label
+                             :disabled?   disabled?
+                             :line-height :block
+                             :info-text   info-text}]))
 
 (defn- template-preview-placeholder
   ; @param (keyword) preview-id
@@ -99,6 +142,7 @@
                                    :content     placeholder
                                    :disabled?   disabled?
                                    :font-size   :xs
+                                   :line-height :block
                                    :selectable? true}]))
 
 (defn- template-preview
@@ -127,7 +171,11 @@
   ;   :label (metamorphic-content)(opt)
   ;   :max-count (integer)(opt)
   ;    Default: 8
-  ;   :placeholder (metamorphic-content)(opt)}
+  ;   :placeholder (metamorphic-content)(opt)
+  ;   :sortable? (boolean)(opt)
+  ;    Default: false
+  ;   :value-path (vector)(opt)
+  ;    W/ {:sortable? true}}
   ;
   ; @usage
   ;  [template-preview {...}]
@@ -138,4 +186,5 @@
    [element (random/generate-keyword) preview-props])
 
   ([preview-id preview-props]
-   [template-preview preview-id preview-props]))
+   (let [preview-props (preview.prototypes/preview-props-prototype preview-id preview-props)]
+        [template-preview preview-id preview-props])))

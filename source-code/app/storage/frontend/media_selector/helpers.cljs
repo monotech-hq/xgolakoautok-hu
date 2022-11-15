@@ -3,7 +3,7 @@
     (:require [app.storage.frontend.core.config :as core.config]
               [io.api                           :as io]
               [re-frame.api                     :as r]
-              [x.app-media.api                  :as x.media]))
+              [x.media.api                      :as x.media]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

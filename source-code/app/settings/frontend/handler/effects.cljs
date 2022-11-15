@@ -1,21 +1,8 @@
 
-;; -- Legal information -------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
-; Monoset Clojure/ClojureScript Library
-; https://monotech.hu/monoset
-;
-; Copyright Adam Szűcs and other contributors - All rights reserved
-
-
-
-;; -- Namespace ---------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
 (ns app.settings.frontend.handler.effects
     (:require [app.settings.frontend.handler.queries :as handler.queries]
               [re-frame.api                          :as r :refer [r]]
-              [x.app-user.api                        :as x.user]))
+              [x.user.api                            :as x.user]))
 
 
 

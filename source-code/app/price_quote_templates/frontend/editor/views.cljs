@@ -8,7 +8,7 @@
             [engines.item-editor.api                      :as item-editor]
             [forms.api                                    :as forms]
             [layouts.surface-a.api                        :as surface-a]
-            [mixed.api                             :as mixed]
+            [mixed.api                                    :as mixed]
             [re-frame.api                                 :as r]))
 
 ;; ----------------------------------------------------------------------------
@@ -219,8 +219,8 @@
   ; Ha a primary-currency és secondary-currency értéke megegyezik, akkor csak egyet
   ; szükséges megjeleníteni a két megegyező értékből!
   (let [editor-disabled?   @(r/subscribe [:item-editor/editor-disabled? :price-quote-templates.editor])
-        primary-currency   @(r/subscribe [:user/get-user-settings-item :primary-currency])
-        secondary-currency @(r/subscribe [:user/get-user-settings-item :secondary-currency])]
+        primary-currency   @(r/subscribe [:x.user/get-user-settings-item :primary-currency])
+        secondary-currency @(r/subscribe [:x.user/get-user-settings-item :secondary-currency])]
        [elements/select ::template-currency-select
                         {:disabled?    editor-disabled?
                          :indent       {:top :m :vertical :s}
@@ -301,7 +301,7 @@
 
 (defn- body
   []
-  (let [current-view-id @(r/subscribe [:gestures/get-current-view-id :price-quote-templates.editor])]
+  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :price-quote-templates.editor])]
        (case current-view-id :data         [template-data]
                              :header       [template-header]
                              :body         [template-body]
@@ -334,7 +334,7 @@
 (defn- breadcrumbs
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :price-quote-templates.editor])
-        template-name    @(r/subscribe [:db/get-item [:price-quote-templates :editor/edited-item :name]])
+        template-name    @(r/subscribe [:x.db/get-item [:price-quote-templates :editor/edited-item :name]])
         template-id      @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         template-uri      (str "/@app-home/price-quote-templates/" template-id)]
        [common/surface-breadcrumbs :price-quote-templates.editor/view
@@ -350,7 +350,7 @@
 (defn- label
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :price-quote-templates.editor])
-        template-name    @(r/subscribe [:db/get-item [:price-quote-templates :editor/edited-item :name]])]
+        template-name    @(r/subscribe [:x.db/get-item [:price-quote-templates :editor/edited-item :name]])]
        [common/surface-label :price-quote-templates.editor/view
                              {:disabled?   editor-disabled?
                               :label       template-name
@@ -373,7 +373,7 @@
   [:<> [header]
        [body]])
 
-(defn- price-quote-template-editor
+(defn- template-editor
   []
   ; XXX#5050 (source-code/app/price-quote-templates/frontend/README.md)
   [item-editor/body :price-quote-templates.editor
@@ -389,4 +389,4 @@
 (defn view
   [surface-id]
   [surface-a/layout surface-id
-                    {:content #'price-quote-template-editor}])
+                    {:content #'template-editor}])

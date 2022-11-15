@@ -17,7 +17,7 @@
                                               :on-click [:schemes.field-deleter/delete-field! scheme-id field-id]
                                               :label    :delete!
                                               :keypress {:key-code 13}}
-                           :secondary-button {:on-click [:ui/remove-popup! :schemes.field-deleter/consent]
+                           :secondary-button {:on-click [:x.ui/remove-popup! :schemes.field-deleter/consent]
                                               :label    :cancel!
                                               :keypress {:key-code 27}}}])
 
@@ -31,7 +31,8 @@
                         :content          name
                         :font-size        :m
                         :indent           {:bottom :xs}
-                        :horizontal-align :center}]))
+                        :horizontal-align :center
+                        :line-height      :block}]))
 
 (defn data-lost-label
   ; @param (keyword) scheme-id
@@ -43,7 +44,8 @@
                    :font-size        :s
                    :font-weight      :extra-bold
                    :horizontal-align :center
-                   :indent           {:bottom :xs :vertical :s}}])
+                   :indent           {:bottom :xs :vertical :s}
+                   :line-height      :block}])
 
 (defn delete-field-label
   ; @param (keyword) scheme-id
@@ -52,7 +54,8 @@
   [elements/label ::delete-field-label
                   {:content          :delete-field?
                    :horizontal-align :center
-                   :indent           {:vertical :s}}])
+                   :indent           {:vertical :s}
+                   :line-height      :block}])
 
 (defn consent
   ; @param (keyword) scheme-id
@@ -84,7 +87,7 @@
   ; @param (keyword) scheme-id
   ; @param (keyword) field-id
   [scheme-id field-id]
-  (let [deleter-status @(r/subscribe [:db/get-item [:schemes :field-deleter/meta-items :deleter-status]])]
+  (let [deleter-status @(r/subscribe [:x.db/get-item [:schemes :field-deleter/meta-items :deleter-status]])]
        (case deleter-status :deleting      [deleting-label      scheme-id field-id]
                             :delete-failed [delete-failed-label scheme-id field-id]
                                            [consent             scheme-id field-id])))

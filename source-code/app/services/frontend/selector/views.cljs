@@ -22,14 +22,15 @@
 
 (defn- service-item-structure
   [selector-id item-dex {:keys [id modified-at name quantity-unit]}]
-  (let [timestamp     @(r/subscribe [:activities/get-actual-timestamp modified-at])
-        service-count @(r/subscribe [:item-selector/get-item-count selector-id id])]
-       [common/list-item-structure selector-id item-dex
-                                   {:cells [[common/selector-item-counter    selector-id item-dex {:item-id id}]
-                                            [common/list-item-thumbnail-icon selector-id item-dex {:icon :workspace_premium}]
-                                            [common/list-item-primary-cell   selector-id item-dex {:label name :timestamp timestamp :stretch? true :placeholder :unnamed-service
-                                                                                                   :description {:content (:value quantity-unit) :replacements [service-count]}}]
-                                            [common/selector-item-marker     selector-id item-dex {:item-id id}]]}]))
+  (let [timestamp     @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+        item-last?    @(r/subscribe [:item-lister/item-last? selector-id item-dex])
+        service-count @(r/subscribe [:item-selector/get-item-count selector-id id])
+        item-count     {:content (:value quantity-unit) :replacements [service-count]}]
+       [common/list-item-structure {:cells [[common/selector-item-counter  selector-id item-dex {:item-id id}]
+                                            [common/list-item-thumbnail    {:icon :workspace_premium}]
+                                            [common/list-item-primary-cell {:label name :timestamp timestamp :stretch? true :placeholder :unnamed-service :description item-count}]
+                                            [common/selector-item-marker   selector-id item-dex {:item-id id}]]
+                                    :separator (if-not item-last? :bottom)}]))
 
 (defn- service-item
   [selector-id item-dex {:keys [id] :as service-item}]
@@ -75,7 +76,7 @@
   (let [multi-select? @(r/subscribe [:item-lister/get-meta-item :services.selector :multi-select?])]
        [common/popup-label-bar :services.selector/view
                                {:primary-button   {:label :save!   :on-click [:item-selector/save-selection! :services.selector]}
-                                :secondary-button {:label :cancel! :on-click [:ui/remove-popup! :services.selector/view]}
+                                :secondary-button {:label :cancel! :on-click [:x.ui/remove-popup! :services.selector/view]}
                                 :label            (if multi-select? :select-services! :select-service!)}]))
 
 (defn- header

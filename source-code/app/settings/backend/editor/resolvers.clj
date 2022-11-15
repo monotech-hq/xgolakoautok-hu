@@ -4,7 +4,7 @@
               [com.wsscode.pathom3.connect.operation :refer [defresolver]]
               [mongo-db.api                          :as mongo-db]
               [pathom.api                            :as pathom]
-              [x.user.api                     :as x.user]))
+              [x.user.api                         :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

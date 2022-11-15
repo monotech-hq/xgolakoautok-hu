@@ -1,10 +1,10 @@
 
 (ns app.common.frontend.file-editor.views
-    (:require [app.common.frontend.item-editor.views    :as item-editor.views]
-              [app.common.frontend.surface.views        :as surface.views]
-              [app.common.frontend.surface-button.views :as surface-button.views]
-              [elements.api                             :as elements]
-              [re-frame.api                             :as r]))
+    (:require [app.common.frontend.item-editor.views :as item-editor.views]
+              [app.common.frontend.surface.views     :as surface.views]
+              [app.components.frontend.api           :as components]
+              [elements.api                          :as elements]
+              [re-frame.api                          :as r]))
 
 ;; -- Menu-bar components -----------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -25,12 +25,12 @@
   ;   :label (metamorphic-content)
   ;   :on-click (metamorphic-event)}
   [editor-id _ {:keys [change-keys label]}]
-  (let [current-view @(r/subscribe [:gestures/get-current-view-id editor-id])
+  (let [current-view @(r/subscribe [:x.gestures/get-current-view-id editor-id])
         changed? (if change-keys @(r/subscribe [:file-editor/form-changed? editor-id change-keys]))]
        {:active?     (= label current-view)
         :badge-color (if changed? :primary)
         :label       label
-        :on-click    [:gestures/change-view! editor-id label]}))
+        :on-click    [:x.gestures/change-view! editor-id label]}))
 
 (defn file-editor-menu-bar
   ; A komponens használatához ne felejts el inicializálni egy gestures/view-handler
@@ -74,12 +74,12 @@
   ;  [revert-content-button :my-editor {...}]
   [editor-id {:keys [disabled?]}]
   (let [content-changed? @(r/subscribe [:file-editor/content-changed? editor-id])]
-       [surface-button.views/element ::revert-content-button
-                                     {:disabled?   (or disabled? (not content-changed?))
-                                      :hover-color :highlight
-                                      :icon        :settings_backup_restore
-                                      :label       :revert!
-                                      :on-click    [:file-editor/revert-content! editor-id]}]))
+       [components/surface-button ::revert-content-button
+                                  {:disabled?   (or disabled? (not content-changed?))
+                                   :hover-color :highlight
+                                   :icon        :settings_backup_restore
+                                   :label       :revert!
+                                   :on-click    [:file-editor/revert-content! editor-id]}]))
 
 (defn save-content-button
   ; @param (keyword) editor-id
@@ -88,13 +88,13 @@
   ; @usage
   ;  [save-content-button :my-editor {...}]
   [editor-id {:keys [disabled?]}]
-  [surface-button.views/element ::save-content-button
-                                {:background-color "#5a4aff"
-                                 :color            "white"
-                                 :disabled?        disabled?
-                                 :icon             :save
-                                 :label            :save!
-                                 :on-click         [:file-editor/save-content! editor-id]}])
+  [components/surface-button ::save-content-button
+                             {:background-color "#5a4aff"
+                              :color            "white"
+                              :disabled?        disabled?
+                              :icon             :save
+                              :label            :save!
+                              :on-click         [:file-editor/save-content! editor-id]}])
 
 (defn file-editor-controls
   ; @param (keyword) editor-id

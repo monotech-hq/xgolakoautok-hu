@@ -4,7 +4,7 @@
               [com.wsscode.pathom3.connect.operation :as pathom.co :refer [defmutation]]
               [mongo-db.api                          :as mongo-db]
               [pathom.api                            :as pathom]
-              [x.user.api                     :as x.user]))
+              [x.user.api                         :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -23,7 +23,8 @@
   ; HANEM a request térkép session értékéből kiolvasott azonosító!
   (let [postpare-f     #(common/updated-document-prototype request %)
         user-account-id (x.user/request->user-account-id   request)]
-       (mongo-db/apply-document! "user_settings" user-account-id #(merge % item) {:postpare-f postpare-f})))
+       (letfn [(f [%] (merge % item))]
+              (mongo-db/apply-document! "user_settings" user-account-id f {:postpare-f postpare-f}))))
 
 (defmutation save-item!
              ; @param (map) env

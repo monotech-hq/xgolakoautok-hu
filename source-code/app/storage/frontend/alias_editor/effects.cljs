@@ -8,12 +8,12 @@
 
 (r/reg-event-fx :storage.alias-editor/load-editor!
   (fn [{:keys [db]} [_ media-item]]
-      [:ui/render-popup! :storage.alias-editor/view
-                         {:content [alias-editor.views/view media-item]}]))
+      [:x.ui/render-popup! :storage.alias-editor/view
+                           {:content [alias-editor.views/view media-item]}]))
 
 (r/reg-event-fx :storage.alias-editor/update-item-alias!
   (fn [{:keys [db]} [_ {:keys [alias id] :as media-item}]]
       (let [updated-alias (get-in db [:storage :alias-editor/item-alias])]
-           {:dispatch [:ui/remove-popup! :storage.alias-editor/view]
+           {:dispatch [:x.ui/remove-popup! :storage.alias-editor/view]
             :dispatch-if [(not= alias updated-alias)
                           [:item-browser/update-item! :storage.media-browser id {:alias updated-alias}]]})))

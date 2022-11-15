@@ -13,8 +13,10 @@
   ; @param (keyword) picker-id
   ; @param (map) picker-props
   [picker-id picker-props]
+  ; BUG#0889 (app.products.frontend.picker.views)
   (let [preview-props (picker.prototypes/preview-props-prototype picker-id picker-props)]
-       [preview.views/element ::service-picker-previews preview-props]))
+      ;[preview.views/element ::service-picker-previews preview-props]
+       [preview.views/element picker-id preview-props]))
 
 (defn- service-picker-button
   ; @param (keyword) picker-id
@@ -38,10 +40,11 @@
   ;   :label (metamorphic-content)(opt)
   ;   :required? (boolean)(opt)}
   [_ {:keys [disabled? info-text label required?]}]
-  (if label [elements/label {:content   label
-                             :disabled? disabled?
-                             :info-text info-text
-                             :required? required?}]))
+  (if label [elements/label {:content     label
+                             :disabled?   disabled?
+                             :info-text   info-text
+                             :line-height :block
+                             :required?   required?}]))
 
 (defn- service-picker-body
   ; @param (keyword) picker-id
@@ -81,6 +84,8 @@
   ;   :required? (boolean)(opt)
   ;    Default: false
   ;   :placeholder (metamorphic-content)(opt)
+  ;   :sortable? (boolean)(opt)
+  ;    Default: false
   ;   :value-path (vector)}
   ;
   ; @usage

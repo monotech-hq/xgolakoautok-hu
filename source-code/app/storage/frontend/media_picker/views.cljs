@@ -13,8 +13,10 @@
   ; @param (keyword) picker-id
   ; @param (map) picker-props
   [picker-id picker-props]
+  ; BUG#0889 (app.products.frontend.picker.views)
   (let [preview-props (media-picker.prototypes/preview-props-prototype picker-id picker-props)]
-       [media-preview.views/element ::media-picker-previews preview-props]))
+      ;[media-preview.views/element ::media-picker-previews preview-props]
+       [media-preview.views/element picker-id preview-props]))
 
 (defn media-picker-button
   ; @param (keyword) picker-id
@@ -39,10 +41,11 @@
   ;   :label (metamorphic-content)(opt)
   ;   :required? (boolean)(opt)}
   [_ {:keys [disabled? info-text label required?]}]
-  (if label [elements/label {:content   label
-                             :disabled? disabled?
-                             :info-text info-text
-                             :required? required?}]))
+  (if label [elements/label {:content     label
+                             :disabled?   disabled?
+                             :info-text   info-text
+                             :line-height :block
+                             :required?   required?}]))
 
 (defn media-picker-body
   ; @param (keyword) picker-id

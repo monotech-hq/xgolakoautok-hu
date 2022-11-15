@@ -9,10 +9,12 @@
 ;; ----------------------------------------------------------------------------
 
 (defn load-screen!
+  ; @return (map)
   [db _]
   (dissoc-in db [:home :screen/screen-loaded?]))
 
 (defn screen-loaded
+  ; @return (map)
   [db _]
   (assoc-in db [:home :screen/screen-loaded?] true))
 
@@ -23,7 +25,7 @@
   ; @param (map) item-props
   ;  {:disabled? (boolean)(opt)
   ;    Default: false
-  ;   :group (keyword)(opt)
+  ;   :group-name (metamorphic-content)(opt)
   ;    Default: :other
   ;   :horizontal-weight (integer)(opt)
   ;    Default: 0

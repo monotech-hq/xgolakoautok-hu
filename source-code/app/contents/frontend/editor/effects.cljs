@@ -7,7 +7,7 @@
 ;; ----------------------------------------------------------------------------
 
 (r/reg-event-fx :contents.editor/load-editor!
-  {:dispatch-n [[:gestures/init-view-handler! :contents.editor
-                                              {:default-view-id :data}]
-                [:ui/render-surface! :contents.editor/view
-                                     {:content #'editor.views/view}]]})
+  {:dispatch-n [[:x.gestures/init-view-handler! :contents.editor
+                                                {:default-view-id :data}]
+                [:x.ui/render-surface! :contents.editor/view
+                                       {:content #'editor.views/view}]]})

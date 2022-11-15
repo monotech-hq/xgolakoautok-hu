@@ -18,9 +18,9 @@
   ; @param (keyword) scheme-id
   ; @param (keyword or nil) field-id
   [scheme-id field-id]
-  (let [field-name @(r/subscribe [:db/get-item [:schemes :field-editor/field-item :field/name]])]
+  (let [field-name @(r/subscribe [:x.db/get-item [:schemes :field-editor/field-item :field/name]])]
        ; XXX#5561
-       ;field-group @(r/subscribe [:db/get-item [:schemes :field-editor/field-item :field/group]])
+       ;field-group @(r/subscribe [:x.db/get-item [:schemes :field-editor/field-item :field/group]])
        [common/popup-label-bar :schemes.field-editor/view
                                {:primary-button   {:disabled? (empty? field-name)
                                                   ; XXX#5561
@@ -28,7 +28,7 @@
                                                    :on-click [:schemes.field-editor/save-field! scheme-id field-id]
                                                    :label    (if field-id :save! :create!)
                                                    :keypress {:key-code 13 :required? true}}
-                                :secondary-button {:on-click [:ui/remove-popup! :schemes.field-editor/view]
+                                :secondary-button {:on-click [:x.ui/remove-popup! :schemes.field-editor/view]
                                                    :label    :cancel!
                                                    :keypress {:key-code 27 :required? true}}
                                 :label            (if field-id :edit-field! :add-field!)}]))
@@ -37,13 +37,25 @@
   ; @param (keyword) scheme-id
   ; @param (keyword or nil) field-id
   [scheme-id field-id]
-  (let [editor-status @(r/subscribe [:db/get-item [:schemes :field-editor/meta-items :editor-status]])]
+  (let [editor-status @(r/subscribe [:x.db/get-item [:schemes :field-editor/meta-items :editor-status]])]
        (case editor-status :saving      [:<>]
                            :save-failed [label-bar scheme-id field-id]
                                         [label-bar scheme-id field-id])))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
+
+(defn- field-type-select
+  ; @param (keyword) scheme-id
+  ; @param (keyword or nil) field-id
+  [_ _]
+  [elements/select ::field-group-select
+                   {:indent          {:bottom :xs :top :m :vertical :xs}
+                    :initial-options [:single-field :multi-field]
+                    :initial-value   :single-field
+                    :label           :type
+                    :required?       true
+                    :value-path      [:schemes :field-editor/field-item :field/type]}])
 
 (defn- field-unit-field
   ; @param (keyword) scheme-id
@@ -83,39 +95,42 @@
   ; @param (keyword) scheme-id
   ; @param (keyword or nil) field-id
   [_ _]
-  (let [editor-status @(r/subscribe [:db/get-item [:schemes :field-editor/meta-items :editor-status]])]
+  (let [editor-status @(r/subscribe [:x.db/get-item [:schemes :field-editor/meta-items :editor-status]])]
        (case editor-status :saving      [:<>]
                            :save-failed [elements/label ::save-failed-label
                                                         {:content          :failed-to-save
                                                          :color            :warning
-                                                         :horizontal-align :center}]
+                                                         :horizontal-align :center
+                                                         :line-height      :block}]
                                         [:<>])))
 
 (defn- field-no-label
   ; @param (keyword) scheme-id
   ; @param (keyword or nil) field-id
   [_ field-id]
-  (if field-id (let [field-no @(r/subscribe [:db/get-item [:schemes :field-editor/field-item :field/field-no]])]
+  (if field-id (let [field-no @(r/subscribe [:x.db/get-item [:schemes :field-editor/field-item :field/field-no]])]
                     [elements/label ::field-no-label
-                                    {:color     :muted
-                                     :content   {:content :field-id-n :replacements [field-no]}
-                                     :font-size :xs
-                                     :indent    {:bottom :xxs :right :xs}}])))
+                                    {:color       :muted
+                                     :content     {:content :field-id-n :replacements [field-no]}
+                                     :font-size   :xs
+                                     :indent      {:bottom :xxs :right :xs}
+                                     :line-height :block}])))
 
 (defn- field-name-label
   ; @param (keyword) scheme-id
   ; @param (keyword or nil) field-id
   [_ _]
-  (let [field-name  @(r/subscribe [:db/get-item [:schemes :field-editor/backup-item :field/name]])]
+  (let [field-name  @(r/subscribe [:x.db/get-item [:schemes :field-editor/backup-item :field/name]])]
        ; XXX#5561
-       ;field-group @(r/subscribe [:db/get-item [:schemes :field-editor/backup-item :field/group]])
+       ;field-group @(r/subscribe [:x.db/get-item [:schemes :field-editor/backup-item :field/group]])
        [elements/label ::field-name-label
-                       {:color     :muted
+                       {:color       :muted
                        ; XXX#5561
-                       ;:content   (str field-group " / " field-name)
-                        :content   field-name
-                        :font-size :xs
-                        :indent    {:bottom :xxs :left :xs}}]))
+                       ;:content     (str field-group " / " field-name)
+                        :content     field-name
+                        :font-size   :xs
+                        :indent      {:bottom :xxs :left :xs}
+                        :line-height :block}]))
 
 (defn- field-info
   ; @param (keyword) scheme-id
@@ -131,6 +146,7 @@
   [scheme-id field-id]
   [:<> [save-failed-label  scheme-id field-id]
        [field-name-field   scheme-id field-id]
+       [field-type-select  scheme-id field-id]
        [field-unit-field   scheme-id field-id]
       ; XXX#5561
       ;[field-group-select scheme-id field-id]
@@ -151,7 +167,7 @@
   ; @param (keyword) scheme-id
   ; @param (keyword or nil) field-id
   [scheme-id field-id]
-  (let [editor-status @(r/subscribe [:db/get-item [:schemes :field-editor/meta-items :editor-status]])]
+  (let [editor-status @(r/subscribe [:x.db/get-item [:schemes :field-editor/meta-items :editor-status]])]
        (case editor-status :saving      [saving-label scheme-id field-id]
                            :save-failed [form         scheme-id field-id]
                                         [form         scheme-id field-id])))

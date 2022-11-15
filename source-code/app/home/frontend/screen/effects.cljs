@@ -8,13 +8,13 @@
 ;; ----------------------------------------------------------------------------
 
 (r/reg-event-fx :home.screen/render-screen!
-  [:ui/render-surface! :home.screen/view
-                       {:content #'screen.views/view}])
+  [:x.ui/render-surface! :home.screen/view
+                         {:content #'screen.views/view}])
 
 (r/reg-event-fx :home.screen/load-screen!
   (fn [{:keys [db]} _]
       {:db             (r screen.events/load-screen! db)
-       :dispatch-n     [[:ui/simulate-process!]
+       :dispatch-n     [[:x.ui/simulate-process!]
                         [:home.screen/render-screen!]
-                        [:ui/restore-default-window-title!]]
+                        [:x.ui/restore-default-window-title!]]
        :dispatch-later [{:ms 500 :dispatch [:home.screen/screen-loaded]}]}))

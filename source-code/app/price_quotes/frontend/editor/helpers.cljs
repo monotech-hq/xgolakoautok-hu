@@ -1,8 +1,8 @@
 
 (ns app.price-quotes.frontend.editor.helpers
-    (:require [candy.api  :refer [return]]
-              [math.api   :as math]
-              [mixed.api  :as mixed]
+    (:require [candy.api         :refer [return]]
+              [math.api          :as math]
+              [mixed.api         :as mixed]
               [mid-fruits.string :as string]
               [re-frame.api      :as r]
               [time.api          :as time]))
@@ -18,7 +18,7 @@
   ;
   ; @return (string)
   []
-  (let [server-date @(r/subscribe [:db/get-item [:price-quotes :editor/server-date]])]
+  (let [server-date @(r/subscribe [:x.db/get-item [:price-quotes :editor/server-date]])]
        (return server-date)))
 
 (defn release-date-from
@@ -29,7 +29,7 @@
   ;
   ; @return (string)
   []
-  (if-let [release-date @(r/subscribe [:db/get-item [:price-quotes :editor/edited-item :release-date]])]
+  (if-let [release-date @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :release-date]])]
           (let [release-year (-> release-date time/timestamp-string->year string/to-integer)]
                (str release-year"-01-01"))))
 
@@ -41,7 +41,7 @@
   ;
   ; @return (string)
   []
-  (if-let [release-date @(r/subscribe [:db/get-item [:price-quotes :editor/edited-item :release-date]])]
+  (if-let [release-date @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :release-date]])]
           (let [release-year (-> release-date time/timestamp-string->year string/to-integer)]
                (str release-year"-12-31"))))
 
@@ -51,19 +51,19 @@
 (defn get-net-total-price
   ; @return (integer)
   []
-  (let [vehicle-unit-price      @(r/subscribe [:db/get-item [:price-quotes :editor/vehicle-unit-price]])
-        vehicle-unique-price    @(r/subscribe [:db/get-item [:price-quotes :editor/edited-item :vehicle-unique-price]])
-        vehicle-unique-pricing? @(r/subscribe [:db/get-item [:price-quotes :editor/edited-item :vehicle-unique-pricing?]])
-        packages-price          @(r/subscribe [:db/get-item [:price-quotes :editor/packages-price]])
-        products-price          @(r/subscribe [:db/get-item [:price-quotes :editor/products-price]])
-        vehicle-count           @(r/subscribe [:db/get-item [:price-quotes :editor/edited-item :vehicle-count]])
+  (let [vehicle-unit-price      @(r/subscribe [:x.db/get-item [:price-quotes :editor/vehicle-unit-price]])
+        vehicle-unique-price    @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :vehicle-unique-price]])
+        vehicle-unique-pricing? @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :vehicle-unique-pricing?]])
+        packages-price          @(r/subscribe [:x.db/get-item [:price-quotes :editor/packages-price]])
+        products-price          @(r/subscribe [:x.db/get-item [:price-quotes :editor/products-price]])
+        vehicle-count           @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :vehicle-count]])
         vehicle-unique-price     (mixed/to-number vehicle-unique-price)
         vehicle-price            (* vehicle-count (if vehicle-unique-pricing? vehicle-unique-price vehicle-unit-price))]
        (+ vehicle-price packages-price products-price)))
 
 (defn get-total-vat
   []
-  (let [vat-value      @(r/subscribe [:user/get-user-settings-item :vat-value])
+  (let [vat-value      @(r/subscribe [:x.user/get-user-settings-item :vat-value])
         net-total-price (get-net-total-price)
         total-vat       (math/percent-result net-total-price vat-value)]
        (math/round total-vat)))

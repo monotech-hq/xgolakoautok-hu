@@ -22,6 +22,7 @@
                              :helper              helper
                              :horizontal-position :left
                              :info-text           info-text
+                             :line-height         :block
                              :selectable?         false}]))
 
 (defn- data-element-value
@@ -29,16 +30,26 @@
   ; @param (map) element-props
   ;  {:disabled? (boolean)(opt)
   ;   :font-size (keyword)
-  ;   :placeholder (metamorphic-content)(opt)
-  ;   :value (metamorphic-content)(opt)}
-  [_ {:keys [disabled? font-size placeholder value]}]
+  ;   :placeholder (metamorphic-content)(opt)}
+  ; @param (metamorphic-content) value
+  [_ {:keys [disabled? font-size placeholder]} value]
   [elements/text {:color               :muted
                   :content             value
                   :disabled?           disabled?
                   :font-size           font-size
                   :horizontal-position :left
+                  :line-height         :block
                   :placeholder         placeholder
                   :selectable?         true}])
+
+(defn- data-element-values
+  ; @param (keyword) element-id
+  ; @param (map) element-props
+  ;  {:value (metamorphic-contents in vector)(opt)}
+  [element-id {:keys [value] :as element-props}]
+  ; XXX#0516
+  (letfn [(f [values value] (conj values [data-element-value element-id element-props value]))]
+         (reduce f [:<>] value)))
 
 (defn- data-element
   ; @param (keyword) element-id
@@ -46,8 +57,8 @@
   ;  {:indent (map)(opt)}
   [element-id {:keys [indent] :as element-props}]
   [elements/blank {:indent  indent
-                   :content [:<> [data-element-label element-id element-props]
-                                 [data-element-value element-id element-props]]}])
+                   :content [:<> [data-element-label  element-id element-props]
+                                 [data-element-values element-id element-props]]}])
 
 (defn element
   ; @param (keyword)(opt) element-id
@@ -62,7 +73,7 @@
   ;   :info-text (metamorphic-content)(opt)
   ;   :label (metamorphic-content)(opt)
   ;   :placeholder (metamorphic-content)(opt)
-  ;   :value (metamorphic-content)(opt)}
+  ;   :value (metamorphic-content or metamorphic-contents in vector)(opt)}
   ;
   ; @usage
   ;  [data-element {...}]
@@ -73,5 +84,9 @@
    [element (random/generate-keyword) element-props])
 
   ([element-id element-props]
+   ; XXX#0516
+   ; A data-element komponens value tulajdonságának típusa lehet metamorphic-content
+   ; típus vagy metamorphic-content típusok vektorban (egyszerre több értéket is
+   ; fel tud sorolni).
    (let [element-props (data-element.prototypes/element-props-prototype element-props)]
         [data-element element-id element-props])))

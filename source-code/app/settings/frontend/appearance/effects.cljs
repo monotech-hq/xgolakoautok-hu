@@ -12,4 +12,4 @@
   (fn [_ [_ theme-props]]
       (let [theme-id (get theme-props :id)]
           ;[:store-the-change-on-server-side! ...]
-           [:ui/change-theme! theme-id])))
+           [:x.ui/change-theme! theme-id])))

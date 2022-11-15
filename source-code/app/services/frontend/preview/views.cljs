@@ -1,12 +1,16 @@
 
 (ns app.services.frontend.preview.views
-    (:require [app.common.frontend.api  :as common]
-              [app.storage.frontend.api :as storage]
-              [elements.api             :as elements]
-              [engines.item-preview.api :as item-preview]
-              [mid-fruits.random        :as random]
-              [mid-fruits.vector        :as vector]
-              [re-frame.api             :as r]))
+    (:require [app.common.frontend.api                  :as common]
+              [app.services.frontend.preview.prototypes :as preview.prototypes]
+              [app.storage.frontend.api                 :as storage]
+              [elements.api                             :as elements]
+              [engines.item-preview.api                 :as item-preview]
+              [mid-fruits.random                        :as random]
+              [mid-fruits.vector                        :as vector]
+              [re-frame.api                             :as r]
+
+              ; TEMP
+              [plugins.dnd-kit.api :as dnd-kit]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -19,16 +23,16 @@
   ;  {:count (integer)
   ;   :id (string)}
   [_ {:keys [disabled?] :as preview-props} {:service/keys [count id]}]
-  (let [service-name                @(r/subscribe [:db/get-item [:services :preview/downloaded-items id :name]])
-        service-item-number         @(r/subscribe [:db/get-item [:services :preview/downloaded-items id :item-number]])
-        service-price               @(r/subscribe [:db/get-item [:services :preview/downloaded-items id :price] 0])
-        service-quantity-unit-value @(r/subscribe [:db/get-item [:services :preview/downloaded-items id :quantity-unit :value]])
+  (let [service-name                @(r/subscribe [:x.db/get-item [:services :preview/downloaded-items id :name]])
+        service-item-number         @(r/subscribe [:x.db/get-item [:services :preview/downloaded-items id :item-number]])
+        service-unit-price          @(r/subscribe [:x.db/get-item [:services :preview/downloaded-items id :unit-price] 0])
+        service-quantity-unit-value @(r/subscribe [:x.db/get-item [:services :preview/downloaded-items id :quantity-unit :value]])
         service-quantity             {:content service-quantity-unit-value :replacements [count]}]
        [common/data-table {:disabled? disabled?
-                           :rows [[          {:content :name}        {:content service-name               :color :muted :placeholder :unnamed-service}]
-                                  [          {:content :item-number} {:content service-item-number        :color :muted :placeholder "-"}]
-                                  (if count [{:content :quantity}    {:content service-quantity           :color :muted :placeholder "-"}])
-                                  [          {:content :unit-price}  {:content (str service-price " EUR") :color :muted :placeholder "-"}]]}]))
+                           :rows [[          {:content :name        :font-size :xs} {:content service-name                    :color :muted :font-size :xs :placeholder :unnamed-service}]
+                                  [          {:content :item-number :font-size :xs} {:content service-item-number             :color :muted :font-size :xs :placeholder "-"}]
+                                  (if count [{:content :quantity    :font-size :xs} {:content service-quantity                :color :muted :font-size :xs :placeholder "-"}])
+                                  [          {:content :unit-price  :font-size :xs} {:content (str service-unit-price " EUR") :color :muted :font-size :xs :placeholder "-"}]]}]))
 
 (defn- service-preview-thumbnail
   ; @param (keyword) preview-id
@@ -37,12 +41,12 @@
   ; @param (namespaced map) service-link
   ;  {:service/id (string)}
   [_ {:keys [disabled?]} {:service/keys [id]}]
-  (let [thumbnail @(r/subscribe [:db/get-item [:services :preview/downloaded-items id :thumbnail]])]
+  (let [thumbnail @(r/subscribe [:x.db/get-item [:services :preview/downloaded-items id :thumbnail]])]
        [storage/media-preview {:disabled?   disabled?
                                :items       [thumbnail]
                                :placeholder :empty-thumbnail
-                               :thumbnail   {:height :xl
-                                             :width  :3xl}}]))
+                               :thumbnail   {:height :m
+                                             :width  :xl}}]))
 
 (defn- service-preview-element
   ; @param (keyword) preview-id
@@ -52,7 +56,7 @@
   [preview-id preview-props]
   [service-preview-data preview-id preview-props])
 
-(defn- service-preview-body
+(defn- service-preview-static-body
   ; @param (keyword) preview-id
   ; @param (map) preview-props
   ; @param (namespaced map) service-link
@@ -68,16 +72,53 @@
                              :item-path       [:services :preview/downloaded-items id]
                              :transfer-id     :services.preview}]))
 
+(defn- service-preview-sortable-body
+  ; @param (keyword) preview-id
+  ; @param (map) preview-props
+  ; @param (integer) item-dex
+  ; @param (namespaced map) service-link
+  ;  {:service/id (string)}
+  ; @param (map) drag-props
+  ;  {:handle-attributes (map)
+  ;   :item-attributes (map)
+  [preview-id preview-props item-dex {:service/keys [id] :as service-link} {:keys [handle-attributes item-attributes]}]
+  [:div (update item-attributes :style merge {:align-items "center" :display "flex" :grid-column-gap "18px"})
+        (if @(r/subscribe [:item-preview/data-received? (keyword id)])
+             [common/list-item-drag-handle {:drag-attributes handle-attributes}])
+        [service-preview-static-body preview-id preview-props service-link]])
+
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- service-preview-list
+(defn- service-preview-static-list
   ; @param (keyword) preview-id
   ; @param (map) preview-props
   ;  {:items (namespaced maps in vector)}
   [preview-id {:keys [items] :as preview-props}]
-  (letfn [(f [preview-list service-link] (conj preview-list [service-preview-body preview-id preview-props service-link]))]
+  (letfn [(f [preview-list service-link] (conj preview-list [service-preview-static-body preview-id preview-props service-link]))]
          (reduce f [:div {:style {:display "flex" :flex-direction "column" :grid-row-gap "24px"}}] items)))
+
+(defn- service-preview-sortable-list
+  ; @param (keyword) preview-id
+  ; @param (map) preview-props
+  ;  {:items (namespaced maps in vector)
+  ;   :value-path (vector)}
+  [preview-id {:keys [items value-path] :as preview-props}]
+  [:div {:style {:display "flex" :flex-direction "column" :grid-row-gap "24px"}}
+        [dnd-kit/body preview-id
+                      {:common-props     preview-props
+                       :items            items
+                       :item-id-f        :service/id
+                       :item-element     #'service-preview-sortable-body
+                       :on-order-changed (fn [_ _ %] (r/dispatch-sync [:x.db/set-item! value-path %]))}]])
+
+(defn- service-preview-list
+  ; @param (keyword) preview-id
+  ; @param (map) preview-props
+  ;  {:sortable? (boolean)(opt)}
+  [preview-id {:keys [sortable?] :as preview-props}]
+  (if sortable? [service-preview-sortable-list preview-id preview-props]
+                [service-preview-static-list   preview-id preview-props]))
 
 (defn- service-preview-label
   ; @param (keyword) preview-id
@@ -86,9 +127,10 @@
   ;   :info-text (metamorphic-content)(opt)
   ;   :label (metamorphic-content)(opt)}
   [_ {:keys [disabled? info-text label]}]
-  (if label [elements/label {:content   label
-                             :disabled? disabled?
-                             :info-text info-text}]))
+  (if label [elements/label {:content     label
+                             :disabled?   disabled?
+                             :info-text   info-text
+                             :line-height :block}]))
 
 (defn- service-preview-placeholder
   ; @param (keyword) preview-id
@@ -100,6 +142,7 @@
                                    :content     placeholder
                                    :disabled?   disabled?
                                    :font-size   :xs
+                                   :line-height :block
                                    :selectable? true}]))
 
 (defn- service-preview
@@ -129,7 +172,11 @@
   ;   :label (metamorphic-content)(opt)
   ;   :max-count (integer)(opt)
   ;    Default: 8
-  ;   :placeholder (metamorphic-content)(opt)}
+  ;   :placeholder (metamorphic-content)(opt)
+  ;   :sortable? (boolean)(opt)
+  ;    Default: false
+  ;   :value-path (vector)(opt)
+  ;    W/ {:sortable? true}}
   ;
   ; @usage
   ;  [service-preview {...}]
@@ -140,4 +187,5 @@
    [element (random/generate-keyword) preview-props])
 
   ([preview-id preview-props]
-   [service-preview preview-id preview-props]))
+   (let [preview-props (preview.prototypes/preview-props-prototype preview-id preview-props)]
+        [service-preview preview-id preview-props])))

@@ -15,7 +15,7 @@
 ;; -----------------------------------------------------------------------------
 
 (defn view []
-  (let [view-props {:models @(r/subscribe [:db/get-item [:site :models]])}]
+  (let [view-props {:models @(r/subscribe [:x.db/get-item [:site :models]])}]
     [:section {:id "xgo-models--container"}
               [models view-props]]))
               ; [category-description]]]))

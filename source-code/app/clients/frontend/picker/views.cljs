@@ -12,8 +12,10 @@
   ; @param (keyword) picker-id
   ; @param (map) picker-props
   [picker-id picker-props]
+  ; BUG#0889 (app.products.frontend.picker.views)
   (let [preview-props (picker.prototypes/preview-props-prototype picker-id picker-props)]
-       [preview.views/element ::client-picker-previews preview-props]))
+      ;[preview.views/element ::client-picker-previews preview-props]
+       [preview.views/element picker-id preview-props]))
 
 (defn- client-picker-button
   ; @param (keyword) picker-id
@@ -37,10 +39,11 @@
   ;   :label (metamorphic-content)(opt)
   ;   :required? (boolean)(opt)}
   [_ {:keys [disabled? info-text label required?]}]
-  (if label [elements/label {:content   label
-                             :disabled? disabled?
-                             :info-text info-text
-                             :required? required?}]))
+  (if label [elements/label {:content     label
+                             :disabled?   disabled?
+                             :info-text   info-text
+                             :line-height :block
+                             :required?   required?}]))
 
 (defn- client-picker-body
   ; @param (keyword) picker-id
@@ -79,6 +82,8 @@
   ;    Az esemény utolsó paraméterként megkapja a kiválasztott elemet.
   ;   :placeholder (metamorphic-content)(opt)
   ;   :required? (boolean)(opt)
+  ;    Default: false
+  ;   :sortable? (boolean)(opt)
   ;    Default: false
   ;   :value-path (vector)}
   ;

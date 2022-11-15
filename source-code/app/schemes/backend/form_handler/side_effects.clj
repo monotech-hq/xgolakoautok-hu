@@ -13,10 +13,13 @@
   ; @param (keyword) scheme-id
   ; @param (namespaced map) scheme-item
   ;  {:scheme/fields (namespaced maps in vector)(opt)
-  ;   [{:field/field-id (string)(opt
+  ;   [{:field/field-id (keyword)(opt
   ;     :field/field-no (string)(opt)
   ;     :field/name (metamorphic-content)
-  ;     :field/undeletable? (boolean)(opt)
+  ;     :field/protected? (boolean)(opt)
+  ;     :field/type (keyword)(opt)
+  ;      :single-field, :multi-field
+  ;      Default: :single-field
   ;     :field/unit (metamorphic-content)(opt)}]
   ;    :scheme/scheme-id (keyword)(opt)}
   ;
@@ -26,7 +29,7 @@
   ; @return (namespaced map)
   ;  {:scheme/id (string)}
   [request scheme-id scheme-item]
-  (if-let [scheme-item (mongo-db/get-document-by-query "schemes" {:scheme/scheme-id scheme-id})]
+  (if-let [scheme-exists? (mongo-db/get-document-by-query "schemes" {:scheme/scheme-id scheme-id})]
           ; Ha a scheme-id azonosítójú scheme már létezik ...
           (letfn [(prepare-f [document] (->> document (common/updated-document-prototype request)
                                                       (form-handler.prototypes/scheme-item-prototype scheme-id)))]

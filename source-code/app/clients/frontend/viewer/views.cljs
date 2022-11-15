@@ -6,7 +6,15 @@
               [forms.api               :as forms]
               [layouts.surface-a.api   :as surface-a]
               [re-frame.api            :as r]
-              [x.app-locales.api       :as x.locales]))
+              [x.locales.api           :as x.locales]))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn- footer
+  []
+  (if-let [data-received? @(r/subscribe [:item-viewer/data-received? :clients.viewer])]
+          [common/item-viewer-item-info :clients.viewer {}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -14,7 +22,7 @@
 (defn- client-last-name
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :clients.viewer])
-        client-last-name @(r/subscribe [:db/get-item [:clients :viewer/viewed-item :last-name]])]
+        client-last-name @(r/subscribe [:x.db/get-item [:clients :viewer/viewed-item :last-name]])]
        [common/data-element ::client-last-name
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -25,7 +33,7 @@
 (defn- client-first-name
   []
   (let [viewer-disabled?  @(r/subscribe [:item-viewer/viewer-disabled? :clients.viewer])
-        client-first-name @(r/subscribe [:db/get-item [:clients :viewer/viewed-item :first-name]])]
+        client-first-name @(r/subscribe [:x.db/get-item [:clients :viewer/viewed-item :first-name]])]
        [common/data-element ::client-first-name
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -40,7 +48,7 @@
                                     [client-first-name]]
                               [:div (forms/form-block-attributes {:ratio 50})
                                     [client-last-name]]
-                              @(r/subscribe [:locales/get-name-order])]])
+                              @(r/subscribe [:x.locales/get-name-order])]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -48,7 +56,7 @@
 (defn- client-email-address
   []
   (let [viewer-disabled?     @(r/subscribe [:item-viewer/viewer-disabled? :clients.viewer])
-        client-email-address @(r/subscribe [:db/get-item [:clients :viewer/viewed-item :email-address]])]
+        client-email-address @(r/subscribe [:x.db/get-item [:clients :viewer/viewed-item :email-address]])]
        [common/data-element ::client-email-address
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -59,7 +67,7 @@
 (defn- client-phone-number
   []
   (let [viewer-disabled?    @(r/subscribe [:item-viewer/viewer-disabled? :clients.viewer])
-        client-phone-number @(r/subscribe [:db/get-item [:clients :viewer/viewed-item :phone-number]])]
+        client-phone-number @(r/subscribe [:x.db/get-item [:clients :viewer/viewed-item :phone-number]])]
        [common/data-element ::client-phone-number
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -91,7 +99,7 @@
 (defn- client-company-name
   []
   (let [viewer-disabled?    @(r/subscribe [:item-viewer/viewer-disabled? :clients.viewer])
-        client-company-name @(r/subscribe [:db/get-item [:clients :viewer/viewed-item :company-name]])]
+        client-company-name @(r/subscribe [:x.db/get-item [:clients :viewer/viewed-item :company-name]])]
        [common/data-element ::client-company-name
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -117,7 +125,7 @@
 (defn- client-vat-no
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :clients.viewer])
-        client-vat-no    @(r/subscribe [:db/get-item [:clients :viewer/viewed-item :vat-no]])]
+        client-vat-no    @(r/subscribe [:x.db/get-item [:clients :viewer/viewed-item :vat-no]])]
        [common/data-element ::client-vat-no
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -128,7 +136,7 @@
 (defn- client-country
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :clients.viewer])
-        client-country   @(r/subscribe [:db/get-item [:clients :viewer/viewed-item :country]])]
+        client-country   @(r/subscribe [:x.db/get-item [:clients :viewer/viewed-item :country]])]
        [common/data-element ::client-country
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -139,7 +147,7 @@
 (defn- client-zip-code
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :clients.viewer])
-        client-zip-code  @(r/subscribe [:db/get-item [:clients :viewer/viewed-item :zip-code]])]
+        client-zip-code  @(r/subscribe [:x.db/get-item [:clients :viewer/viewed-item :zip-code]])]
        [common/data-element ::client-zip-code
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -150,7 +158,7 @@
 (defn- client-city
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :clients.viewer])
-        client-city      @(r/subscribe [:db/get-item [:clients :viewer/viewed-item :city]])]
+        client-city      @(r/subscribe [:x.db/get-item [:clients :viewer/viewed-item :city]])]
        [common/data-element ::client-city
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -161,7 +169,7 @@
 (defn- client-address
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :clients.viewer])
-        client-address   @(r/subscribe [:db/get-item [:clients :viewer/viewed-item :address]])]
+        client-address   @(r/subscribe [:x.db/get-item [:clients :viewer/viewed-item :address]])]
        [common/data-element ::client-address
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -201,8 +209,8 @@
                              :horizontal-position :left
                              :indent              {:top :m :vertical :s}
                              :label               :tags
-                             :value-path          [:clients :viewer/viewed-item :tags]
-                             :no-chips-label      "-"}]))
+                             :placeholder         "-"
+                             :value-path          [:clients :viewer/viewed-item :tags]}]))
 
 (defn- client-colors
   []
@@ -216,7 +224,7 @@
 (defn- client-description
   []
   (let [viewer-disabled?   @(r/subscribe [:item-viewer/viewer-disabled? :clients.viewer])
-        client-description @(r/subscribe [:db/get-item [:clients :viewer/viewed-item :description]])]
+        client-description @(r/subscribe [:x.db/get-item [:clients :viewer/viewed-item :description]])]
        [common/data-element ::client-description
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -262,7 +270,7 @@
 
 (defn- body
   []
-  (let [current-view-id @(r/subscribe [:gestures/get-current-view-id :clients.viewer])]
+  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :clients.viewer])]
        (case current-view-id :overview     [client-overview]
                              :price-quotes [client-price-quotes])))
 
@@ -275,7 +283,7 @@
        [common/item-viewer-menu-bar :clients.viewer
                                     {:disabled?  viewer-disabled?
                                      :menu-items [{:label :overview}
-                                                  {:label :price-quotes}]}]))
+                                                  {:label :price-quotes :disabled? true}]}]))
 
 (defn- controls
   []
@@ -310,7 +318,7 @@
   [:<> [:div {:style {:display "flex" :justify-content "space-between" :flex-wrap "wrap" :grid-row-gap "48px"}}
              [:div [label]
                    [breadcrumbs]]
-             (let [current-view-id @(r/subscribe [:gestures/get-current-view-id :clients.viewer])]
+             (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :clients.viewer])]
                   (if-not (= current-view-id :price-quotes)
                           [:div [controls]]))]
        [elements/horizontal-separator {:size :xxl}]
@@ -322,10 +330,12 @@
 (defn- view-structure
   []
   [:<> [header]
-       [body]])
+       [body]
+       [footer]])
 
 (defn- client-viewer
-  []
+  ; @param (keyword) surface-id
+  [_]
   [item-viewer/body :clients.viewer
                     {:auto-title?   true
                      :error-element [common/error-content {:error :the-item-you-opened-may-be-broken}]
@@ -335,6 +345,7 @@
                      :label-key     :name}])
 
 (defn view
+  ; @param (keyword) surface-id
   [surface-id]
   [surface-a/layout surface-id
                     {:content #'client-viewer}])

@@ -9,8 +9,8 @@
 
 (r/reg-event-fx :packages.selector/render-selector!
   ; @param (keyword) selector-id
-  [:ui/render-popup! :packages.selector/view
-                     {:content #'selector.views/view}])
+  [:x.ui/render-popup! :packages.selector/view
+                       {:content #'selector.views/view}])
 
 (r/reg-event-fx :packages.selector/load-selector!
   ; @param (keyword)(opt) selector-id
@@ -50,4 +50,4 @@
   ; @param (maps in vector) exported-items
   (fn [_ [_ on-save exported-items]]
       (let [on-save (r/metamorphic-event<-params on-save exported-items)]
-           {:dispatch-n [on-save [:ui/remove-popup! :packages.selector/view]]})))
+           {:dispatch-n [on-save [:x.ui/remove-popup! :packages.selector/view]]})))

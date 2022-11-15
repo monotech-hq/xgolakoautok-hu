@@ -1,9 +1,9 @@
 
 (ns app.website-config.backend.editor.mutations
     (:require [app.website-config.backend.handler.config :as handler.config]
+              [candy.api                                 :refer [return]]
               [com.wsscode.pathom3.connect.operation     :as pathom.co :refer [defmutation]]
               [io.api                                    :as io]
-              [candy.api                                 :refer [return]]
               [pathom.api                                :as pathom]))
 
 ;; ----------------------------------------------------------------------------

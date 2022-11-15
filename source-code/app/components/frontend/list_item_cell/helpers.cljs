@@ -7,9 +7,11 @@
 (defn cell-attributes
   ; @param (keyword) cell-id
   ; @param (map) cell-props
-  ;  {}
+  ;  {:width (keyword or string)(opt)}
   ;
   ; @return (map)
-  ;  {}
-  [cell-id cell-props]
-  {:style {:display :table-cell}})
+  ;  {:style (map)}
+  [_ {:keys [width]}]
+  ;:display :table-cell
+  (case width :stretch {:style {:flex-grow 1}}
+                       {:style {:width width}}))

@@ -1,11 +1,11 @@
 
 (ns app.storage.frontend.media-viewer.views
-    (:require [elements.api        :as elements]
+    (:require [css.api             :as css]
+              [elements.api        :as elements]
               [io.api              :as io]
               [layouts.popup-b.api :as popup-b]
-              [mid-fruits.css      :as css]
               [re-frame.api        :as r]
-              [x.app-media.api     :as x.media]))
+              [x.media.api         :as x.media]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -16,7 +16,7 @@
         [elements/icon-button ::close-icon-button
                               {:color    :invert
                                :keypress {:key-code 27}
-                               :on-click [:ui/remove-popup! :storage.media-viewer/view]
+                               :on-click [:x.ui/remove-popup! :storage.media-viewer/view]
                                :preset   :close}]])
 
 ;; -- PDF-item components -----------------------------------------------------

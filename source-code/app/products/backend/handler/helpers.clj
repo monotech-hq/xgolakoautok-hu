@@ -1,8 +1,8 @@
 
 (ns app.products.backend.handler.helpers
-    (:require [candy.api :refer [return]]
-              [mixed.api :as mixed]
-              [mongo-db.api     :as mongo-db]))
+    (:require [candy.api    :refer [return]]
+              [mixed.api    :as mixed]
+              [mongo-db.api :as mongo-db]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -14,8 +14,8 @@
   ;
   ; @return (integer)
   [{:product/keys [count id]}]
-  (if-let [{:product/keys [price]} (mongo-db/get-document-by-id "products" id)]
-          (mixed/multiply-numbers count price)
+  (if-let [{:product/keys [unit-price]} (mongo-db/get-document-by-id "products" id)]
+          (mixed/multiply-numbers count unit-price)
           (return 0)))
 
 (defn get-products-price

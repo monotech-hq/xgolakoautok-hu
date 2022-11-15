@@ -1,7 +1,7 @@
 
 (ns app.schemes.backend.form-handler.prototypes
     (:require [app.schemes.backend.field-editor.prototypes :as field-editor.prototypes]
-              [candy.api                            :refer [param return]]
+              [candy.api                                   :refer [param]]
               [mid-fruits.vector                           :as vector]))
 
 ;; ----------------------------------------------------------------------------

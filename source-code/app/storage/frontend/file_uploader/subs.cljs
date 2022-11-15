@@ -2,13 +2,13 @@
 (ns app.storage.frontend.file-uploader.subs
     (:require [app.storage.frontend.capacity-handler.subs :as capacity-handler.subs]
               [app.storage.frontend.file-uploader.helpers :as file-uploader.helpers]
+              [candy.api                                  :refer [param return]]
               [dom.api                                    :as dom]
-              [candy.api                           :refer [param return]]
               [mid-fruits.map                             :as map]
               [mid-fruits.vector                          :as vector]
               [re-frame.api                               :as r :refer [r]]
-              [x.app-db.api                               :as x.db]
-              [x.app-sync.api                             :as x.sync]))
+              [x.db.api                                   :as x.db]
+              [x.sync.api                                 :as x.sync]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

@@ -43,5 +43,5 @@
   ;
   ; @return (vector)
   []
-  (let [package-id @(r/subscribe [:db/get-item [:packages :viewer/viewed-item :id]])]
+  (let [package-id @(r/subscribe [:x.db/get-item [:packages :viewer/viewed-item :id]])]
        [`(~:packages.viewer/get-automatic-price ~{:package-id package-id})]))

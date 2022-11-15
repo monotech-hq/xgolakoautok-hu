@@ -11,7 +11,7 @@
   ; @param (map) item-props
   ;  {:disabled? (boolean)(opt)
   ;    Default: false
-  ;   :group (keyword)(opt)
+  ;   :group-name (metamorphic-content)(opt)
   ;    Default: :other
   ;   :icon (keyword)
   ;   :icon-color (string)(opt)

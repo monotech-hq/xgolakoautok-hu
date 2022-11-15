@@ -1,6 +1,7 @@
 
 (ns app.contents.frontend.preview.prototypes
-    (:require [candy.api :refer [param]]))
+    (:require [candy.api         :refer [param]]
+              [mid-fruits.vector :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -8,11 +9,14 @@
 (defn preview-props-prototype
   ; @param (keyword) preview-id
   ; @param (map) preview-props
+  ;  {:items (namespaced maps in vector)}
   ;
   ; @return (map)
   ;  {:font-size (keyword)
-  ;   :font-weight (keyword)}
-  [_ preview-props]
+  ;   :font-weight (keyword)
+  ;   :items (namespaced maps in vector)}
+  [_ {:keys [items] :as preview-props}]
   (merge {:font-size   :s
           :font-weight :normal}
-         (param preview-props)))
+         (param preview-props)
+         {:items (vector/remove-items-by items nil?)}))

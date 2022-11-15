@@ -7,7 +7,7 @@
 ;; ----------------------------------------------------------------------------
 
 (r/reg-event-fx :price-quote-templates.viewer/load-viewer!
-  {:dispatch-n [[:gestures/init-view-handler! :price-quote-templates.viewer
-                                              {:default-view-id :overview}]
-                [:ui/render-surface! :price-quote-templates.viewer/view
-                                     {:content #'viewer.views/view}]]})
+  {:dispatch-n [[:x.gestures/init-view-handler! :price-quote-templates.viewer
+                                                {:default-view-id :overview}]
+                [:x.ui/render-surface! :price-quote-templates.viewer/view
+                                       {:content #'viewer.views/view}]]})

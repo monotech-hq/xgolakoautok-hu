@@ -10,7 +10,7 @@
   [:clients.viewer/render-viewer!])
 
 (r/reg-event-fx :clients.viewer/render-viewer!
-  {:dispatch-n [[:gestures/init-view-handler! :clients.viewer
-                                              {:default-view-id :overview}]
-                [:ui/render-surface! :clients.viewer/view
-                                     {:content #'viewer.views/view}]]})
+  {:dispatch-n [[:x.gestures/init-view-handler! :clients.viewer
+                                                {:default-view-id :overview}]
+                [:x.ui/render-surface! :clients.viewer/view
+                                       {:content #'viewer.views/view}]]})

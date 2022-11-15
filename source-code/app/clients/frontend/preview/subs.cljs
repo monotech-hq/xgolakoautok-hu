@@ -2,7 +2,7 @@
 (ns app.clients.frontend.preview.subs
     (:require [mid-fruits.string :as string]
               [re-frame.api      :as r :refer [r]]
-              [x.app-locales.api :as x.locales]))
+              [x.locales.api     :as x.locales]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

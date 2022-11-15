@@ -4,7 +4,7 @@
               [com.wsscode.pathom3.connect.operation :as pathom.co :refer [defmutation]]
               [mongo-db.api                          :as mongo-db]
               [pathom.api                            :as pathom]
-              [x.user.api                     :as x.user]))
+              [x.user.api                         :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -20,7 +20,8 @@
   ; XXX#9100 (app.settings.backend.editor.mutations)
   (let [postpare-f     #(common/updated-document-prototype request %)
         user-account-id (x.user/request->user-account-id   request)]
-       (mongo-db/apply-document! "user_settings" user-account-id #(merge % user-settings) {:postpare-f postpare-f})))
+       (letfn [(f [%] (merge % user-settings))]
+              (mongo-db/apply-document! "user_settings" user-account-id f {:postpare-f postpare-f}))))
 
 (defmutation update-user-settings!
              ; @param (map) env

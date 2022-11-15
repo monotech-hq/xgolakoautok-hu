@@ -114,11 +114,11 @@
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :products.editor])]
        [elements/text-field ::product-price-field
                             {:disabled?      editor-disabled?
-                             :end-adornments [{:label "EUR"}]
+                             :end-adornments [{:label "EUR" :color :muted}]
                              :indent         {:top :m :vertical :s}
-                             :label          :price
+                             :label          :unit-price
                              :placeholder    "0"
-                             :value-path     [:products :editor/edited-item :price]}]))
+                             :value-path     [:products :editor/edited-item :unit-price]}]))
 
 (defn- product-name-field
   []
@@ -178,7 +178,7 @@
 
 (defn- body
   []
-  (let [current-view-id @(r/subscribe [:gestures/get-current-view-id :products.editor])]
+  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :products.editor])]
        (case current-view-id :data      [product-data]
                              :thumbnail [product-thumbnail]
                              :images    [product-images])))
@@ -191,7 +191,7 @@
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :products.editor])]
        [common/item-editor-menu-bar :products.editor
                                     {:disabled?  editor-disabled?
-                                     :menu-items [{:label :data      :change-keys [:name :description :price :quantity-unit :item-number]}
+                                     :menu-items [{:label :data      :change-keys [:name :description :unit-price :quantity-unit :item-number]}
                                                   {:label :thumbnail :change-keys [:thumbnail]}
                                                   {:label :images    :change-keys [:images]}]}]))
 
@@ -204,7 +204,7 @@
 (defn- breadcrumbs
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :products.editor])
-        product-name        @(r/subscribe [:db/get-item [:products :editor/edited-item :name]])
+        product-name        @(r/subscribe [:x.db/get-item [:products :editor/edited-item :name]])
         product-id          @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         product-uri          (str "/@app-home/products/" product-id)]
        [common/surface-breadcrumbs :products.editor/view
@@ -220,7 +220,7 @@
 (defn- label
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :products.editor])
-        product-name        @(r/subscribe [:db/get-item [:products :editor/edited-item :name]])]
+        product-name        @(r/subscribe [:x.db/get-item [:products :editor/edited-item :name]])]
        [common/surface-label :products.editor/view
                              {:disabled?   editor-disabled?
                               :label       product-name

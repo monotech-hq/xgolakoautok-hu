@@ -15,7 +15,8 @@
       (let [query (r field-deleter.queries/get-delete-field-query db scheme-id field-id)]
            {:db       (r field-deleter.events/field-deleting db scheme-id field-id)
             :dispatch [:pathom/send-query! :schemes.field-deleter/delete-field!
-                                           {:on-failure [:schemes.field-deleter/delete-field-failured  scheme-id field-id]
+                                           {:display-progress? true
+                                            :on-failure [:schemes.field-deleter/delete-field-failured  scheme-id field-id]
                                             :on-success [:schemes.field-deleter/delete-field-successed scheme-id field-id]
                                             :query query}]})))
 
@@ -24,7 +25,7 @@
   ; @param (keyword) field-id
   ; @param (map) server-response
   {:dispatch-later [{:ms 1000 :dispatch [:schemes.field-deleter/delete-failed]}
-                    {:ms 3000 :dispatch [:ui/remove-popup! :schemes.field-deleter/consent]}
+                    {:ms 3000 :dispatch [:x.ui/remove-popup! :schemes.field-deleter/consent]}
                     {:ms 3500 :dispatch [:schemes.field-deleter/clean-data!]}]})
 
 (r/reg-event-fx :schemes.field-deleter/delete-field-successed
@@ -32,7 +33,7 @@
   ; @param (keyword) field-id
   ; @param (map) server-response
   (fn [_ [_ scheme-id field-id _]]
-      {:dispatch-later [{:ms 1000 :dispatch [:ui/remove-popup! :schemes.field-deleter/consent]}
+      {:dispatch-later [{:ms 1000 :dispatch [:x.ui/remove-popup! :schemes.field-deleter/consent]}
                         {:ms 1500 :dispatch [:schemes.field-deleter/clean-data!]}
                         {:ms 1500 :dispatch [:schemes.field-deleter/remove-field! scheme-id field-id]}]}))
 
@@ -43,5 +44,5 @@
   ; @param (keyword) scheme-id
   ; @param (keyword) field-id
   (fn [{:keys [db]} [_ scheme-id field-id]]
-      [:ui/render-popup! :schemes.field-deleter/consent
-                         {:content [field-deleter.views/view scheme-id field-id]}]))
+      [:x.ui/render-popup! :schemes.field-deleter/consent
+                           {:content [field-deleter.views/view scheme-id field-id]}]))

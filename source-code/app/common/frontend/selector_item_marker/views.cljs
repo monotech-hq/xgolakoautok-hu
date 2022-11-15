@@ -1,8 +1,8 @@
 
 (ns app.common.frontend.selector-item-marker.views
-    (:require [app.common.frontend.list-item-marker.views :as list-item-marker.views]
-              [elements.api                               :as elements]
-              [re-frame.api                               :as r]))
+    (:require [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -15,9 +15,9 @@
   [selector-id item-dex {:keys [item-id]}]
   (if-let [item-selected? @(r/subscribe [:item-lister/item-selected? selector-id item-id])]
           (if-let [autosaving? @(r/subscribe [:item-selector/autosaving? selector-id])]
-                  [list-item-marker.views/element selector-id item-dex {:icon :check_circle_outline :progress 100 :progress-duration 1000}]
-                  [list-item-marker.views/element selector-id item-dex {:icon :check_circle_outline}])
-          [list-item-marker.views/element selector-id item-dex {:icon :radio_button_unchecked}]))
+                  [components/list-item-marker {:icon :check_circle_outline :progress 100 :progress-duration 1000}]
+                  [components/list-item-marker {:icon :check_circle_outline}])
+          [components/list-item-marker {:icon :radio_button_unchecked}]))
 
 (defn element
   ; @param (keyword) selector-id

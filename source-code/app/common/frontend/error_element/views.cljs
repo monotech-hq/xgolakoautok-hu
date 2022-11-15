@@ -11,9 +11,10 @@
   ; @param (keyword) element-id
   ; @param (map) element-props
   [_ {:keys [error]}]
-  [elements/label {:color     :warning
-                   :content   error
-                   :font-size :xs}])
+  [elements/label {:color       :warning
+                   :content     error
+                   :font-size   :xs
+                   :line-height :block}])
 
 (defn- error-element
   ; @param (keyword) element-id

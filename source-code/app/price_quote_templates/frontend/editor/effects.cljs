@@ -7,7 +7,7 @@
 ;; ----------------------------------------------------------------------------
 
 (r/reg-event-fx :price-quote-templates.editor/load-editor!
-  {:dispatch-n [[:gestures/init-view-handler! :price-quote-templates.editor
-                                              {:default-view-id :data}]
-                [:ui/render-surface! :price-quote-templates.editor/view
-                                     {:content #'editor.views/view}]]})
+  {:dispatch-n [[:x.gestures/init-view-handler! :price-quote-templates.editor
+                                                {:default-view-id :data}]
+                [:x.ui/render-surface! :price-quote-templates.editor/view
+                                       {:content #'editor.views/view}]]})

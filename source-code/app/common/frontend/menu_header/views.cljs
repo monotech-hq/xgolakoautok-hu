@@ -12,7 +12,7 @@
   [elements/icon-button ::close-icon-button
                         {:hover-color :highlight
                          :keypress    {:key-code 27}
-                         :on-click    [:ui/remove-popup! popup-id]
+                         :on-click    [:x.ui/remove-popup! popup-id]
                          :preset      :close}])
 
 (defn menu-header-label
@@ -26,6 +26,7 @@
                    :content     label
                    :font-size   :xs
                    :indent      {:horizontal :xs :left :s}
+                   :line-height :block
                    :placeholder placeholder}])
 
 (defn- menu-header

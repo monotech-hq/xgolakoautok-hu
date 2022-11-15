@@ -11,10 +11,10 @@
 (r/reg-event-fx :packages.viewer/load-viewer!
   ; @param (keyword) view-id
   (fn [_ [_ view-id]]
-      {:dispatch-n [[:gestures/init-view-handler! :packages.viewer
-                                                  {:default-view-id (or view-id :overview)}]
-                    [:ui/render-surface! :packages.viewer/view
-                                         {:content #'viewer.views/view}]]}))
+      {:dispatch-n [[:x.gestures/init-view-handler! :packages.viewer
+                                                    {:default-view-id (or view-id :overview)}]
+                    [:x.ui/render-surface! :packages.viewer/view
+                                           {:content #'viewer.views/view}]]}))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -28,8 +28,8 @@
                                  :query query :validator-f validator-f}])))
 
 (r/reg-event-fx :packages.viewer/save-package-products-failed
-  [:ui/render-bubble! ::notification
-                      {:body :failed-to-save}])
+  [:x.ui/render-bubble! ::notification
+                        {:body :failed-to-save}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -43,5 +43,5 @@
                                  :query query :validator-f validator-f}])))
 
 (r/reg-event-fx :packages.viewer/save-package-services-failed
-  [:ui/render-bubble! ::notification
-                      {:body :failed-to-save}])
+  [:x.ui/render-bubble! ::notification
+                        {:body :failed-to-save}])

@@ -40,11 +40,11 @@
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :services.editor])]
        [elements/text-field ::service-price-field
                             {:disabled?      editor-disabled?
-                             :end-adornments [{:label "EUR"}]
+                             :end-adornments [{:label "EUR" :color :muted}]
                              :indent         {:top :m :vertical :s}
-                             :label          :price
+                             :label          :unit-price
                              :placeholder    "0"
-                             :value-path     [:services :editor/edited-item :price]}]))
+                             :value-path     [:services :editor/edited-item :unit-price]}]))
 
 (defn- service-name-field
   []
@@ -104,7 +104,7 @@
 
 (defn- body
   []
-  (let [current-view-id @(r/subscribe [:gestures/get-current-view-id :services.editor])]
+  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :services.editor])]
        (case current-view-id :data [service-data])))
 
 ;; ----------------------------------------------------------------------------
@@ -115,7 +115,7 @@
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :services.editor])]
        [common/item-editor-menu-bar :services.editor
                                     {:disabled?  editor-disabled?
-                                     :menu-items [{:label :data :change-keys [:name :description :price :quantity-unit :item-number]}]}]))
+                                     :menu-items [{:label :data :change-keys [:name :description :unit-price :quantity-unit :item-number]}]}]))
 
 (defn- controls
   []
@@ -126,7 +126,7 @@
 (defn- breadcrumbs
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :services.editor])
-        service-name     @(r/subscribe [:db/get-item [:services :editor/edited-item :name]])
+        service-name     @(r/subscribe [:x.db/get-item [:services :editor/edited-item :name]])
         service-id       @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         service-uri       (str "/@app-home/services/" service-id)]
        [common/surface-breadcrumbs :services.editor/view
@@ -142,7 +142,7 @@
 (defn- label
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :services.editor])
-        service-name     @(r/subscribe [:db/get-item [:services :editor/edited-item :name]])]
+        service-name     @(r/subscribe [:x.db/get-item [:services :editor/edited-item :name]])]
        [common/surface-label :services.editor/view
                              {:disabled?   editor-disabled?
                               :label       service-name

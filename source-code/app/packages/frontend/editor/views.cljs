@@ -117,30 +117,30 @@
 (defn- package-automatic-price
   []
   (let [editor-disabled?        @(r/subscribe [:item-editor/editor-disabled? :packages.editor])
-        package-automatic-price @(r/subscribe [:db/get-item [:packages :editor/edited-item :automatic-price]])]
+        package-automatic-price @(r/subscribe [:x.db/get-item [:packages :editor/edited-item :automatic-price]])]
        [common/data-element ::package-automatic-price
                             {:disabled?   editor-disabled?
                              :indent      {:top :m :vertical :s}
-                             :label       :price
+                             :label       :unit-price
                              :placeholder "-"
                              :value       {:content package-automatic-price :suffix " EUR"}}]))
 
 (defn- package-price-field
   []
   (let [editor-disabled?        @(r/subscribe [:item-editor/editor-disabled? :packages.editor])
-        package-automatic-price @(r/subscribe [:db/get-item [:packages :editor/edited-item :automatic-price]])]
+        package-automatic-price @(r/subscribe [:x.db/get-item [:packages :editor/edited-item :automatic-price]])]
        [elements/text-field ::package-price-field
                             {:disabled?      editor-disabled?
-                             :end-adornments [{:label "EUR"}]
+                             :end-adornments [{:label "EUR" :color :muted}]
                              :indent         {:top :m :vertical :s}
-                             :label          :price
+                             :label          :unit-price
                              :placeholder    package-automatic-price
                              :required?      true
-                             :value-path     [:packages :editor/edited-item :price]}]))
+                             :value-path     [:packages :editor/edited-item :unit-price]}]))
 
 (defn- package-price
   []
-  (if-let [automatic-pricing? @(r/subscribe [:db/get-item [:packages :editor/edited-item :automatic-pricing?]])]
+  (if-let [automatic-pricing? @(r/subscribe [:x.db/get-item [:packages :editor/edited-item :automatic-pricing?]])]
           [package-automatic-price]
           [package-price-field]))
 
@@ -205,7 +205,7 @@
 
 (defn- body
   []
-  (let [current-view-id @(r/subscribe [:gestures/get-current-view-id :packages.editor])]
+  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :packages.editor])]
        (case current-view-id :data      [package-data]
                              :thumbnail [package-thumbnail]
                              :settings  [package-settings])))
@@ -218,7 +218,7 @@
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :packages.editor])]
        [common/item-editor-menu-bar :packages.editor
                                     {:disabled?  editor-disabled?
-                                     :menu-items [{:label :data      :change-keys [:name :price :description :quantity-unit :item-number]}
+                                     :menu-items [{:label :data      :change-keys [:name :unit-price :description :quantity-unit :item-number]}
                                                   {:label :thumbnail :change-keys [:thumbnail]}
                                                   {:label :settings  :change-keys [:automatic-pricing?]}]}]))
 
@@ -231,7 +231,7 @@
 (defn- breadcrumbs
   []
   (let [editor-disabled?   @(r/subscribe [:item-editor/editor-disabled? :packages.editor])
-        package-name @(r/subscribe [:db/get-item [:packages :editor/edited-item :name]])
+        package-name @(r/subscribe [:x.db/get-item [:packages :editor/edited-item :name]])
         package-id   @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         package-uri   (str "/@app-home/packages/" package-id)]
        [common/surface-breadcrumbs :packages.editor/view
@@ -247,7 +247,7 @@
 (defn- label
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :packages.editor])
-        package-name     @(r/subscribe [:db/get-item [:packages :editor/edited-item :name]])]
+        package-name     @(r/subscribe [:x.db/get-item [:packages :editor/edited-item :name]])]
        [common/surface-label :packages.editor/view
                              {:disabled?   editor-disabled?
                               :label       package-name

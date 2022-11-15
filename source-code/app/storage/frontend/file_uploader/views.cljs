@@ -2,13 +2,13 @@
 (ns app.storage.frontend.file-uploader.views
     (:require [app.storage.frontend.file-uploader.helpers :as file-uploader.helpers]
               [app.storage.frontend.media-browser.helpers :as media-browser.helpers]
+              [css.api                                    :as css]
               [elements.api                               :as elements]
               [engines.item-browser.api                   :as item-browser]
+              [format.api                                 :as format]
               [io.api                                     :as io]
               [layouts.popup-a.api                        :as popup-a]
-              [mid-fruits.css                             :as css]
-              [format.api                          :as format]
-              [math.api                            :as math]
+              [math.api                                   :as math]
               [mid-fruits.string                          :as string]
               [re-frame.api                               :as r]))
 
@@ -27,12 +27,12 @@
 (defn abort-progress-button
   [uploader-id]
   (let [request-id         (file-uploader.helpers/request-id uploader-id)
-        files-uploaded?   @(r/subscribe [:sync/request-successed? request-id])
-        request-aborted?  @(r/subscribe [:sync/request-aborted?   request-id])
-        request-failured? @(r/subscribe [:sync/request-failured?  request-id])]
+        files-uploaded?   @(r/subscribe [:x.sync/request-successed? request-id])
+        request-aborted?  @(r/subscribe [:x.sync/request-aborted?   request-id])
+        request-failured? @(r/subscribe [:x.sync/request-failured?  request-id])]
        (if-not (or files-uploaded? request-aborted? request-failured?)
                [elements/icon-button {:height   :l
-                                      :on-click [:sync/abort-request! request-id]
+                                      :on-click [:x.sync/abort-request! request-id]
                                       :preset   :close}])))
 
 (defn progress-diagram
@@ -41,8 +41,8 @@
   ; sokszoros változása ne kényszerítse a többi komponenst újra renderelődésre!
   (let [request-id         (file-uploader.helpers/request-id uploader-id)
         uploader-progress @(r/subscribe [:storage.file-uploader/get-uploader-progress uploader-id])
-        request-aborted?  @(r/subscribe [:sync/request-aborted?   request-id])
-        request-failured? @(r/subscribe [:sync/request-failured?  request-id])
+        request-aborted?  @(r/subscribe [:x.sync/request-aborted?   request-id])
+        request-failured? @(r/subscribe [:x.sync/request-failured?  request-id])
         line-color (cond request-aborted? :warning request-failured? :warning :default :primary)]
        [elements/line-diagram {:indent   {:vertical :xs :bottom :xxs}
                                :sections [{:color line-color :value        uploader-progress}
@@ -51,21 +51,22 @@
 (defn progress-label
   [uploader-id]
   (let [request-id         (file-uploader.helpers/request-id uploader-id)
-        files-uploaded?   @(r/subscribe [:sync/request-successed? request-id])
-        request-aborted?  @(r/subscribe [:sync/request-aborted?   request-id])
-        request-failured? @(r/subscribe [:sync/request-failured?  request-id])
+        files-uploaded?   @(r/subscribe [:x.sync/request-successed? request-id])
+        request-aborted?  @(r/subscribe [:x.sync/request-aborted?   request-id])
+        request-failured? @(r/subscribe [:x.sync/request-failured?  request-id])
         file-count        @(r/subscribe [:storage.file-uploader/get-uploading-file-count uploader-id])
         progress-label {:content :uploading-n-files-in-progress... :replacements [file-count]}
         label (cond files-uploaded? :files-uploaded request-aborted? :aborted request-failured? :file-upload-failure :default progress-label)]
-       [elements/label {:color     :default
-                        :content   label
-                        :font-size :xs
-                        :indent    {:left :xs :horizontal :xxs}}]))
+       [elements/label {:color       :default
+                        :content     label
+                        :font-size   :xs
+                        :indent      {:left :xs :horizontal :xxs}
+                        :line-height :block}]))
 
 (defn progress-state
   [uploader-id]
   (let [request-id     (file-uploader.helpers/request-id uploader-id)
-        request-sent? @(r/subscribe [:sync/request-sent? request-id])]
+        request-sent? @(r/subscribe [:x.sync/request-sent? request-id])]
        (if request-sent? [:<> [elements/row {:content [:<> [progress-label        uploader-id]
                                                            [abort-progress-button uploader-id]]
                                              :horizontal-align :space-between
@@ -183,8 +184,8 @@
                                       :uri object-url :width :l}]
                  [elements/icon {:icon :insert_drive_file :indent {:horizontal :m :vertical :xl}}])
              [:div {:style {:flex-grow 1}}
-                   [elements/label {:content filename                :style {:color "#333" :line-height "18px"} :indent {:right :xs}}]
-                   [elements/label {:content filesize :font-size :xs :style {:color "#888" :line-height "18px"}}]]
+                   [elements/label {:content filename                :style {:color "#333"} :indent {:right :xs}}]
+                   [elements/label {:content filesize :font-size :xs :style {:color "#888"}}]]
              (if file-cancelled? [elements/icon {:icon :radio_button_unchecked :indent {:right :xs} :size :s}]
                                  [elements/icon {:icon :highlight_off          :indent {:right :xs} :size :s}])]))
 

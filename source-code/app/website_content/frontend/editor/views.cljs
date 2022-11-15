@@ -3,14 +3,14 @@
     (:require [app.common.frontend.api   :as common]
               [app.contents.frontend.api :as contents]
               [app.storage.frontend.api  :as storage]
+              [css.api                   :as css]
               [elements.api              :as elements]
               [engines.file-editor.api   :as file-editor]
               [forms.api                 :as forms]
               [layouts.surface-a.api     :as surface-a]
-              [mid-fruits.css            :as css]
               [mid-fruits.vector         :as vector]
               [re-frame.api              :as r]))
-  
+
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
@@ -172,7 +172,7 @@
                          :font-size :xs
                          :indent    {:right :s :top :m}
                          :label     :duplicate!
-                         :on-click  [:db/apply-item! [:website-content :editor/edited-item :brands]
+                         :on-click  [:x.db/apply-item! [:website-content :editor/edited-item :brands]
                                                      vector/duplicate-nth-item brand-dex]}]))
 
 (defn- delete-brand-button
@@ -183,7 +183,7 @@
                          :font-size :xs
                          :indent    {:right :s :top :m}
                          :label     :delete!
-                         :on-click  [:db/apply-item! [:website-content :editor/edited-item :brands]
+                         :on-click  [:x.db/apply-item! [:website-content :editor/edited-item :brands]
                                                      vector/remove-nth-item brand-dex]}]))
 
 (defn- brand-description-field
@@ -194,19 +194,6 @@
                                   :indent      {:top :m :vertical :s}
                                   :placeholder :brand-description-placeholder
                                   :value-path  [:website-content :editor/edited-item :brands brand-dex :description]}]))
-
-(defn- brand-icon-picker
-  [brand-dex _]
-  (let [editor-disabled? @(r/subscribe [:file-editor/editor-disabled? :website-content.editor])]
-       [storage/media-picker {:autosave?     true
-                              :disabled?     editor-disabled?
-                              :extensions    ["bmp" "jpg" "jpeg" "png" "webp"]
-                              :indent        {:top :m :vertical :s}
-                              :label         :icon
-                              :multi-select? false
-                              :toggle-label  :select-image!
-                              :thumbnail     {:height :3xl :width :5xl}
-                              :value-path    [:website-content :editor/edited-item :brands brand-dex :icon]}]))
 
 (defn- brand-title-field
   [brand-dex _]
@@ -239,9 +226,7 @@
   [brand-dex brand-props]
   [common/surface-box {:indent  {:top :m}
                        :content [:<> [:div (forms/form-row-attributes)
-                                           [:div (forms/form-block-attributes {:ratio 30})
-                                                 [brand-icon-picker      brand-dex brand-props]]
-                                           [:div (forms/form-block-attributes {:ratio 70})
+                                           [:div (forms/form-block-attributes {:ratio 100})
                                                  [brand-title-field      brand-dex brand-props]
                                                  [brand-link-label-field brand-dex brand-props]
                                                  [brand-link-field       brand-dex brand-props]]]
@@ -259,7 +244,7 @@
 (defn- brand-list
   []
   (letfn [(f [%1 %2 %3] (conj %1 [brand-box %2 %3]))]
-         (let [brands @(r/subscribe [:db/get-item [:website-content :editor/edited-item :brands]])]
+         (let [brands @(r/subscribe [:x.db/get-item [:website-content :editor/edited-item :brands]])]
               (reduce-kv f [:<>] brands))))
 
 ;; ----------------------------------------------------------------------------
@@ -268,7 +253,7 @@
 (defn- brand-controls-action-bar
   []
   (let [editor-disabled? @(r/subscribe [:file-editor/editor-disabled? :website-content.editor])
-        on-click [:db/apply-item! [:website-content :editor/edited-item :brands] vector/cons-item {}]]
+        on-click [:x.db/apply-item! [:website-content :editor/edited-item :brands] vector/cons-item {}]]
        [common/action-bar ::brand-controls-action-bar
                           {:disabled? editor-disabled?
                            :label     :add-brand!
@@ -340,7 +325,7 @@
 
 (defn- body
   []
-  (let [current-view-id @(r/subscribe [:gestures/get-current-view-id :website-content.editor])]
+  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :website-content.editor])]
        (case current-view-id :renting  [renting]
                              :selling  [selling]
                              :webshop  [webshop]
@@ -389,7 +374,8 @@
        [body]])
 
 (defn- website-content-editor
-  []
+  ; @param (keyword) surface-id
+  [_]
   [file-editor/body :website-content.editor
                     {:content-path  [:website-content :editor/edited-item]
                      :form-element  #'view-structure
@@ -397,6 +383,7 @@
                      :ghost-element #'common/file-editor-ghost-element}])
 
 (defn view
+  ; @param (keyword) surface-id
   [surface-id]
   [surface-a/layout surface-id
                     {:content #'website-content-editor}])

@@ -21,14 +21,17 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- client-item-structure
-  [selector-id item-dex {:keys [colors id modified-at] :as client-item}]
-  (let [client-name @(r/subscribe [:clients.selector/get-client-name item-dex])
-        timestamp   @(r/subscribe [:activities/get-actual-timestamp  modified-at])]
-       [common/list-item-structure selector-id item-dex
-                                   {:cells [[elements/color-marker {:colors colors :indent {:left :xs :right :m :horizontal :xs} :size :m}]
-                                            [common/list-item-primary-cell selector-id item-dex {:label client-name :timestamp timestamp :stretch? true
-                                                                                                 :placeholder :unnamed-client}]
-                                            [common/selector-item-marker   selector-id item-dex {:item-id id}]]}]))
+  [selector-id item-dex {:keys [colors company-name email-address id modified-at] :as client-item}]
+  (let [timestamp   @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+        item-last?  @(r/subscribe [:item-lister/item-last? selector-id item-dex])
+        client-name @(r/subscribe [:clients.selector/get-client-name item-dex])]
+       [common/list-item-structure {:cells [[elements/color-marker {:colors colors :indent {:left :xs :right :m :horizontal :xs} :size :m}]
+                                            [common/list-item-cell {:rows [{:content client-name   :placeholder :unnamed-client}
+                                                                           {:content email-address :font-size :xs :color :muted}
+                                                                           {:content company-name  :font-size :xs :color :muted}]
+                                                                    :width :stretch}]
+                                            [common/selector-item-marker selector-id item-dex {:item-id id}]]
+                                    :separator (if-not item-last? :bottom)}]))
 
 (defn- client-item
   [selector-id item-dex {:keys [id] :as client-item}]
@@ -76,7 +79,7 @@
                                {:primary-button   {:label :save! :on-click [:item-selector/save-selection! :clients.selector]}
                                 :secondary-button (if-let [autosaving? @(r/subscribe [:item-selector/autosaving? :clients.selector])]
                                                           {:label :abort!  :on-click [:item-selector/abort-autosave! :clients.selector]}
-                                                          {:label :cancel! :on-click [:ui/remove-popup! :clients.selector/view]})
+                                                          {:label :cancel! :on-click [:x.ui/remove-popup! :clients.selector/view]})
                                 :label            (if multi-select? :select-clients! :select-client!)}]))
 
 (defn- header

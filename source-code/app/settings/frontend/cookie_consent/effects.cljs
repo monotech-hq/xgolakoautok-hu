@@ -34,8 +34,8 @@
                                         :dispatch [:settings.cookie-consent/render-consent!]}]}]}))
 
 (r/reg-event-fx :settings.cookie-consent/render-consent!
-  [:ui/render-popup! :settings.cookie-consent/view
-                     {:body             #'cookie-settings.views/body
-                      :header           #'cookie-consent.views/header
-                      :horizontal-align :left
-                      :user-close?      false}])
+  [:x.ui/render-popup! :settings.cookie-consent/view
+                       {:body             #'cookie-settings.views/body
+                        :header           #'cookie-consent.views/header
+                        :horizontal-align :left
+                        :user-close?      false}])

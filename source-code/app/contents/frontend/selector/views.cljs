@@ -4,8 +4,8 @@
               [app.contents.frontend.handler.helpers :as handler.helpers]
               [elements.api                          :as elements]
               [engines.item-lister.api               :as item-lister]
+              [hiccup.api                            :as hiccup]
               [layouts.popup-a.api                   :as popup-a]
-              [hiccup.api                     :as hiccup]
               [re-frame.api                          :as r]))
 
 ;; ----------------------------------------------------------------------------
@@ -13,17 +13,15 @@
 
 (defn content-item-structure
   [selector-id item-dex {:keys [body name id modified-at] :as content-item}]
-  (let [timestamp   @(r/subscribe [:activities/get-actual-timestamp modified-at])
+  (let [timestamp   @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+        item-last?  @(r/subscribe [:item-lister/item-last? selector-id item-dex])
         content-body (-> body handler.helpers/parse-content-body hiccup/to-string)]
-       [common/list-item-structure selector-id item-dex
-                                   {:cells [[common/list-item-thumbnail-icon selector-id item-dex {:icon :article :icon-family :material-icons-outlined}]
+       [common/list-item-structure {:cells [[common/list-item-thumbnail {:icon :article :icon-family :material-icons-outlined}]
                                             ; HACK#4506
                                             [:div {:style {:flex-grow 1 :max-width "calc(100% - 144px)" :padding-right "24px"}}
-                                                  [common/list-item-primary-cell selector-id item-dex {:label name
-                                                                                                       :placeholder :unnamed-content
-                                                                                                       :description content-body
-                                                                                                       :timestamp timestamp}]]
-                                            [common/selector-item-marker selector-id item-dex {:item-id id}]]}]))
+                                                  [common/list-item-primary-cell {:label name :placeholder :unnamed-content :description content-body :timestamp timestamp}]]
+                                            [common/selector-item-marker selector-id item-dex {:item-id id}]]
+                                    :separator (if-not item-last? :bottom)}]))
 
 (defn content-item
   [selector-id item-dex {:keys [id] :as content-item}]
@@ -71,7 +69,7 @@
                                {:primary-button   {:label :save! :on-click [:item-selector/save-selection! :contents.selector]}
                                 :secondary-button (if-let [autosaving? @(r/subscribe [:item-selector/autosaving? :contents.selector])]
                                                           {:label :abort!  :on-click [:item-selector/abort-autosave! :contents.selector]}
-                                                          {:label :cancel! :on-click [:ui/remove-popup! :contents.selector/view]})
+                                                          {:label :cancel! :on-click [:x.ui/remove-popup! :contents.selector/view]})
                                 :label            (if multi-select? :select-contents! :select-content!)}]))
 
 (defn- header

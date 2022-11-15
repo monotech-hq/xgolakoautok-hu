@@ -1,6 +1,6 @@
 
 (ns app.schemes.backend.field-editor.prototypes
-    (:require [candy.api  :refer [param]]
+    (:require [candy.api         :refer [param]]
               [mid-fruits.random :as random]))
 
 ;; ----------------------------------------------------------------------------
@@ -11,8 +11,10 @@
   ;
   ; @return (namespaced map)
   ;  {:field/field-id (keyword)
-  ;   :field/field-no (integer)}
+  ;   :field/field-no (integer)
+  ;   :field/type (keyword)}
   [field-item]
   (merge {:field/field-id (random/generate-keyword)
-          :field/field-no (random/generate-number 6)}
+          :field/field-no (random/generate-number 6)
+          :field/type     :single-field}
          (param field-item)))

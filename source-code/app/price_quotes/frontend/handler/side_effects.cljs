@@ -3,8 +3,8 @@
     (:require [ajax.api                                :as ajax]
               [app.price-quotes.frontend.handler.state :as handler.state]
               [app-fruits.blob                         :as blob]
-              [app-fruits.base64                       :as base64]
-              [mid-fruits.reader                       :as reader]
+              [base64.api                              :as base64]
+              [reader.api                              :as reader]
               [re-frame.api                            :as r]))
 
 ;; ----------------------------------------------------------------------------

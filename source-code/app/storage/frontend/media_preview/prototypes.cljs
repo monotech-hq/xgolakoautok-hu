@@ -1,6 +1,6 @@
 
 (ns app.storage.frontend.media-preview.prototypes
-    (:require [candy.api  :refer [param]]
+    (:require [candy.api         :refer [param]]
               [mid-fruits.vector :as vector]))
 
 ;; ----------------------------------------------------------------------------
@@ -15,10 +15,12 @@
   ;  {:sortable? (boolean)
   ;   :thumbnail (map)}
   [{:keys [items thumbnail] :as preview-props}]
-  (merge {:max-count 8}
-         (param preview-props)
-         (if (vector/max? items 1)
-             {:sortable? false})
-         {:thumbnail (merge {:height    :5xl
-                             :width     :5xl}
-                            (param thumbnail))}))
+  (let [items (vector/remove-items-by items nil?)]
+       (merge {:max-count 8}
+              (param preview-props)
+              (if (vector/max? items 1)
+                  {:sortable? false})
+              {:items     items
+               :thumbnail (merge {:height    :5xl
+                                  :width     :5xl}
+                                 (param thumbnail))})))

@@ -17,38 +17,39 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- price-quote-template-item-structure
+(defn- template-item-structure
   [lister-id item-dex {:keys [modified-at name issuer-logo]}]
-  (let [timestamp @(r/subscribe [:activities/get-actual-timestamp modified-at])]
-       [common/list-item-structure lister-id item-dex
-                                   {:cells [[common/list-item-thumbnail lister-id item-dex {:thumbnail (:media/uri issuer-logo)}]
-                                            [common/list-item-label     lister-id item-dex {:content name :stretch? true :placeholder :unnamed-price-quote-template}]
-                                            [common/list-item-detail    lister-id item-dex {:content timestamp :width "160px"}]
-                                            [common/list-item-marker    lister-id item-dex {:icon :navigate_next}]]}]))
+  (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+        item-last? @(r/subscribe [:item-lister/item-last? lister-id item-dex])]
+       [common/list-item-structure {:cells [[common/list-item-thumbnail {:thumbnail (:media/uri issuer-logo)}]
+                                            [common/list-item-label     {:content name :stretch? true :placeholder :unnamed-price-quote-template}]
+                                            [common/list-item-detail    {:content timestamp :width "160px"}]
+                                            [common/list-item-marker    {:icon :navigate_next}]]
+                                    :separator (if-not item-last? :bottom)}]))
 
-(defn- price-quote-template-item
+(defn- template-item
   [lister-id item-dex {:keys [id] :as price-quote-template-item}]
-  [elements/toggle {:content     [price-quote-template-item-structure lister-id item-dex price-quote-template-item]
+  [elements/toggle {:content     [template-item-structure lister-id item-dex price-quote-template-item]
                     :hover-color :highlight
                     :on-click    [:x.router/go-to! (str "/@app-home/price-quote-templates/"id)]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- price-quote-template-list
+(defn- template-list
   [lister-id items]
-  [common/item-list lister-id {:item-element #'price-quote-template-item :items items}])
+  [common/item-list lister-id {:item-element #'template-item :items items}])
 
-(defn- price-quote-template-lister-body
+(defn- template-lister-body
   []
   [item-lister/body :price-quote-templates.lister
                     {:default-order-by :modified-at/descending
                      :items-path       [:price-quote-templates :lister/downloaded-items]
                      :error-element    [common/error-content {:error :the-content-you-opened-may-be-broken}]
                      :ghost-element    #'common/item-lister-ghost-element
-                     :list-element     #'price-quote-template-list}])
+                     :list-element     #'template-list}])
 
-(defn- price-quote-template-lister-header
+(defn- template-lister-header
   []
   [common/item-lister-header :price-quote-templates.lister
                              {:cells [[common/item-lister-header-spacer :price-quote-templates.lister {:width "108px"}]
@@ -59,8 +60,8 @@
 (defn- body
   []
   [common/item-lister-wrapper :price-quote-templates.lister
-                              {:body   #'price-quote-template-lister-body
-                               :header #'price-quote-template-lister-header}])
+                              {:body   #'template-lister-body
+                               :header #'template-lister-header}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

@@ -10,6 +10,14 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn- footer
+  []
+  (if-let [data-received? @(r/subscribe [:item-viewer/data-received? :pages.viewer])]
+          [common/item-viewer-item-info :pages.viewer {}]))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
 (defn- page-overview
   [])
 
@@ -18,7 +26,7 @@
 
 (defn- body
   []
-  (let [current-view-id @(r/subscribe [:gestures/get-current-view-id :pages.viewer])]
+  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :pages.viewer])]
        (case current-view-id :overview [page-overview])))
 
 ;; ----------------------------------------------------------------------------
@@ -43,7 +51,7 @@
 (defn- breadcrumbs
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :pages.viewer])
-        page-name        @(r/subscribe [:db/get-item [:pages :viewer/viewed-item :name]])]
+        page-name        @(r/subscribe [:x.db/get-item [:pages :viewer/viewed-item :name]])]
        [common/surface-breadcrumbs :pages.viewer/view
                                    {:crumbs [{:label :app-home :route "/@app-home"}
                                              {:label :pages    :route "/@app-home/pages"}
@@ -53,7 +61,7 @@
 (defn- label
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :pages.viewer])
-        page-name        @(r/subscribe [:db/get-item [:pages :viewer/viewed-item :name]])]
+        page-name        @(r/subscribe [:x.db/get-item [:pages :viewer/viewed-item :name]])]
        [common/surface-label :pages.viewer/view
                              {:disabled?   viewer-disabled?
                               :label       page-name
@@ -74,7 +82,8 @@
 (defn- view-structure
   []
   [:<> [header]
-       [body]])
+       [body]
+       [footer]])
 
 (defn- page-viewer
   []

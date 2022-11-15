@@ -9,17 +9,17 @@
 
 (r/reg-event-fx :settings.editor/load-editor!
   (fn [{:keys [db]} _]
-      {:dispatch-n [[:gestures/init-view-handler! :settings.editor
-                                                  {:default-view-id :sales}]
+      {:dispatch-n [[:x.gestures/init-view-handler! :settings.editor
+                                                    {:default-view-id :sales}]
                     [:settings.editor/render-editor!]]}))
 
 (r/reg-event-fx :settings.editor/render-editor!
-  [:ui/render-surface! :settings.editor/view
-                       {:content #'editor.views/view}])
+  [:x.ui/render-surface! :settings.editor/view
+                         {:content #'editor.views/view}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (r/reg-event-fx :settings.editor/user-settings-saved
   (fn [{:keys [db]} [_ saved-settings]]
-      {:db (update-in db [:user :settings-handler/user-settings] merge saved-settings)}))
+      {:db (update-in db [:x.user :settings-handler/user-settings] merge saved-settings)}))

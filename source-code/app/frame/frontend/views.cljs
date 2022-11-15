@@ -2,10 +2,10 @@
 (ns app.frame.frontend.views
     (:require [app.common.frontend.api  :as common]
               [app.frame.frontend.state :as state]
+              [css.api                  :as css]
               [elements.api             :as elements]
-              [mid-fruits.css           :as css]
               [re-frame.api             :as r]
-              [x.app-components.api     :as x.components]))
+              [x.components.api         :as x.components]))
 
 ;; -- Footer components -------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -60,9 +60,10 @@
 
 (defn- tool-group-label
   [group-name]
-  [elements/label {:content   group-name
-                   :color     "#333"
-                   :font-size :xs}])
+  [elements/label {:content     group-name
+                   :color       "#333"
+                   :font-size   :xs
+                   :line-height :block}])
 
 (defn- tool-group
   [[group-name group-items]]
@@ -72,7 +73,7 @@
 
 (defn- tool-list
   []
-  (let [tool-items @(r/subscribe [:db/get-item [:frame :tool-handler/data-items]])]
+  (let [tool-items @(r/subscribe [:x.db/get-item [:frame :tool-handler/data-items]])]
        [:<> (map (fn [%] ^{:key (random-uuid)} [tool-group %])
                  (group-by :group tool-items))]))
 
@@ -145,7 +146,7 @@
                    {:font-size :xs
                     :indent    {:horizontal :xxs :right :s}
                     :label     :logout!
-                    :on-click  [:user/logout!]}])
+                    :on-click  [:x.user/logout!]}])
 
 (defn- login-button
   []
@@ -171,7 +172,7 @@
 
 (defn- main-bar-large
   []
-  (let [user-identified? @(r/subscribe [:user/user-identified?])]
+  (let [user-identified? @(r/subscribe [:x.user/user-identified?])]
        [elements/horizontal-polarity {:end-content   [:<> [signup-button]
                                                           (if user-identified? [logout-button]
                                                                                [login-button])]
@@ -262,6 +263,6 @@
                    [:div {:style {:max-width "970px" :width "100%"}}
                          [x.components/content content]]]
              [x.components/content footer]]
-       [:div {:style {:background-color "#eee9ff"}}
-             [common/credits]]
+      ;;  [:div {:style {:background-color "#eee9ff"}}
+            ;;  [common/credits]]
        [header]])

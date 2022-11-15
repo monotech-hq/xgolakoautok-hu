@@ -1,7 +1,8 @@
 
 (ns app.storage.backend.core.helpers
-    (:require [io.api           :as io]
-              [candy.api :refer [return]]))
+    (:require [candy.api :refer [return]]
+              [io.api    :as io]))
+
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

@@ -14,13 +14,14 @@
                     :hover-color :highlight
                     :indent      {:all :xxs}
                     :keypress    {:key-code 27 :required? true}
-                    :on-click    [:ui/remove-popup! :storage.alias-editor/view]
+                    :on-click    [:x.ui/remove-popup! :storage.alias-editor/view]
                     :preset      :cancel}])
 
 (defn header-label
   [_]
   [elements/label ::header-label
-                  {:content :rename!}])
+                  {:content     :rename!
+                   :line-height :block}])
 
 (defn rename-button
   [media-item]

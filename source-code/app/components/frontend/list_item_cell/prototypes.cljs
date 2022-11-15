@@ -7,10 +7,8 @@
 
 (defn cell-props-prototype
   ; @param (map) cell-props
-  ;  {}
   ;
   ; @return (map)
-  ;  {}
-  [cell-props]
+  [{:keys [] :as cell-props}]
   (merge {}
          (param cell-props)))

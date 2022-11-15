@@ -21,5 +21,5 @@
   [namespace]
   {(keyword/add-namespace namespace :permissions) 0
    (keyword/add-namespace namespace :added-at)    0
-   (keyword/add-namespace namespace :added-by)    0
-   (keyword/add-namespace namespace :modified-by) 0})
+   (keyword/add-namespace namespace :added-by)    0})
+  ;(keyword/add-namespace namespace :modified-by) 0}

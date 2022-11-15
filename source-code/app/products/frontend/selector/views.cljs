@@ -22,15 +22,19 @@
 
 (defn- product-item-structure
   [selector-id item-dex {:keys [id item-number modified-at name quantity-unit thumbnail]}]
-  (let [timestamp     @(r/subscribe [:activities/get-actual-timestamp modified-at])
+  (let [timestamp     @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+        item-last?    @(r/subscribe [:item-lister/item-last? selector-id item-dex])
         product-count @(r/subscribe [:item-selector/get-item-count selector-id id])
-        item-number    {:content :item-number-n :replacements [item-number]}]
-       [common/list-item-structure selector-id item-dex
-                                   {:cells [[common/selector-item-counter  selector-id item-dex {:item-id id}]
-                                            [common/list-item-thumbnail    selector-id item-dex {:thumbnail (:media/uri thumbnail)}]
-                                            [common/list-item-primary-cell selector-id item-dex {:label name :timestamp item-number :stretch? true :placeholder :unnamed-product
-                                                                                                 :description {:content (:value quantity-unit) :replacements [product-count]}}]
-                                            [common/selector-item-marker   selector-id item-dex {:item-id id}]]}]))
+        item-number    {:content :item-number-n :replacements [item-number]}
+        item-count     {:content (:value quantity-unit) :replacements [product-count]}]
+       [common/list-item-structure {:cells [[common/selector-item-counter  selector-id item-dex {:item-id id}]
+                                            [common/list-item-thumbnail    {:thumbnail (:media/uri thumbnail)}]
+                                            [common/list-item-cell {:rows [{:content name :placeholder :unnamed-product}
+                                                                           {:content item-number :font-size :xs :color :muted}
+                                                                           {:content item-count  :font-size :xs :color :muted}]
+                                                                    :width :stretch}]
+                                            [common/selector-item-marker   selector-id item-dex {:item-id id}]]
+                                    :separator (if-not item-last? :bottom)}]))
 
 (defn- product-item
   [selector-id item-dex {:keys [id] :as product-item}]
@@ -76,7 +80,7 @@
   (let [multi-select? @(r/subscribe [:item-lister/get-meta-item :products.selector :multi-select?])]
        [common/popup-label-bar :products.selector/view
                                {:primary-button   {:label :save!   :on-click [:item-selector/save-selection! :products.selector]}
-                                :secondary-button {:label :cancel! :on-click [:ui/remove-popup! :products.selector/view]}
+                                :secondary-button {:label :cancel! :on-click [:x.ui/remove-popup! :products.selector/view]}
                                 :label            (if multi-select? :select-products! :select-product!)}]))
 
 (defn- header

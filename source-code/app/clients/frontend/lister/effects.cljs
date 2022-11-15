@@ -10,5 +10,5 @@
   [:clients.lister/render-lister!])
 
 (r/reg-event-fx :clients.lister/render-lister!
-  [:ui/render-surface! :clients.lister/view
-                       {:content #'lister.views/view}])
+  [:x.ui/render-surface! :clients.lister/view
+                         {:content #'lister.views/view}])

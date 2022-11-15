@@ -5,14 +5,16 @@
               [layouts.sidebar-a.api            :as sidebar-a]
               [mid-fruits.vector                :as vector]
               [re-frame.api                     :as r]
-              [x.app-components.api             :as x.components]))
+              [x.components.api                 :as x.components]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn- label-group-item-icon
   ; @param (map) group-item
-  ;  {}
+  ;  {:icon (keyword)
+  ;   :icon-color (string)
+  ;   :icon-family (keyword)}
   [{:keys [icon icon-color icon-family]}]
   [elements/icon {:color       icon-color
                   :icon        icon
@@ -22,23 +24,28 @@
 
 (defn- label-group-item-label
   ; @param (map) group-item
-  ;  {}
+  ;  {:label (metamorphic-content)}
   [{:keys [label]}]
-  [elements/label {:color     :invert
-                   :content   label
-                   :indent    {:right :xl}
-                   :font-size :xs}])
+  [elements/label {:color       :invert
+                   :content     label
+                   :indent      {:right :xl}
+                   :font-size   :xs
+                   :line-height :block}])
 
 (defn- label-group-item
   ; @param (map) group-item
-  ;  {}
-  [{:keys [icon icon-color icon-family disabled? label on-click] :as group-item}]
-  [elements/toggle {:content       [:div {:style {:display :flex}}
-                                         [label-group-item-icon  group-item]
-                                         [label-group-item-label group-item]]
-                    :disabled?     disabled?
-                    :on-click      on-click
-                    :hover-color   :invert}])
+  ;  {:disabled? (boolean)(opt)}
+  ;   :icon (keyword)
+  ;   :icon-color (string)
+  ;   :icon-family (keyword)
+  ;   :on-click (metamorphic-event)}
+  [{:keys [disabled? icon icon-color icon-family label on-click] :as group-item}]
+  [elements/toggle {:content     [:div {:style {:display :flex}}
+                                       [label-group-item-icon  group-item]
+                                       [label-group-item-label group-item]]
+                    :disabled?   disabled?
+                    :on-click    on-click
+                    :hover-color :invert}])
 
 (defn- label-group
   ; @param (metamorphic-content) label
@@ -61,19 +68,22 @@
 (defn- menu-group-label
   ; @param (metamorphic-content) group-name
   [group-name]
-  [elements/label {:color     :invert
-                   :content   group-name
-                   :font-size :xs
-                   :indent    {:left :s :top :xs :right :l}
-                   :style     {:opacity ".5"}}])
+  [elements/label {:color       :invert
+                   :content     group-name
+                   :font-size   :xs
+                   :indent      {:left :s :top :xs :right :l}
+                   :line-height :block
+                   :style       {:opacity ".6"}}])
 
 (defn- menu-group
-  ; @param (metamorphic-content) group-name
-  [group-name]
+  ; @param (map) group-props
+  ;  {:color (string)
+  ;   :name (metamorphic-content)}
+  [{:keys [name] :as group-props}]
   ; XXX#0091 (app.home.frontend.screen.views)
-  (let [group-items @(r/subscribe [:home.sidebar/get-menu-group-items group-name])]
+  (let [group-items @(r/subscribe [:home.sidebar/get-menu-group-items name])]
        (if (vector/nonempty? group-items)
-           [:<> [menu-group-label group-name]
+           [:<> [menu-group-label name]
                 (let [weight-groups (group-by :vertical-weight group-items)]
                      (letfn [(f [group-list vertical-weight]
                                 (conj group-list [weight-group vertical-weight (get weight-groups vertical-weight)]))]
@@ -82,20 +92,28 @@
 (defn- menu-groups
   []
   ; XXX#0091 (app.home.frontend.screen.views)
-  (letfn [(f [group-list group-name]
-             (conj group-list [menu-group group-name]))]
+  (letfn [(f [group-list group-props]
+             (conj group-list [menu-group group-props]))]
          (reduce f [:<>] handler.config/GROUP-ORDER)))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn- app-home-button
+  []
+  [label-group-item {:icon :apps :label :app-home :icon-family :material-icons-outlined
+                     :icon-color "#98829e" :on-click [:x.router/go-to! "/@app-home"]}])
+
 (defn- label
   []
-  [elements/label ::label
-                  {:color   :invert
-                   :content "Monotech.hu"
-                   :font-size :xs
-                   :indent  {:left :s :right :l :top :xs}}])
+  (let [app-title @(r/subscribe [:x.core/get-app-config-item :app-title])]
+       [elements/label ::label
+                       {:color       "#bfbfbf"
+                        :content     (mid-fruits.string/uppercase app-title)
+                        :font-size   :xs
+                        :font-weight :extra-bold
+                        :line-height :block
+                        :indent      {:horizontal :xs :vertical :s}}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -104,9 +122,14 @@
   ; @param (keyword) sidebar-id
   [_]
   (if @(r/subscribe [:x.environment/viewport-min? 1024])
-       [:<> ;[label]
-            [elements/horizontal-separator {:size :xs}]
-            [menu-groups]]))
+       [:div {:style {:display "flex" :flex-direction "column" :height "100%"}}
+             [:div {:style {:background-color "#00000021"}}
+                   [label]]
+             ;[elements/horizontal-line {:color "#88998e"}]
+             [elements/horizontal-separator {:size :xs}]
+             [:div {:data-scrollable-y true :style {:flex-grow "1"}}
+                   [app-home-button]
+                   [menu-groups]]]))
 
 (defn view
   ; @param (keyword) sidebar-id

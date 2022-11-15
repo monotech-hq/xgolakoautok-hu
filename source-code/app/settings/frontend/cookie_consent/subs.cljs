@@ -1,8 +1,8 @@
 
 (ns app.settings.frontend.cookie-consent.subs
-    (:require [re-frame.api          :refer [r]]
-              [x.app-environment.api :as x.environment]
-              [x.app-router.api      :as x.router]))
+    (:require [re-frame.api      :refer [r]]
+              [x.environment.api :as x.environment]
+              [x.router.api      :as x.router]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

@@ -17,8 +17,6 @@
               [app.common.frontend.item-selector.subs          :as item-selector.subs]
               [app.common.frontend.item-selector.views         :as item-selector.views]
               [app.common.frontend.item-viewer.views           :as item-viewer.views]
-              [app.common.frontend.list-item-drag-handle.views :as list-item-drag-handle.views]
-              [app.common.frontend.list-item-marker.views      :as list-item-marker.views]
               [app.common.frontend.menu-header.views           :as menu-header.views]
               [app.common.frontend.popup.views                 :as popup.views]
               [app.common.frontend.pdf-preview.views           :as pdf-preview.views]
@@ -26,7 +24,9 @@
               [app.common.frontend.selector-item-marker.views  :as selector-item-marker.views]
               [app.common.frontend.surface.views               :as surface.views]
               [app.common.frontend.surface-box.views           :as surface-box.views]
-              [app.common.frontend.surface-button.views        :as surface-button.views]))
+
+              ; TEMP
+              [app.components.frontend.api :as components]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -69,9 +69,8 @@
 
 ; app.common.frontend.item-lister.views
 (def list-item-structure            item-lister.views/list-item-structure)
-(def list-item-icon-button          item-lister.views/list-item-icon-button)
-(def list-item-thumbnail            item-lister.views/list-item-thumbnail)
-(def list-item-thumbnail-icon       item-lister.views/list-item-thumbnail-icon)
+(def list-item-thumbnail            components/list-item-thumbnail)
+(def list-item-cell                 components/list-item-cell)
 (def list-item-label                item-lister.views/list-item-label)
 (def list-item-details              item-lister.views/list-item-details)
 (def list-item-detail               item-lister.views/list-item-detail)
@@ -103,10 +102,10 @@
 (def item-viewer-controls      item-viewer.views/item-viewer-controls)
 
 ; app.common.frontend.list-item-drag-handle.views
-(def list-item-drag-handle list-item-drag-handle.views/element)
+(def list-item-drag-handle components/list-item-drag-handle)
 
 ; app.common.frontend.list-item-marker.views
-(def list-item-marker list-item-marker.views/element)
+(def list-item-marker components/list-item-marker)
 
 ; app.common.frontend.selector-item-counter.views
 (def selector-item-counter selector-item-counter.views/element)
@@ -118,7 +117,7 @@
 (def menu-header menu-header.views/element)
 
 ; app.common.frontend.popup.views
-(def popup-label-bar          popup.views/popup-label-bar)
+(def popup-label-bar          components/popup-label-bar)
 (def popup-progress-indicator popup.views/popup-progress-indicator)
 
 ; app.common.frontend.pdf-preview.views
@@ -126,13 +125,13 @@
 
 ; app.common.frontend.surface.views
 (def go-back-button                surface.views/go-back-button)
-(def surface-label                 surface.views/surface-label)
-(def surface-description           surface.views/surface-description)
-(def surface-breadcrumbs           surface.views/surface-breadcrumbs)
+(def surface-label                 components/surface-label)
+(def surface-description           components/surface-description)
+(def surface-breadcrumbs           components/surface-breadcrumbs)
 (def surface-box-layout-ghost-view surface.views/surface-box-layout-ghost-view)
 
 ; app.common.frontend.surface-box.views
 (def surface-box surface-box.views/element)
 
 ; app.common.frontend.surface-button.views
-(def surface-button surface-button.views/element)
+(def surface-button components/surface-button)

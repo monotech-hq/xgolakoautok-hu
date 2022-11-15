@@ -3,29 +3,37 @@
     (:require [app.common.frontend.api              :as common]
               [app.packages.frontend.viewer.queries :as viewer.queries]
               [app.storage.frontend.api             :as storage]
+              [candy.api                            :refer [return]]
               [elements.api                         :as elements]
               [engines.item-lister.api              :as item-lister]
               [engines.item-viewer.api              :as item-viewer]
               [forms.api                            :as forms]
               [layouts.surface-a.api                :as surface-a]
-              [candy.api                     :refer [return]]
               [mid-fruits.vector                    :as vector]
               [re-frame.api                         :as r]
-              [x.app-components.api                 :as x.components]))
+              [x.components.api                     :as x.components]))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn- footer
+  []
+  (if-let [data-received? @(r/subscribe [:item-viewer/data-received? :packages.viewer])]
+          [common/item-viewer-item-info :packages.viewer {}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn- service-item-structure
   [lister-id item-dex {:keys [id modified-at name quantity-unit]}]
-  (let [timestamp     @(r/subscribe [:activities/get-actual-timestamp modified-at])
+  (let [timestamp     @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+        item-last?    @(r/subscribe [:item-lister/item-last? lister-id item-dex])
         service-count @(r/subscribe [:packages.viewer/get-service-count id])
-        description    {:content (:value quantity-unit) :replacements [service-count]}]
-       [common/list-item-structure lister-id item-dex
-                                   {:cells [[common/list-item-thumbnail-icon lister-id item-dex {:icon :workspace_premium}]
-                                            [common/list-item-primary-cell   lister-id item-dex {:label name :timestamp timestamp :stretch? true
-                                                                                                 :description description :placeholder :unnamed-service}]
-                                            [common/list-item-marker         lister-id item-dex {:icon :drag_handle :style {:cursor :grab}}]]}]))
+        service-count  {:content (:value quantity-unit) :replacements [service-count]}]
+       [common/list-item-structure {:cells [[common/list-item-thumbnail    {:icon :workspace_premium}]
+                                            [common/list-item-primary-cell {:label name :timestamp timestamp :stretch? true :description service-count :placeholder :unnamed-service}]
+                                            [common/list-item-marker       {:icon :drag_handle :style {:cursor :grab}}]]
+                                    :separator (if-not item-last? :bottom)}]))
 
 (defn- service-item
   [lister-id item-dex {:keys [id] :as service-item}]
@@ -59,7 +67,7 @@
 
 (defn- service-lister
   []
-  (let [package-services @(r/subscribe [:db/get-item [:packages :viewer/viewed-item :services]])
+  (let [package-services @(r/subscribe [:x.db/get-item [:packages :viewer/viewed-item :services]])
         prefilter         {:$or (vector/->items package-services #(dissoc % :service/count))}]
        [item-lister/body :services.lister
                          {:default-order-by :modified-at/descending
@@ -97,14 +105,14 @@
 
 (defn- product-item-structure
   [lister-id item-dex {:keys [id modified-at name quantity-unit thumbnail]}]
-  (let [timestamp     @(r/subscribe [:activities/get-actual-timestamp modified-at])
+  (let [timestamp     @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+        item-last?    @(r/subscribe [:item-lister/item-last? lister-id item-dex])
         product-count @(r/subscribe [:packages.viewer/get-product-count id])
-        description    {:content (:value quantity-unit) :replacements [product-count]}]
-       [common/list-item-structure lister-id item-dex
-                                   {:cells [[common/list-item-thumbnail    lister-id item-dex {:thumbnail (:media/uri thumbnail)}]
-                                            [common/list-item-primary-cell lister-id item-dex {:label name :timestamp timestamp :stretch? true
-                                                                                               :description description :placeholder :unnamed-product}]
-                                            [common/list-item-marker       lister-id item-dex {:icon :drag_handle :style {:cursor :grab}}]]}]))
+        product-count  {:content (:value quantity-unit) :replacements [product-count]}]
+       [common/list-item-structure {:cells [[common/list-item-thumbnail    {:thumbnail (:media/uri thumbnail)}]
+                                            [common/list-item-primary-cell {:label name :timestamp timestamp :stretch? true :description product-count :placeholder :unnamed-product}]
+                                            [common/list-item-marker       {:icon :drag_handle :style {:cursor :grab}}]]
+                                    :separator (if-not item-last? :bottom)}]))
 
 (defn- product-item
   [lister-id item-dex {:keys [id] :as product-item}]
@@ -138,7 +146,7 @@
 
 (defn- product-lister
   []
-  (let [package-products @(r/subscribe [:db/get-item [:packages :viewer/viewed-item :products]])
+  (let [package-products @(r/subscribe [:x.db/get-item [:packages :viewer/viewed-item :products]])
         prefilter         {:$or (vector/->items package-products #(dissoc % :product/count))}]
        [item-lister/body :products.lister
                          {:default-order-by :modified-at/descending
@@ -177,12 +185,13 @@
 (defn- package-thumbnail-preview
   []
   (let [viewer-disabled?  @(r/subscribe [:item-viewer/viewer-disabled? :packages.viewer])
-        package-thumbnail @(r/subscribe [:db/get-item [:packages :viewer/viewed-item :thumbnail]])]
+        package-thumbnail @(r/subscribe [:x.db/get-item [:packages :viewer/viewed-item :thumbnail]])]
        [storage/media-preview ::package-thumbnail-preview
                               {:disabled?   viewer-disabled?
                                :indent      {:top :m :vertical :s}
                                :items       [package-thumbnail]
-                               :placeholder "-"}]))
+                               :placeholder "-"
+                               :thumbnail   {:height :3xl :width :5xl}}]))
 
 (defn- package-thumbnail-box
   []
@@ -200,7 +209,7 @@
 (defn- package-quantity-unit
   []
   (let [viewer-disabled?      @(r/subscribe [:item-viewer/viewer-disabled? :packages.viewer])
-        package-quantity-unit @(r/subscribe [:db/get-item [:packages :viewer/viewed-item :quantity-unit :label]])]
+        package-quantity-unit @(r/subscribe [:x.db/get-item [:packages :viewer/viewed-item :quantity-unit :label]])]
        [common/data-element ::package-quantity-unit
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -211,7 +220,7 @@
 (defn- package-description
   []
   (let [viewer-disabled?    @(r/subscribe [:item-viewer/viewer-disabled? :packages.viewer])
-        package-description @(r/subscribe [:db/get-item [:packages :viewer/viewed-item :description]])]
+        package-description @(r/subscribe [:x.db/get-item [:packages :viewer/viewed-item :description]])]
        [common/data-element ::package-description
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -222,7 +231,7 @@
 (defn- package-item-number
   []
   (let [viewer-disabled?    @(r/subscribe [:item-viewer/viewer-disabled? :packages.viewer])
-        package-item-number @(r/subscribe [:db/get-item [:packages :viewer/viewed-item :item-number]])]
+        package-item-number @(r/subscribe [:x.db/get-item [:packages :viewer/viewed-item :item-number]])]
        [common/data-element ::package-item-number
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -233,7 +242,7 @@
 (defn- package-pricing
   []
   (let [viewer-disabled?           @(r/subscribe [:item-viewer/viewer-disabled? :packages.viewer])
-        package-automatic-pricing? @(r/subscribe [:db/get-item [:packages :viewer/viewed-item :automatic-pricing?]])]
+        package-automatic-pricing? @(r/subscribe [:x.db/get-item [:packages :viewer/viewed-item :automatic-pricing?]])]
        [common/data-element ::package-pricing
                             {:disabled? viewer-disabled?
                              :indent    {:top :m :vertical :s}
@@ -248,28 +257,28 @@
 (defn- package-automatic-price
   []
   (let [viewer-disabled?        @(r/subscribe [:item-viewer/viewer-disabled? :packages.viewer])
-        package-automatic-price @(r/subscribe [:db/get-item [:packages :viewer/viewed-item :automatic-price]])]
+        package-automatic-price @(r/subscribe [:x.db/get-item [:packages :viewer/viewed-item :automatic-price]])]
        [common/data-element ::package-automatic-price
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
-                             :label       :price
+                             :label       :unit-price
                              :placeholder "-"
                              :value       {:content package-automatic-price :suffix " EUR"}}]))
 
 (defn- package-static-price
   []
   (let [viewer-disabled?     @(r/subscribe [:item-viewer/viewer-disabled? :packages.viewer])
-        package-static-price @(r/subscribe [:db/get-item [:packages :viewer/viewed-item :price]])]
+        package-static-price @(r/subscribe [:x.db/get-item [:packages :viewer/viewed-item :unit-price]])]
        [common/data-element ::package-static-price
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
-                             :label       :price
+                             :label       :unit-price
                              :placeholder "-"
                              :value       {:content package-static-price :suffix " EUR"}}]))
 
 (defn- package-price
   []
-  (if-let [automatic-pricing? @(r/subscribe [:db/get-item [:packages :viewer/viewed-item :automatic-pricing?]])]
+  (if-let [automatic-pricing? @(r/subscribe [:x.db/get-item [:packages :viewer/viewed-item :automatic-pricing?]])]
           [:<> [package-automatic-price-querier]
                [package-automatic-price]]
           [package-static-price]))
@@ -277,7 +286,7 @@
 (defn- package-name
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :packages.viewer])
-        package-name     @(r/subscribe [:db/get-item [:packages :viewer/viewed-item :name]])]
+        package-name     @(r/subscribe [:x.db/get-item [:packages :viewer/viewed-item :name]])]
        [common/data-element ::package-name
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -288,7 +297,7 @@
 (defn- package-product-count
   []
   (let [viewer-disabled?     @(r/subscribe [:item-viewer/viewer-disabled? :packages.viewer])
-        package-products     @(r/subscribe [:db/get-item [:packages :viewer/viewed-item :products]])
+        package-products     @(r/subscribe [:x.db/get-item [:packages :viewer/viewed-item :products]])
         package-product-count (count package-products)]
        [common/data-element ::package-product-count
                             {:disabled? viewer-disabled?
@@ -299,7 +308,7 @@
 (defn- package-service-count
   []
   (let [viewer-disabled?     @(r/subscribe [:item-viewer/viewer-disabled? :packages.viewer])
-        package-services     @(r/subscribe [:db/get-item [:packages :viewer/viewed-item :services]])
+        package-services     @(r/subscribe [:x.db/get-item [:packages :viewer/viewed-item :services]])
         package-service-count (count package-services)]
        [common/data-element ::package-service-count
                             {:disabled? viewer-disabled?
@@ -348,7 +357,7 @@
 
 (defn- body
   []
-  (let [current-view-id @(r/subscribe [:gestures/get-current-view-id :packages.viewer])]
+  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :packages.viewer])]
        (case current-view-id :overview [package-overview]
                              :products [package-products]
                              :services [package-services])))
@@ -377,7 +386,7 @@
 (defn- breadcrumbs
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :packages.viewer])
-        package-name     @(r/subscribe [:db/get-item [:packages :viewer/viewed-item :name]])]
+        package-name     @(r/subscribe [:x.db/get-item [:packages :viewer/viewed-item :name]])]
        [common/surface-breadcrumbs :packages.viewer/view
                                    {:crumbs [{:label :app-home    :route "/@app-home"}
                                              {:label :packages    :route "/@app-home/packages"}
@@ -387,7 +396,7 @@
 (defn- label
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :packages.viewer])
-        package-name     @(r/subscribe [:db/get-item [:packages :viewer/viewed-item :name]])]
+        package-name     @(r/subscribe [:x.db/get-item [:packages :viewer/viewed-item :name]])]
        [common/surface-label :packages.viewer/view
                              {:disabled?   viewer-disabled?
                               :label       package-name
@@ -408,7 +417,8 @@
 (defn- view-structure
   []
   [:<> [header]
-       [body]])
+       [body]
+       [footer]])
 
 (defn- package-viewer
   []

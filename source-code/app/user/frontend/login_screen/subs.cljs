@@ -1,7 +1,7 @@
 
 (ns app.user.frontend.login-screen.subs
-    (:require [re-frame.api   :as r :refer [r]]
-              [x.app-sync.api :as x.sync]))
+    (:require [re-frame.api :as r :refer [r]]
+              [x.sync.api   :as x.sync]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -24,7 +24,7 @@
   ; Ha a login-button-disabled? függvény alkalmazná a login-fields-unfilled?
   ; függvényt, akkor ilyen esetekben a felhasználó úgy láthatná, hogy az
   ; autofill kitöltötte a mezőket, miközben a bejelentkező gomb inaktív maradna.
-  (or (r x.sync/listening-to-request? db :user/authenticate!)))
+  (or (r x.sync/listening-to-request? db :x.user/authenticate!)))
      ;(r login-fields-unfilled?     db)
 
 ;; ----------------------------------------------------------------------------

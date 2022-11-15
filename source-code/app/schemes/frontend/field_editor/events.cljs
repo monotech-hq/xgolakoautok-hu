@@ -2,7 +2,7 @@
 (ns app.schemes.frontend.field-editor.events
     (:require [app.schemes.frontend.field-editor.subs :as field-editor.subs]
               [app.schemes.frontend.form-handler.subs :as form-handler.subs]
-              [candy.api                       :refer [return]]
+              [candy.api                              :refer [return]]
               [mid-fruits.map                         :refer [dissoc-in]]
               [mid-fruits.vector                      :as vector]
               [re-frame.api                           :as r :refer [r]]))
@@ -28,7 +28,8 @@
   [db [_ scheme-id field-id]]
   (let [field-item (r form-handler.subs/get-scheme-field        db scheme-id field-id)
         field-name (r field-editor.subs/get-resolved-field-name db scheme-id field-id)]
-       (-> db (assoc-in [:schemes :field-editor/field-item] (assoc field-item :field/name field-name))
+       (-> db (assoc-in [:schemes :field-editor/field-item]
+                        (assoc field-item :field/name field-name))
               (assoc-in [:schemes :field-editor/backup-item] field-item))))
 
 (defn load-editor!
@@ -62,13 +63,19 @@
 ;; ----------------------------------------------------------------------------
 
 (defn save-failed
+  ; @param (keyword) scheme-id
+  ; @param (keyword or nil) field-id
+  ;
   ; @return (map)
-  [db _]
+  [db [_ _ _]]
   (assoc-in db [:schemes :field-editor/meta-items :editor-status] :save-failed))
 
 (defn field-saving
+  ; @param (keyword) scheme-id
+  ; @param (keyword or nil) field-id
+  ;
   ; @return (map)
-  [db _]
+  [db [_ _ _]]
   (assoc-in db [:schemes :field-editor/meta-items :editor-status] :saving))
 
 (defn save-successed

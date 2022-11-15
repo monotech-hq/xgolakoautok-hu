@@ -9,8 +9,8 @@
 
 (r/reg-event-fx :main-page/render-page!
   (fn [{:keys [db]} [_]]
-    {:dispatch-n [[:db/set-item! [:filters] (router/get-current-route-path-params db)]
-                  [:ui/render-surface! :main-page/view {:content #'views/view}]]}))
+    {:dispatch-n [[:x.db/set-item! [:filters] (router/get-current-route-path-params db)]
+                  [:x.ui/render-surface! :main-page/view {:content #'views/view}]]}))
 
 (r/reg-event-fx :main-page/load-page!
   [:main-page/render-page!])

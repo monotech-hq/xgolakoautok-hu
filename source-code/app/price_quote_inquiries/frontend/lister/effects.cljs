@@ -7,5 +7,5 @@
 ;; ----------------------------------------------------------------------------
 
 (r/reg-event-fx :price-quote-inquiries.lister/load-lister!
-  [:ui/render-surface! :price-quote-inquiries.lister/view
-                       {:content #'lister.views/view}])
+  [:x.ui/render-surface! :price-quote-inquiries.lister/view
+                         {:content #'lister.views/view}])

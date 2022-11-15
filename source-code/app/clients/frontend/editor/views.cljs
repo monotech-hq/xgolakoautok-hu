@@ -7,7 +7,7 @@
               [layouts.surface-a.api   :as surface-a]
               [mid-fruits.string       :as string]
               [re-frame.api            :as r :refer [r]]
-              [x.app-locales.api       :as x.locales]))
+              [x.locales.api           :as x.locales]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -15,7 +15,7 @@
 (defn- client-last-name-field
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :clients.editor])
-        name-order       @(r/subscribe [:locales/get-name-order])]
+        name-order       @(r/subscribe [:x.locales/get-name-order])]
        [elements/text-field ::client-last-name-field
                             {:autofocus?  (= name-order :reversed)
                              :disabled?   editor-disabled?
@@ -28,7 +28,7 @@
 (defn- client-first-name-field
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :clients.editor])
-        name-order       @(r/subscribe [:locales/get-name-order])]
+        name-order       @(r/subscribe [:x.locales/get-name-order])]
        [elements/text-field ::client-first-name-field
                             {:autofocus?  (= name-order :normal)
                              :disabled?   editor-disabled?
@@ -45,7 +45,7 @@
                                     [client-first-name-field]]
                               [:div (forms/form-block-attributes {:ratio 50})
                                     [client-last-name-field]]
-                             @(r/subscribe [:locales/get-name-order])]])
+                             @(r/subscribe [:x.locales/get-name-order])]])
 
 (defn- client-phone-number-field
   []
@@ -262,7 +262,7 @@
 
 (defn- body
   []
-  (let [current-view-id @(r/subscribe [:gestures/get-current-view-id :clients.editor])]
+  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :clients.editor])]
        (case current-view-id :data [client-data])))
 
 ;; ----------------------------------------------------------------------------
@@ -304,7 +304,7 @@
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :clients.editor])
         client-name      @(r/subscribe [:clients.editor/get-client-name])
-        client-colors    @(r/subscribe [:db/get-item [:clients :editor/edited-item :colors]])]
+        client-colors    @(r/subscribe [:x.db/get-item [:clients :editor/edited-item :colors]])]
        [common/surface-label :clients.editor/view
                              {:disabled?   editor-disabled?
                               :label       client-name
@@ -329,7 +329,7 @@
 
 (defn- client-editor
   []
-  (let [user-locale      @(r/subscribe [:user/get-user-locale])
+  (let [user-locale      @(r/subscribe [:x.user/get-user-locale])
         user-country-name (get-in x.locales/COUNTRY-LIST [user-locale :native])]
        [item-editor/body :clients.editor
                          {:auto-title?      true

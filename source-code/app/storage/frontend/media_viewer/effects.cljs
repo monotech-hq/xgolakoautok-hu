@@ -41,5 +41,5 @@
 
 (r/reg-event-fx :storage.media-viewer/render-viewer!
   (fn [_ [_ viewer-id]]
-      [:ui/render-popup! :storage.media-viewer/view
-                         {:content [media-viewer.views/view viewer-id]}]))
+      [:x.ui/render-popup! :storage.media-viewer/view
+                           {:content [media-viewer.views/view viewer-id]}]))

@@ -13,7 +13,7 @@
 
 (defn- body
   []
-  (let [current-view-id @(r/subscribe [:gestures/get-current-view-id :pages.editor])]))
+  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :pages.editor])]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -32,7 +32,7 @@
 (defn- breadcrumbs
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :pages.editor])
-        page-name        @(r/subscribe [:db/get-item [:pages :editor/edited-item :name]])
+        page-name        @(r/subscribe [:x.db/get-item [:pages :editor/edited-item :name]])
         page-id          @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         page-uri          (str "/@app-home/pages/" page-id)]
        [common/surface-breadcrumbs :pages.editor/view
@@ -48,7 +48,7 @@
 (defn- label
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :pages.editor])
-        page-name        @(r/subscribe [:db/get-item [:pages :editor/edited-item :name]])]
+        page-name        @(r/subscribe [:x.db/get-item [:pages :editor/edited-item :name]])]
        [common/surface-label :pages.editor/view
                              {:disabled?   editor-disabled?
                               :label       page-name

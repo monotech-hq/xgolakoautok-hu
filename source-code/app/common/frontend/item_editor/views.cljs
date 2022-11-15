@@ -1,10 +1,10 @@
 
 (ns app.common.frontend.item-editor.views
-    (:require [app.common.frontend.surface.views        :as surface.views]
-              [app.common.frontend.surface-button.views :as surface-button.views]
-              [elements.api                             :as elements]
-              [mid-fruits.vector                        :as vector]
-              [re-frame.api                             :as r]))
+    (:require [app.common.frontend.surface.views :as surface.views]
+              [app.components.frontend.api       :as components]
+              [elements.api                      :as elements]
+              [mid-fruits.vector                 :as vector]
+              [re-frame.api                      :as r]))
 
 ;; -- Color-picker component --------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -18,8 +18,9 @@
   ; @usage
   ;  [item-editor-color-picker-label :my-editor {...}]
   [_ {:keys [disabled? label]}]
-  (if label [elements/label {:content   :color
-                             :disabled? disabled?}]))
+  (if label [elements/label {:content     :color
+                             :disabled?   disabled?
+                             :line-height :block}]))
 
 (defn item-editor-color-picker-button
   ; @param (keyword) editor-id
@@ -46,7 +47,7 @@
   ; @usage
   ;  [item-editor-color-picker-value :my-editor {...}]
   [_ {:keys [disabled? value-path]}]
-  (let [picked-colors @(r/subscribe [:db/get-item value-path])]
+  (let [picked-colors @(r/subscribe [:x.db/get-item value-path])]
        [elements/color-stamp {:colors    picked-colors
                               :disabled? disabled?
                               :size      :xxl}]))
@@ -88,13 +89,13 @@
   ;   :label (metamorphic-content)
   ;   :on-click (metamorphic-event)}
   [editor-id _ {:keys [change-keys disabled? label]}]
-  (let [current-view @(r/subscribe [:gestures/get-current-view-id editor-id])
+  (let [current-view @(r/subscribe [:x.gestures/get-current-view-id editor-id])
         changed? (if change-keys @(r/subscribe [:item-editor/form-changed? editor-id change-keys]))]
        {:active?     (= label current-view)
         :disabled?   disabled?
         :badge-color (if changed? :primary)
         :label       label
-        :on-click    [:gestures/change-view! editor-id label]}))
+        :on-click    [:x.gestures/change-view! editor-id label]}))
 
 (defn item-editor-menu-bar
   ; A komponens használatához ne felejts el inicializálni egy gestures/view-handler
@@ -140,12 +141,12 @@
   ;  [revert-item-button :my-editor {...}]
   [editor-id {:keys [disabled?]}]
   (let [item-changed? @(r/subscribe [:item-editor/item-changed? editor-id])]
-       [surface-button.views/element ::revert-item-button
-                                     {:disabled?   (or disabled? (not item-changed?))
-                                      :hover-color :highlight
-                                      :icon        :settings_backup_restore
-                                      :label       :revert!
-                                      :on-click    [:item-editor/revert-item! editor-id]}]))
+       [components/surface-button ::revert-item-button
+                                  {:disabled?   (or disabled? (not item-changed?))
+                                   :hover-color :highlight
+                                   :icon        :settings_backup_restore
+                                   :label       :revert!
+                                   :on-click    [:item-editor/revert-item! editor-id]}]))
 
 (defn save-item-button
   ; @param (keyword) editor-id
@@ -154,13 +155,13 @@
   ; @usage
   ;  [save-item-button :my-editor {...}]
   [editor-id {:keys [disabled?]}]
-  [surface-button.views/element ::save-item-button
-                                {:background-color "#5a4aff"
-                                 :color            "white"
-                                 :disabled?        disabled?
-                                 :icon             :save
-                                 :label            :save!
-                                 :on-click         [:item-editor/save-item! editor-id]}])
+  [components/surface-button ::save-item-button
+                             {:background-color "#5a4aff"
+                              :color            "white"
+                              :disabled?        disabled?
+                              :icon             :save
+                              :label            :save!
+                              :on-click         [:item-editor/save-item! editor-id]}])
 
 (defn item-editor-controls
   ; @param (keyword) editor-id

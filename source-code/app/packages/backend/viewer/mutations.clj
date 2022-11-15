@@ -86,8 +86,8 @@
   ; @return (namespaced map)
   [{:keys [request]} {:keys [package-id package-products]}]
   (let [prepare-f #(common/updated-document-prototype request %)]
-       (mongo-db/apply-document! "packages" package-id #(assoc % :package/products package-products)
-                                                        {:prepare-f prepare-f})))
+       (letfn [(f [%] (assoc % :package/products package-products))]
+              (mongo-db/apply-document! "packages" package-id f {:prepare-f prepare-f}))))
 
 (defmutation save-package-products!
              ; @param (map) env
@@ -113,8 +113,8 @@
   ; @return (namespaced map)
   [{:keys [request]} {:keys [package-id package-services]}]
   (let [prepare-f #(common/updated-document-prototype request %)]
-       (mongo-db/apply-document! "packages" package-id #(assoc % :package/services package-services)
-                                                        {:prepare-f prepare-f})))
+       (letfn [(f [%] (assoc % :package/services package-services))]
+              (mongo-db/apply-document! "packages" package-id f {:prepare-f prepare-f}))))
 
 (defmutation save-package-services!
              ; @param (map) env

@@ -12,10 +12,18 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn- footer
+  []
+  (if-let [data-received? @(r/subscribe [:item-viewer/data-received? :contents.viewer])]
+          [common/item-viewer-item-info :contents.viewer {}]))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
 (defn- content-visibility
   []
   (let [viewer-disabled?   @(r/subscribe [:item-viewer/viewer-disabled? :contents.viewer])
-        content-visibility @(r/subscribe [:db/get-item [:contents :viewer/viewed-item :visibility]])
+        content-visibility @(r/subscribe [:x.db/get-item [:contents :viewer/viewed-item :visibility]])
         content-visibility  (case content-visibility :public :public-content :private :private-content)]
        [common/data-element ::content-visibility
                             {:disabled?   viewer-disabled?
@@ -42,7 +50,7 @@
 (defn- content-body
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :contents.viewer])
-        content-body     @(r/subscribe [:db/get-item [:contents :viewer/viewed-item :body]])
+        content-body     @(r/subscribe [:x.db/get-item [:contents :viewer/viewed-item :body]])
         content-body      (handler.helpers/parse-content-body content-body)]
        [common/data-element ::content-body
                             {:disabled?   viewer-disabled?
@@ -81,7 +89,7 @@
 
 (defn- body
   []
-  (let [current-view-id @(r/subscribe [:gestures/get-current-view-id :contents.viewer])]
+  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :contents.viewer])]
        (case current-view-id :overview [content-overview])))
 
 ;; ----------------------------------------------------------------------------
@@ -99,7 +107,7 @@
 (defn- breadcrumbs
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :contents.viewer])
-        content-name     @(r/subscribe [:db/get-item [:contents :viewer/viewed-item :name]])]
+        content-name     @(r/subscribe [:x.db/get-item [:contents :viewer/viewed-item :name]])]
        [common/surface-breadcrumbs :contents.viewer/view
                                    {:crumbs [{:label :app-home   :route "/@app-home"}
                                              {:label :contents    :route "/@app-home/contents"}
@@ -109,7 +117,7 @@
 (defn- label
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :contents.viewer])
-        content-name     @(r/subscribe [:db/get-item [:contents :viewer/viewed-item :name]])]
+        content-name     @(r/subscribe [:x.db/get-item [:contents :viewer/viewed-item :name]])]
        [common/surface-label :contents.viewer/view
                              {:disabled?   viewer-disabled?
                               :label       content-name
@@ -130,10 +138,12 @@
 (defn- view-structure
   []
   [:<> [header]
-       [body]])
+       [body]
+       [footer]])
 
 (defn- content-viewer
-  []
+  ; @param (keyword) surface-id
+  [_]
   [item-viewer/body :contents.viewer
                     {:auto-title?   true
                      :error-element [common/error-content {:error :the-item-you-opened-may-be-broken}]
@@ -143,6 +153,7 @@
                      :label-key     :name}])
 
 (defn view
+  ; @param (keyword) surface-id
   [surface-id]
   [surface-a/layout surface-id
                     {:content #'content-viewer}])

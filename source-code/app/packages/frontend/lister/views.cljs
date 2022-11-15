@@ -19,15 +19,15 @@
 
 (defn- package-item-structure
   [lister-id item-dex {:keys [item-number modified-at name products thumbnail]}]
-  (let [timestamp    @(r/subscribe [:activities/get-actual-timestamp modified-at])
-        product-count (count products)
-        description   {:content :n-items :replacements [product-count]}]
-       [common/list-item-structure lister-id item-dex
-                                   {:cells [[common/list-item-thumbnail    lister-id item-dex {:thumbnail (:media/uri thumbnail)}]
-                                            [common/list-item-primary-cell lister-id item-dex {:label name :stretch? true :placeholder :unnamed-package :description description}]
-                                            [common/list-item-detail       lister-id item-dex {:content item-number :width "160px"}]
-                                            [common/list-item-detail       lister-id item-dex {:content timestamp :width "160px"}]
-                                            [common/list-item-marker       lister-id item-dex {:icon :navigate_next}]]}]))
+  (let [timestamp    @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+        item-last?   @(r/subscribe [:item-lister/item-last? lister-id item-dex])
+        product-count {:content :n-items :replacements [(count products)]}]
+       [common/list-item-structure {:cells [[common/list-item-thumbnail    {:thumbnail (:media/uri thumbnail)}]
+                                            [common/list-item-primary-cell {:label name :stretch? true :placeholder :unnamed-package :description product-count}]
+                                            [common/list-item-detail       {:content item-number :width "160px"}]
+                                            [common/list-item-detail       {:content timestamp :width "160px"}]
+                                            [common/list-item-marker       {:icon :navigate_next}]]
+                                    :separator (if-not item-last? :bottom)}]))
 
 (defn- package-item
   [lister-id item-dex {:keys [id] :as package-item}]

@@ -6,7 +6,7 @@
               [app.storage.frontend.directory-creator.views      :as directory-creator.views]
               [engines.item-browser.api                          :as item-browser]
               [re-frame.api                                      :as r :refer [r]]
-              [x.app-ui.api                                      :as x.ui]))
+              [x.ui.api                                          :as x.ui]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -38,7 +38,7 @@
             query          (r directory-creator.queries/get-create-directory-query          db creator-id directory-name)
             validator-f   #(r directory-creator.validators/create-directory-response-valid? db creator-id %)]
            {:db       (r x.ui/fake-process! db 15)
-            :dispatch-n [[:ui/remove-popup! :storage.directory-creator/view]
+            :dispatch-n [[:x.ui/remove-popup! :storage.directory-creator/view]
                          [:pathom/send-query! :storage.directory-creator/create-directory!
                                               {:query query :validator-f validator-f
                                                :on-success [:storage.directory-creator/directory-created         creator-id]
@@ -55,13 +55,13 @@
 
 (r/reg-event-fx :storage.directory-creator/directory-creation-failed
   (fn [_ [_ creator-id server-response]]
-      {:dispatch-n [[:ui/end-fake-process!]
-                    [:ui/render-bubble! {:body :failed-to-create-directory}]]}))
+      {:dispatch-n [[:x.ui/end-fake-process!]
+                    [:x.ui/render-bubble! {:body :failed-to-create-directory}]]}))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (r/reg-event-fx :storage.directory-creator/render-dialog!
   (fn [{:keys [db]} [_ creator-id]]
-      [:ui/render-popup! :storage.directory-creator/view
-                         {:content [directory-creator.views/view creator-id]}]))
+      [:x.ui/render-popup! :storage.directory-creator/view
+                           {:content [directory-creator.views/view creator-id]}]))

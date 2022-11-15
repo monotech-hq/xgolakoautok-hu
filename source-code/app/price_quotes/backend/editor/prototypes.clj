@@ -2,7 +2,7 @@
 (ns app.price-quotes.backend.editor.prototypes
     (:require [app.price-quotes.backend.handler.helpers :as handler.helpers]
               [app.price-quotes.mid.handler.config      :as handler.config]
-              [candy.api                         :refer [param]]
+              [candy.api                                :refer [param]]
               [time.api                                 :as time]))
 
 ;; ----------------------------------------------------------------------------

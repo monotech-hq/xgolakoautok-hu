@@ -22,4 +22,7 @@
             :hu "Kapcsolati adatok információ"}
            :rent-informations
            {:en "Rent informations"
-            :hu "Bérléssel kapcsolatos információk"}})
+            :hu "Bérléssel kapcsolatos információk"}
+           :website-content
+           {:en "Website content"
+            :hu "Webhely tartalma"}})

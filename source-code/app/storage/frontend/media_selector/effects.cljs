@@ -12,8 +12,8 @@
 (r/reg-event-fx :storage.media-selector/render-selector!
   ; @param (keyword) selector-id
   (fn [_ [_ selector-id]]
-      [:ui/render-popup! :storage.media-selector/view
-                         {:content [media-selector.views/view selector-id]}]))
+      [:x.ui/render-popup! :storage.media-selector/view
+                           {:content [media-selector.views/view selector-id]}]))
 
 (r/reg-event-fx :storage.media-selector/load-selector!
   ; @param (keyword)(opt) selector-id
@@ -51,7 +51,7 @@
   ; @param (string or strings in vector) exported-items
   (fn [_ [_ on-save exported-items]]
       (let [on-save (r/metamorphic-event<-params on-save exported-items)]
-           {:dispatch-n [on-save [:ui/remove-popup! :storage.media-selector/view]]})))
+           {:dispatch-n [on-save [:x.ui/remove-popup! :storage.media-selector/view]]})))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

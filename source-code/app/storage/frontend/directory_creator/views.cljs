@@ -16,12 +16,13 @@
                     :indent      {:horizontal :xxs :vertical :xxs}
                     :keypress    {:key-code 27 :required? true}
                     :label       :cancel!
-                    :on-click    [:ui/remove-popup! :storage.directory-creator/view]}])
+                    :on-click    [:x.ui/remove-popup! :storage.directory-creator/view]}])
 
 (defn header-label
   [creator-id]
   [elements/label ::header-label
-                  {:content :create-directory!}])
+                  {:content     :create-directory!
+                   :line-height :block}])
 
 (defn create-button
   [creator-id]

@@ -1,7 +1,7 @@
 
 (ns app.price-quote-templates.backend.editor.prototypes
     (:require [app.price-quote-templates.mid.handler.config :as handler.config]
-              [candy.api                             :refer [param]]))
+              [candy.api                                    :refer [param]]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

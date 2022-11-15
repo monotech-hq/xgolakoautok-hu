@@ -9,19 +9,20 @@
   []
   [elements/button ::cancel-button
                    {:preset   :cancel-button
-                    :on-click [:ui/remove-popup! :settings.cookie-settings/view]}])
+                    :on-click [:x.ui/remove-popup! :settings.cookie-settings/view]}])
 
 (defn save-button
   []
   [elements/button ::save-button
                    {:preset   :save-button
                     :variant  :transparent
-                    :on-click {:dispatch-n [[:ui/remove-popup! :settings.cookie-settings/view]
+                    :on-click {:dispatch-n [[:x.ui/remove-popup! :settings.cookie-settings/view]
                                             [:x.environment/cookie-settings-changed]]}}])
 
 (defn header-label
   [])
   ;[elements/label {:content :privacy-settings :indent _}])
+                    ;:line-height :block])
 
 (defn header
   [_]
@@ -67,20 +68,20 @@
                         {:disabled?     true
                          :initial-value true
                          :label         :necessary-cookies
-                         :value-path [:environment :cookie-handler/meta-items :necessary-cookies-enabled?]}]
+                         :value-path [:x.environment :cookie-handler/meta-items :necessary-cookies-enabled?]}]
 
        ; BUG#1294
        [elements/switch ;::user-experience-cookies-switch
                         {:initial-value true
                          :label         :user-experience-cookies
-                         :value-path [:environment :cookie-handler/meta-items :user-experience-cookies-enabled?]
+                         :value-path [:x.environment :cookie-handler/meta-items :user-experience-cookies-enabled?]
                          :on-check   [:x.environment/cookie-settings-changed]
                          :on-uncheck [:x.environment/cookie-settings-changed]}]
        ; BUG#1294
        [elements/switch ;::analytics-cookies-switch
                         {:initial-value true
                          :label         :analytics-cookies
-                         :value-path [:environment :cookie-handler/meta-items :analytics-cookies-enabled?]
+                         :value-path [:x.environment :cookie-handler/meta-items :analytics-cookies-enabled?]
                          :on-check   [:x.environment/cookie-settings-changed]
                          :on-uncheck [:x.environment/cookie-settings-changed]}]
        ; Remove stored cookies

@@ -4,20 +4,21 @@
               [app.products.backend.api                :as products]
               [app.services.backend.api                :as services]
               [app.price-quotes.backend.handler.config :as handler.config]
+              [candy.api                               :refer [return]]
+              [format.api                              :as format]
+              [gestures.api                            :as gestures]
               [io.api                                  :as io]
-              [candy.api                        :refer [return]]
-              [format.api                       :as format]
               [mid-fruits.map                          :as map]
-              [math.api                         :as math]
-              [mixed.api                        :as mixed]
+              [math.api                                :as math]
+              [mixed.api                               :as mixed]
               [mid-fruits.string                       :as string]
               [mongo-db.api                            :as mongo-db]
               [pathom.api                              :as pathom]
               [re-frame.api                            :as r]
               [time.api                                :as time]
-              [x.locales.api                    :as x.locales]
-              [x.media.api                      :as x.media]
-              [x.user.api                       :as x.user]))
+              [x.locales.api                           :as x.locales]
+              [x.media.api                             :as x.media]
+              [x.user.api                              :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -125,35 +126,6 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn resolve-variable
-  ; @param (string) text
-  ; @param (vectors in vector) variables
-  ;  [[(string) variable-value
-  ;    (list of keywords) variable-names]
-  ;   [...]]}
-  ;
-  ; @example
-  ;  (resolve-variable "My favorite color: @color"
-  ;                    [["red" "@color"]])
-  ;
-  ; @example
-  ;  (resolve-variable "My favorite color: @color"
-  ;                    [["red" "@color" "@szin"]])
-  ;
-  ; @return (string)
-  [text variables]
-  (letfn [(f [result [variable-value & variable-names]]
-             (letfn [(f [result variable-name]
-                        (cond (nil?             variable-value) (return              result)
-                              (number?          variable-value) (string/replace-part result variable-name variable-value)
-                              (string/nonempty? variable-value) (string/replace-part result variable-name variable-value)
-                              :return result))]
-                    (reduce f result variable-names)))]
-         (reduce f text variables)))
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
 (defn env->cover
   [env]
   (let [price-quote-item (pathom/env->param env :item)
@@ -236,9 +208,9 @@
         price-quote-item (pathom/env->param env :item)
         template-item    (mongo-db/get-document-by-id "price_quote_templates" (-> price-quote-item :price-quote/template :template/id))
         body-description (:template/body-description template-item)]
-       (resolve-variable body-description [[current-price                              "@arfolyam"                "@current-price"]
-                                           [vat-value                                  "@afa-ertek"               "@vat-value"]
-                                           [(:template/default-currency template-item) "@alapertelmezett-penznem" "@default-currency"]])))
+       (gestures/resolve-variable body-description [[current-price                              "@arfolyam"                "@current-price"]
+                                                    [vat-value                                  "@afa-ertek"               "@vat-value"]
+                                                    [(:template/default-currency template-item) "@alapertelmezett-penznem" "@default-currency"]])))
 
 (defn env->body-subtitle
   ; @param (map) env
@@ -251,10 +223,10 @@
         type-item           (mongo-db/get-document-by-id "types"  (-> price-quote-item :price-quote/type  :type/id))
         product-description (-> model-item :model/product-description string/lowercase)
         body-subtitle       (:template/body-subtitle template-item)]
-       (resolve-variable body-subtitle [[product-description                           "@modell-termek-megnevezese" "@model-product-description"]
-                                        [(:price-quote/vehicle-count price-quote-item) "@jarmu-darabszama"          "@vehicle-count"]
-                                        [(:model/name model-item)                      "@modell-neve"               "@model-name"]
-                                        [(:type/name  type-item)                       "@tipus-neve"                "@type-name"]])))
+       (gestures/resolve-variable body-subtitle [[product-description                           "@modell-termek-megnevezese" "@model-product-description"]
+                                                 [(:price-quote/vehicle-count price-quote-item) "@jarmu-darabszama"          "@vehicle-count"]
+                                                 [(:model/name model-item)                      "@modell-neve"               "@model-name"]
+                                                 [(:type/name  type-item)                       "@tipus-neve"                "@type-name"]])))
 
 (defn env->body-title
   ; @param (map) env
@@ -265,8 +237,8 @@
         template-item    (mongo-db/get-document-by-id "price_quote_templates" (-> price-quote-item :price-quote/template :template/id))
         client-item      (mongo-db/get-document-by-id "clients" (-> price-quote-item :price-quote/client :client/id))
         body-title       (:template/body-title template-item)]
-       (resolve-variable body-title [[(:client/first-name client-item) "@keresztnev" "@first-name"]
-                                     [(:client/last-name  client-item) "@vezeteknev" "@last-name"]])))
+       (gestures/resolve-variable body-title [[(:client/first-name client-item) "@keresztnev" "@first-name"]
+                                              [(:client/last-name  client-item) "@vezeteknev" "@last-name"]])))
 
 (defn env->body
   ; @param (map) env
@@ -309,8 +281,8 @@
         {:template/keys    [language]}        (mongo-db/get-document-by-id "price_quote_templates" (:template/id template))
         {:client/keys [address city company-name country first-name last-name zip-code vat-no]}
         (mongo-db/get-document-by-id "clients" (:client/id client))
-        client-name    @(r/subscribe [:locales/get-ordered-name    first-name last-name language])
-        client-address @(r/subscribe [:locales/get-ordered-address nil nil city address language])]
+        client-name    @(r/subscribe [:x.locales/get-ordered-name    first-name last-name language])
+        client-address @(r/subscribe [:x.locales/get-ordered-address nil nil city address language])]
        {:address client-address
         :vat-no  vat-no
         :name (or company-name client-name)}))
@@ -468,7 +440,7 @@
   (let [{:price-quote/keys [template]} (pathom/env->param env :item)
         {:template/keys    [language]} (mongo-db/get-document-by-id "price_quote_templates" (:template/id template))
         date   (time/get-date)
-        title @(r/subscribe [:dictionary/look-up :price-quote {:language language}])]
+        title @(r/subscribe [:x.dictionary/look-up :price-quote {:language language}])]
        {:author  (x.locales/request->ordered-user-name request)
         :subject (str title " – " date)
         :title   title}))

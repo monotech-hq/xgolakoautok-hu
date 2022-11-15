@@ -11,5 +11,5 @@
                                 {:title :user-profile :helper :there-is-no-available-settings}])
 
 (r/reg-event-fx :user.profile-settings/render-page!
-  [:ui/render-surface! :user.profile-settings/view
-                       {:content #'profile-settings.views/view}])
+  [:x.ui/render-surface! :user.profile-settings/view
+                         {:content #'profile-settings.views/view}])

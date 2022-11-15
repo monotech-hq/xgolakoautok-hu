@@ -9,8 +9,8 @@
 
 (r/reg-event-fx :price-quote-templates.selector/render-selector!
   ; @param (keyword) selector-id
-  [:ui/render-popup! :price-quote-templates.selector/view
-                     {:content #'selector.views/view}])
+  [:x.ui/render-popup! :price-quote-templates.selector/view
+                       {:content #'selector.views/view}])
 
 (r/reg-event-fx :price-quote-templates.selector/load-selector!
   ; @param (keyword)(opt) selector-id
@@ -49,4 +49,4 @@
   ; @param (map) exported-item
   (fn [_ [_ on-save exported-item]]
       (let [on-save (r/metamorphic-event<-params on-save exported-item)]
-           {:dispatch-n [on-save [:ui/remove-popup! :price-quote-templates.selector/view]]})))
+           {:dispatch-n [on-save [:x.ui/remove-popup! :price-quote-templates.selector/view]]})))

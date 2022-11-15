@@ -1,8 +1,8 @@
 
 (ns app.settings.frontend.personal.views
-    (:require [elements.api   :as elements]
-              [mid-fruits.css :as css]      
-              [re-frame.api   :as r]))
+    (:require [css.api      :as css]
+              [elements.api :as elements]
+              [re-frame.api :as r]))
 
 ;; -- Body components ---------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -16,7 +16,7 @@
 
 (defn user-profile-picture
   []
-  (let [user-profile-picture @(r/subscribe [:user/get-user-profile-picture])]
+  (let [user-profile-picture @(r/subscribe [:x.user/get-user-profile-picture])]
        [:div.x-user-profile-picture {:style {:backgroundImage (css/url user-profile-picture)}}]))
 
 (defn user-profile-picture-block
@@ -28,10 +28,11 @@
 (defn user-name
   []
   [:<> [elements/label ::user-name-label
-                       {:content   :name
-                        :color     :muted
-                        :layout    :fit
-                        :font-size :xs}]
+                       {:content     :name
+                        :color       :muted
+                        :layout      :fit
+                        :font-size   :xs
+                        :line-height :block}]
        [elements/button ::user-name-button
                         {:label  "Tech Mono"
                          :preset :default-button
@@ -40,10 +41,11 @@
 (defn user-email-address
   []
   [:<> [elements/label ::user-email-address-label
-                       {:content   :email-address
-                        :color     :muted
-                        :layout    :fit
-                        :font-size :xs}]
+                       {:content     :email-address
+                        :color       :muted
+                        :layout      :fit
+                        :font-size   :xs
+                        :line-height :block}]
        [elements/button ::user-email-address-button
                         {:label  "demo@monotech.hu"
                          :preset :default-button
@@ -52,10 +54,11 @@
 (defn user-phone-number
   []
   [:<> [elements/label ::user-phone-number-label
-                       {:content   :phone-number
-                        :color     :muted
-                        :layout    :fit
-                        :font-size :xs}]
+                       {:content     :phone-number
+                        :color       :muted
+                        :layout      :fit
+                        :font-size   :xs
+                        :line-height :block}]
        [elements/button ::user-phone-number-button
                         {:label  "+36301234567"
                          :preset :default-button
@@ -64,10 +67,11 @@
 (defn user-password
   []
   [:<> [elements/label ::user-password-label
-                       {:content   :password
-                        :color     :muted
-                        :layout    :fit
-                        :font-size :xs}]
+                       {:content     :password
+                        :color       :muted
+                        :layout      :fit
+                        :font-size   :xs
+                        :line-height :block}]
        [elements/button ::user-password-button
                         {:label  "••••••••"
                          :preset :default-button
@@ -76,10 +80,11 @@
 (defn user-pin
   []
   [:<> [elements/label ::user-pin-label
-                       {:content   :pin
-                        :color     :muted
-                        :layout    :fit
-                        :font-size :xs}]
+                       {:content     :pin
+                        :color       :muted
+                        :layout      :fit
+                        :font-size   :xs
+                        :line-height :block}]
        [elements/button ::user-pin-button
                         {:label  "••••"
                          :preset :default-button

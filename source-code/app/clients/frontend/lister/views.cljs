@@ -20,15 +20,16 @@
 
 (defn- client-item-structure
   [lister-id item-dex {:keys [colors email-address id modified-at phone-number]}]
-  (let [client-name @(r/subscribe [:clients.lister/get-client-name  item-dex])
-        timestamp   @(r/subscribe [:activities/get-actual-timestamp modified-at])]
-       [common/list-item-structure lister-id item-dex
-                                   {:cells [[elements/color-marker   {:colors colors :indent {:left :xs :right :m :horizontal :xs} :size :m}]
-                                            [common/list-item-label  lister-id item-dex {:content client-name :stretch? true :placeholder :unnamed-client}]
-                                            [common/list-item-detail lister-id item-dex {:content email-address :width "240px"}]
-                                            [common/list-item-detail lister-id item-dex {:content phone-number  :width "240px"}]
-                                            [common/list-item-detail lister-id item-dex {:content timestamp     :width "160px"}]
-                                            [common/list-item-marker lister-id item-dex {:icon    :navigate_next}]]}]))
+  (let [timestamp   @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+        item-last?  @(r/subscribe [:item-lister/item-last? lister-id item-dex])
+        client-name @(r/subscribe [:clients.lister/get-client-name item-dex])]
+       [common/list-item-structure {:cells [[elements/color-marker   {:colors colors :indent {:left :xs :right :m :horizontal :xs} :size :m}]
+                                            [common/list-item-cell   {:rows [{:content client-name   :placeholder :unnamed-client}] :width :stretch}]
+                                            [common/list-item-cell   {:rows [{:content email-address :font-size :xs :color :muted}] :width "240px"}]
+                                            [common/list-item-cell   {:rows [{:content phone-number  :font-size :xs :color :muted}] :width "240px"}]
+                                            [common/list-item-cell   {:rows [{:content timestamp     :font-size :xs :color :muted}] :width "160px"}]
+                                            [common/list-item-marker {:icon :navigate_next}]]
+                                    :separator (if-not item-last? :bottom)}]))
 
 (defn- client-item
   [lister-id item-dex {:keys [id] :as client-item}]
@@ -123,12 +124,14 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- view-structure
-  []
+  ; @param (keyword) surface-id
+  [_]
   [:<> [header]
        [body]
        [footer]])
 
 (defn view
+  ; @param (keyword) surface-id
   [surface-id]
   [surface-a/layout surface-id
                     {:content #'view-structure}])

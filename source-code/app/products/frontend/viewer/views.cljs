@@ -12,15 +12,24 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn- footer
+  []
+  (if-let [data-received? @(r/subscribe [:item-viewer/data-received? :products.viewer])]
+          [common/item-viewer-item-info :products.viewer {}]))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
 (defn- product-thumbnail-preview
   []
   (let [viewer-disabled?  @(r/subscribe [:item-viewer/viewer-disabled? :products.viewer])
-        product-thumbnail @(r/subscribe [:db/get-item [:products :viewer/viewed-item :thumbnail]])]
+        product-thumbnail @(r/subscribe [:x.db/get-item [:products :viewer/viewed-item :thumbnail]])]
        [storage/media-preview ::product-thumbnail-preview
                               {:disabled?   viewer-disabled?
                                :indent      {:top :m :vertical :s}
                                :items       [product-thumbnail]
-                               :placeholder "-"}]))
+                               :placeholder "-"
+                               :thumbnail   {:height :3xl :width :5xl}}]))
 
 (defn- product-thumbnail-box
   []
@@ -38,12 +47,13 @@
 (defn- product-images-preview
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :products.viewer])
-        product-images   @(r/subscribe [:db/get-item [:products :viewer/viewed-item :images]])]
+        product-images   @(r/subscribe [:x.db/get-item [:products :viewer/viewed-item :images]])]
        [storage/media-preview ::product-images-preview
                               {:disabled?   viewer-disabled?
                                :indent      {:top :m :vertical :s}
                                :items       product-images
-                               :placeholder "-"}]))
+                               :placeholder "-"
+                               :thumbnail   {:height :3xl :width :5xl}}]))
 
 (defn- product-images-box
   []
@@ -61,7 +71,7 @@
 (defn- product-quantity-unit
   []
   (let [viewer-disabled?      @(r/subscribe [:item-viewer/viewer-disabled? :products.viewer])
-        product-quantity-unit @(r/subscribe [:db/get-item [:products :viewer/viewed-item :quantity-unit :label]])]
+        product-quantity-unit @(r/subscribe [:x.db/get-item [:products :viewer/viewed-item :quantity-unit :label]])]
        [common/data-element ::product-quantity-unit
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -72,7 +82,7 @@
 (defn- product-description
   []
   (let [viewer-disabled?    @(r/subscribe [:item-viewer/viewer-disabled? :products.viewer])
-        product-description @(r/subscribe [:db/get-item [:products :viewer/viewed-item :description]])]
+        product-description @(r/subscribe [:x.db/get-item [:products :viewer/viewed-item :description]])]
        [common/data-element ::product-description
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -83,7 +93,7 @@
 (defn- product-item-number
   []
   (let [viewer-disabled?    @(r/subscribe [:item-viewer/viewer-disabled? :products.viewer])
-        product-item-number @(r/subscribe [:db/get-item [:products :viewer/viewed-item :item-number]])]
+        product-item-number @(r/subscribe [:x.db/get-item [:products :viewer/viewed-item :item-number]])]
        [common/data-element ::product-item-number
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -94,18 +104,18 @@
 (defn- product-price
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :products.viewer])
-        product-price    @(r/subscribe [:db/get-item [:products :viewer/viewed-item :price]])]
+        product-price    @(r/subscribe [:x.db/get-item [:products :viewer/viewed-item :unit-price]])]
        [common/data-element ::product-price
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
-                             :label       :price
+                             :label       :unit-price
                              :placeholder "-"
                              :value       {:content product-price :suffix " EUR"}}]))
 
 (defn- product-name
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :products.viewer])
-        product-name     @(r/subscribe [:db/get-item [:products :viewer/viewed-item :name]])]
+        product-name     @(r/subscribe [:x.db/get-item [:products :viewer/viewed-item :name]])]
        [common/data-element ::product-name
                             {:disabled?   viewer-disabled?
                              :indent      {:top :m :vertical :s}
@@ -148,7 +158,7 @@
 
 (defn- body
   []
-  (let [current-view-id @(r/subscribe [:gestures/get-current-view-id :products.viewer])]
+  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :products.viewer])]
        (case current-view-id :overview [product-overview])))
 
 ;; ----------------------------------------------------------------------------
@@ -173,7 +183,7 @@
 (defn- breadcrumbs
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :products.viewer])
-        product-name     @(r/subscribe [:db/get-item [:products :viewer/viewed-item :name]])]
+        product-name     @(r/subscribe [:x.db/get-item [:products :viewer/viewed-item :name]])]
        [common/surface-breadcrumbs :products.viewer/view
                                    {:crumbs [{:label :app-home    :route "/@app-home"}
                                              {:label :products    :route "/@app-home/products"}
@@ -183,7 +193,7 @@
 (defn- label
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :products.viewer])
-        product-name     @(r/subscribe [:db/get-item [:products :viewer/viewed-item :name]])]
+        product-name     @(r/subscribe [:x.db/get-item [:products :viewer/viewed-item :name]])]
        [common/surface-label :products.viewer/view
                              {:disabled?   viewer-disabled?
                               :label       product-name
@@ -204,7 +214,8 @@
 (defn- view-structure
   []
   [:<> [header]
-       [body]])
+       [body]
+       [footer]])
 
 (defn- product-viewer
   []

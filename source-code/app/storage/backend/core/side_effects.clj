@@ -2,10 +2,10 @@
 (ns app.storage.backend.core.side-effects
     (:require [app.common.backend.api          :as common]
               [app.storage.backend.core.config :as core.config]
-              [candy.api                :refer [return]]
+              [candy.api                       :refer [return]]
               [mid-fruits.vector               :as vector]
               [mongo-db.api                    :as mongo-db]
-              [x.media.api              :as x.media]))
+              [x.media.api                     :as x.media]))
 
 ;; -- Attach/detach item functions --------------------------------------------
 ;; ----------------------------------------------------------------------------

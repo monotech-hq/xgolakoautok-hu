@@ -1,8 +1,8 @@
 
 (ns app.common.frontend.item-selector.events
     (:require [app.common.frontend.item-selector.subs :as item-selector.subs]
+              [candy.api                              :refer [return]]
               [engines.item-lister.api                :as item-lister]
-              [candy.api                       :refer [return]]
               [mid-fruits.map                         :refer [dissoc-in]]
               [mid-fruits.vector                      :as vector]
               [re-frame.api                           :as r :refer [r]]))

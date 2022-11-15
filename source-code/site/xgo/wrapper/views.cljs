@@ -23,8 +23,8 @@
 
 (defn company-name-and-slogan
   []
-  (let [company-name   @(r/subscribe [:db/get-item [:site :website-config :company-name]])
-        company-slogan @(r/subscribe [:db/get-item [:site :website-config :company-slogan]])]
+  (let [company-name   @(r/subscribe [:x.db/get-item [:site :website-config :company-name]])
+        company-slogan @(r/subscribe [:x.db/get-item [:site :website-config :company-slogan]])]
        [:a {:href "/" :style {:text-decoration "none"}}
          [:div#sp-navbar--company-name-and-slogan
            [:div#sp-navbar--company-name   company-name]
