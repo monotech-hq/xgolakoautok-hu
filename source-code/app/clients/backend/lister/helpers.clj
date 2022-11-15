@@ -2,7 +2,7 @@
 (ns app.clients.backend.lister.helpers
     (:require [engines.item-lister.api :as item-lister]
               [pathom.api              :as pathom]
-              [x.server-locales.api    :as x.locales]))
+              [x.locales.api    :as x.locales]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

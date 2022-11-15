@@ -17,7 +17,7 @@
               [engines.item-editor.api                  :as item-editor]
               [forms.api                                :as forms]
               [layouts.surface-a.api                    :as surface-a]
-              [mid-fruits.mixed                         :as mixed]
+              [mixed.api                         :as mixed]
               [mid-fruits.string                        :as string]
               [mid-fruits.vector                        :as vector]
               [re-frame.api                             :as r]

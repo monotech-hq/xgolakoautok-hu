@@ -2,7 +2,7 @@
 (ns app.types.backend.viewer.mutations
     (:require [app.common.backend.api                :as common]
               [com.wsscode.pathom3.connect.operation :as pathom.co :refer [defmutation]]
-              [mid-fruits.candy                      :refer [return]]
+              [candy.api                      :refer [return]]
               [mid-fruits.vector                     :as vector]
               [mongo-db.api                          :as mongo-db]
               [pathom.api                            :as pathom]))

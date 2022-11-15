@@ -1,6 +1,6 @@
 
 (ns app.products.frontend.picker.prototypes
-    (:require [mid-fruits.candy :refer [param]]
+    (:require [candy.api :refer [param]]
               [re-frame.api     :as r]))
 
 ;; ----------------------------------------------------------------------------

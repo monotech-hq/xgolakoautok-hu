@@ -1,6 +1,6 @@
 
 (ns app.user.backend.create-account.lifecycles
-    (:require [x.server-core.api :as x.core]))
+    (:require [x.core.api :as x.core]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

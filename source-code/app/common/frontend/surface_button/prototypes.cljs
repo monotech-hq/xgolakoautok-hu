@@ -1,6 +1,6 @@
 
 (ns app.common.frontend.surface-button.prototypes
-    (:require [mid-fruits.candy :refer [param]]
+    (:require [candy.api :refer [param]]
               [re-frame.api     :as r]))
 
 ;; ----------------------------------------------------------------------------

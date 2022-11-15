@@ -1,6 +1,6 @@
 
 (ns app.types.backend.installer.lifecycles
-    (:require [x.server-core.api :as x.core]))
+    (:require [x.core.api :as x.core]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 
 (ns app.clients.backend.viewer.helpers
-    (:require [x.server-locales.api :as x.locales]))
+    (:require [x.locales.api :as x.locales]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

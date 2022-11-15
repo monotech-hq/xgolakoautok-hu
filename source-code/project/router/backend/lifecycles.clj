@@ -2,7 +2,7 @@
 (ns project.router.backend.lifecycles
     (:require [project.router.backend.default-routes :as default-routes]
               [project.router.backend.main-routes    :as main-routes]
-              [x.server-core.api                     :as x.core]))
+              [x.core.api                     :as x.core]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

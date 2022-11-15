@@ -4,7 +4,7 @@
               [app.price-quotes.backend.editor.prototypes :as editor.prototypes]
               [app.price-quotes.backend.handler.helpers   :as handler.helpers]
               [com.wsscode.pathom3.connect.operation      :as pathom.co :refer [defmutation]]
-              [mid-fruits.candy                           :refer [return]]
+              [candy.api                           :refer [return]]
               [mongo-db.api                               :as mongo-db]
               [pathom.api                                 :as pathom]))
 

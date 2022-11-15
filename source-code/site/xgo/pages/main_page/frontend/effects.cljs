@@ -1,7 +1,7 @@
 
 (ns site.xgo.pages.main-page.frontend.effects
     (:require [re-frame.api                            :as r]
-              [x.app-router.api :as router]
+              [x.router.api                            :as router]
               [site.xgo.pages.main-page.frontend.views :as views]))
 
 ;; -----------------------------------------------------------------------------

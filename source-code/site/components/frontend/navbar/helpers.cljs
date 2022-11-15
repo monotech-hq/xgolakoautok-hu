@@ -1,6 +1,6 @@
 
 (ns site.components.frontend.navbar.helpers
-    (:require [x.app-environment.api :as x.environment]))
+    (:require [x.environment.api :as x.environment]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

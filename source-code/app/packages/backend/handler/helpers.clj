@@ -1,7 +1,7 @@
 
 (ns app.packages.backend.handler.helpers
-    (:require [mid-fruits.candy :refer [return]]
-              [mid-fruits.mixed :as mixed]
+    (:require [candy.api :refer [return]]
+              [mixed.api :as mixed]
               [mongo-db.api     :as mongo-db]))
 
 ;; ----------------------------------------------------------------------------

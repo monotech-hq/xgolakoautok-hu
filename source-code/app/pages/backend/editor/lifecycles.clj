@@ -1,7 +1,7 @@
 
 (ns app.pages.backend.editor.lifecycles
     (:require [engines.item-editor.api]
-              [x.server-core.api :as x.core]))
+              [x.core.api :as x.core]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

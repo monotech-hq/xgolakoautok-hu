@@ -1,7 +1,7 @@
 
 (ns app.price-quotes.backend.editor.lifecycles
     (:require [engines.item-editor.api]
-              [x.server-core.api :as core]))
+              [x.core.api :as core]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

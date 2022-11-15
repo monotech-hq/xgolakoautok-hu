@@ -2,7 +2,7 @@
 (ns project.ui.backend.main
     (:require [app.website-config.backend.api    :as website-config]
               [project.ui.backend.loading-screen :as loading-screen]
-              [x.server-ui.api                   :as x.ui]))
+              [x.ui.api                          :as x.ui]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

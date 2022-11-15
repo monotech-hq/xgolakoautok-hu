@@ -2,7 +2,7 @@
 (ns app.schemes.backend.field-editor.side-effects
     (:require [app.schemes.backend.form-handler.helpers      :as form-handler.helpers]
               [app.schemes.backend.form-handler.side-effects :as form-handler.side-effects]
-              [mid-fruits.candy                              :refer [return]]
+              [candy.api                              :refer [return]]
               [mid-fruits.vector                             :as vector]
               [mongo-db.api                                  :as mongo-db]))
 

@@ -1,7 +1,7 @@
 
 (ns site.xgo.transfer
     (:require [io.api               :as io]
-              [x.server-core.api    :as x.core]
+              [x.core.api    :as x.core]
               [mongo-db.api         :as mongo-db]
               [mid-fruits.normalize :as normalize]))
 

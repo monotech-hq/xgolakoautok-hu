@@ -3,7 +3,7 @@
     (:require [app.common.backend.api                :as common]
               [com.wsscode.pathom3.connect.operation :refer [defresolver]]
               [engines.item-viewer.api               :as item-viewer]
-              [mid-fruits.candy                      :refer [return]]
+              [candy.api                      :refer [return]]
               [mongo-db.api                          :as mongo-db]
               [pathom.api                            :as pathom]))
 

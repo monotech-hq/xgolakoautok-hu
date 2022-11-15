@@ -3,7 +3,7 @@
     (:require [app.common.backend.api                   :as common]
               [app.price-quotes.backend.handler.helpers :as handler.helpers]
               [com.wsscode.pathom3.connect.operation    :refer [defresolver]]
-              [mid-fruits.candy                         :refer [return]]
+              [candy.api                         :refer [return]]
               [mid-fruits.keyword                       :as keyword]
               [mid-fruits.map                           :as map]
               [math.api                          :as math]

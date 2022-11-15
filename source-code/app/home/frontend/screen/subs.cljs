@@ -1,6 +1,6 @@
 
 (ns app.home.frontend.screen.subs
-    (:require [mid-fruits.candy :refer [return]]
+    (:require [candy.api :refer [return]]
               [re-frame.api     :as r]))
 
 ;; ----------------------------------------------------------------------------

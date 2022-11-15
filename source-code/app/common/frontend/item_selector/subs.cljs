@@ -1,7 +1,7 @@
 
 (ns app.common.frontend.item-selector.subs
     (:require [engines.item-lister.api :as item-lister]
-              [mid-fruits.candy        :refer [return]]
+              [candy.api        :refer [return]]
               [mid-fruits.vector       :as vector]
               [re-frame.api            :as r :refer [r]]))
 

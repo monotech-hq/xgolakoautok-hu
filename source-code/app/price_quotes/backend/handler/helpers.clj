@@ -5,19 +5,19 @@
               [app.services.backend.api                :as services]
               [app.price-quotes.backend.handler.config :as handler.config]
               [io.api                                  :as io]
-              [mid-fruits.candy                        :refer [return]]
+              [candy.api                        :refer [return]]
               [format.api                       :as format]
               [mid-fruits.map                          :as map]
               [math.api                         :as math]
-              [mid-fruits.mixed                        :as mixed]
+              [mixed.api                        :as mixed]
               [mid-fruits.string                       :as string]
               [mongo-db.api                            :as mongo-db]
               [pathom.api                              :as pathom]
               [re-frame.api                            :as r]
               [time.api                                :as time]
-              [x.server-locales.api                    :as x.locales]
-              [x.server-media.api                      :as x.media]
-              [x.server-user.api                       :as x.user]))
+              [x.locales.api                    :as x.locales]
+              [x.media.api                      :as x.media]
+              [x.user.api                       :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 (ns app.storage.backend.directory-creator.mutations
     (:require [app.storage.backend.core.side-effects :as core.side-effects]
               [com.wsscode.pathom3.connect.operation :as pathom.co :refer [defmutation]]
-              [mid-fruits.candy                      :refer [return]]
+              [candy.api                      :refer [return]]
               [mongo-db.api                          :as mongo-db]
               [pathom.api                            :as pathom]))
 

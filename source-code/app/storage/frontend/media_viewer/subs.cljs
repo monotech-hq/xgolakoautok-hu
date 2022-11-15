@@ -1,6 +1,6 @@
 
 (ns app.storage.frontend.media-viewer.subs
-    (:require [mid-fruits.candy :refer [param return]]
+    (:require [candy.api :refer [param return]]
               [re-frame.api     :as r :refer [r]]))
 
 ;; ----------------------------------------------------------------------------

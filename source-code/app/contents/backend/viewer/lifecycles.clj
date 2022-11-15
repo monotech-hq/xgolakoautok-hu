@@ -1,7 +1,7 @@
 
 (ns app.contents.backend.viewer.lifecycles
     (:require [engines.item-viewer.api]
-              [x.server-core.api :as x.core]))
+              [x.core.api :as x.core]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

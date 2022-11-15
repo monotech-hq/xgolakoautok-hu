@@ -4,7 +4,7 @@
               [io.api                      :as io]
               [shadow.cljs.devtools.server :as server]
               [shadow.cljs.devtools.api    :as shadow]
-              [x.server-core.api           :as x.core])
+              [x.core.api           :as x.core])
     (:gen-class))
 
 ;; ----------------------------------------------------------------------------

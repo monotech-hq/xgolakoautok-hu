@@ -1,7 +1,7 @@
 
 (ns app.website-config.backend.editor.lifecycles
     (:require [engines.file-editor.api]
-              [x.server-core.api :as x.core]))
+              [x.core.api :as x.core]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

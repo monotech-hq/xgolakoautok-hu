@@ -8,7 +8,7 @@
             [engines.item-editor.api                      :as item-editor]
             [forms.api                                    :as forms]
             [layouts.surface-a.api                        :as surface-a]
-            [mid-fruits.mixed                             :as mixed]
+            [mixed.api                             :as mixed]
             [re-frame.api                                 :as r]))
 
 ;; ----------------------------------------------------------------------------

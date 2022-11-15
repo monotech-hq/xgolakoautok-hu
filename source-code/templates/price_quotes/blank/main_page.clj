@@ -2,7 +2,7 @@
 (ns templates.price-quotes.blank.main-page
     (:require [css.api                            :as css]
               [re-frame.api                       :as r]
-              [server-fruits.base64               :as base64]
+              [base64.api                         :as base64]
               [templates.price-quotes.blank.items :as items]))
 
 ;; ----------------------------------------------------------------------------

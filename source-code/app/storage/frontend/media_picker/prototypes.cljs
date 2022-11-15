@@ -1,6 +1,6 @@
 
 (ns app.storage.frontend.media-picker.prototypes
-    (:require [mid-fruits.candy :refer [param]]
+    (:require [candy.api :refer [param]]
               [re-frame.api     :as r]))
 
 ;; ----------------------------------------------------------------------------

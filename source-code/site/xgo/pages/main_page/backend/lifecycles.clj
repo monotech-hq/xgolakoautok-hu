@@ -1,6 +1,6 @@
 
 (ns site.xgo.pages.main-page.backend.lifecycles
-    (:require [x.server-core.api :as x.core]))
+    (:require [x.core.api :as x.core]))
 
 (x.core/reg-lifecycles! ::lifecycles
   {:on-server-boot {:dispatch-n [;[:environment/add-css! {:uri "/site/css/site.css"}]

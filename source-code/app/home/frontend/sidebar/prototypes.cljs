@@ -1,7 +1,7 @@
 
 (ns app.home.frontend.sidebar.prototypes
     (:require [app.home.frontend.handler.config :as handler.config]
-              [mid-fruits.candy                 :refer [param]]
+              [candy.api                 :refer [param]]
               [mid-fruits.vector                :as vector]))
 
 ;; ----------------------------------------------------------------------------

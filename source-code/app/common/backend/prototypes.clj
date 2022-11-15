@@ -1,7 +1,7 @@
 
 (ns app.common.backend.prototypes
-    (:require [mid-fruits.json   :as json]
-              [x.server-user.api :as x.user]))
+    (:require [json.api   :as json]
+              [x.user.api :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

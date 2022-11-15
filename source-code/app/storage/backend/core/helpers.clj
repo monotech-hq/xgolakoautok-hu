@@ -1,7 +1,7 @@
 
 (ns app.storage.backend.core.helpers
     (:require [io.api           :as io]
-              [mid-fruits.candy :refer [return]]))
+              [candy.api :refer [return]]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

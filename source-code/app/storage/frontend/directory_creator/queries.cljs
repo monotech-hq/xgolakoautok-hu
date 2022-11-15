@@ -1,6 +1,6 @@
 
 (ns app.storage.frontend.directory-creator.queries
-    (:require [mid-fruits.candy     :refer [return]]
+    (:require [candy.api     :refer [return]]
               [re-frame.api         :refer [r]]
               [x.app-dictionary.api :as x.dictionary]))
 

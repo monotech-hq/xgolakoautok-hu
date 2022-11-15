@@ -1,7 +1,7 @@
 
 (ns app.contents.backend.preview.lifecycles
     (:require [engines.item-preview.api]
-              [x.server-core.api :as x.core]))
+              [x.core.api :as x.core]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

@@ -3,7 +3,7 @@
     (:require [app.schemes.backend.api            :as schemes]
               [app.types.backend.installer.config :as installer.config]
               [re-frame.api                       :as r]
-              [x.server-user.api                  :as x.user]))
+              [x.user.api                  :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

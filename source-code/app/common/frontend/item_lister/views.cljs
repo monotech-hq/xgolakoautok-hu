@@ -4,7 +4,7 @@
               [app.common.frontend.surface-button.views :as surface-button.views]
               [dom.api                                  :as dom]
               [elements.api                             :as elements]
-              [mid-fruits.candy                         :refer [param]]
+              [candy.api                         :refer [param]]
               [mid-fruits.css                           :as css]
               [mid-fruits.keyword                       :as keyword]
               [mid-fruits.logical                       :refer [nor]]

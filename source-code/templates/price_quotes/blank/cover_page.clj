@@ -1,7 +1,7 @@
 
 (ns templates.price-quotes.blank.cover-page
-    (:require [css.api       :as css]
-              [server-fruits.base64 :as base64]))
+    (:require [css.api    :as css]
+              [base64.api :as base64]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

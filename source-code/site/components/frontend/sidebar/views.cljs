@@ -1,11 +1,11 @@
 
 (ns site.components.frontend.sidebar.views
     (:require [elements.api                             :as elements]
-              [mid-fruits.random                        :as random]
               [re-frame.api                             :as r]
-              [site.components.frontend.sidebar.helpers :as sidebar.helpers]
-              [x.app-components.api                     :as x.components]
-              [x.app-environment.api                    :as x.environment]))
+              [mid-fruits.random                        :as random]
+              [x.components.api                         :as x.components]
+              [x.environment.api                        :as x.environment]
+              [site.components.frontend.sidebar.helpers :as sidebar.helpers]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

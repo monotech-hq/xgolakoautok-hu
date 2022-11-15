@@ -1,7 +1,7 @@
 
 (ns app.storage.backend.media-browser.lifecycles
     (:require [engines.item-browser.api]
-              [x.server-core.api :as x.core]))
+              [x.core.api :as x.core]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

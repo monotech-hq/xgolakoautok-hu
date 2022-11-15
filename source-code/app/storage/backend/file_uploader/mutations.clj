@@ -6,10 +6,10 @@
               [app.storage.backend.core.side-effects             :as core.side-effects]
               [com.wsscode.pathom3.connect.operation             :as pathom.co :refer [defmutation]]
               [io.api                                            :as io]
-              [mid-fruits.candy                                  :refer [return]]
+              [candy.api                                  :refer [return]]
               [mongo-db.api                                      :as mongo-db]
               [pathom.api                                        :as pathom]
-              [x.server-media.api                                :as x.media]))
+              [x.media.api                                :as x.media]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

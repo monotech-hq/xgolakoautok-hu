@@ -1,7 +1,7 @@
 
 (ns app.schemes.frontend.form-handler.subs
     (:require [mid-fruits.vector :as vector]
-              [mid-fruits.candy  :refer [return]]
+              [candy.api  :refer [return]]
               [re-frame.api      :as r :refer [r]]))
 
 ;; ----------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 
 (ns app.storage.frontend.media-browser.target-selector
     (:require [elements.api     :as elements]
-              [mid-fruits.candy :refer [param return]]
+              [candy.api :refer [param return]]
               [re-frame.api     :as r]))
 
 ;; ----------------------------------------------------------------------------
