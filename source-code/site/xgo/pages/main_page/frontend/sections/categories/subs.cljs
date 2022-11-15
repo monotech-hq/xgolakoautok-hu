@@ -10,7 +10,7 @@
   :category/description
   (fn [db [_]]
     (let [category-name (get-in db [:filters :category] "dynamic")]
-        (get-in db [:site :categories category-name]))))
+        (get-in db [:site :categories category-name :category/description]))))
 
 (r/reg-sub
   :categories/selected?
