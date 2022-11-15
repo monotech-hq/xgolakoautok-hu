@@ -20,7 +20,7 @@
                 :modules {:app {:init-fn boot-loader.frontend.app/start-app!}}
                 :output-dir "resources/public/js/core"
                 ; BUG#0012
-                :compiler-options {:infer-externs :auto :output-feature-set :es-next}
+                :compiler-options {:infer-externs true :output-feature-set :es-next}
                 :target :browser}
 
   :site-ready  {:modules {:site {:init-fn boot-loader.frontend.site/start-site!}}
