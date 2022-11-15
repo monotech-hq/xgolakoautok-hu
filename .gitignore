@@ -53,6 +53,8 @@ pom.xml.asc
 .idea
 **/.DS_Store
 .DS_Store
+.clj-kondo
+.lsp
 
 # resources
 resources/public/js
