@@ -134,6 +134,10 @@
 /******************************************************************************/
 /***** Categories *****/
 
+#xgo-categories--container {
+  margin-bottom: 80px;
+}
+
 #xgo-categories {
   display: flex;
   justify-content: center;
