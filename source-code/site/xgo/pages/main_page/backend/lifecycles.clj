@@ -11,4 +11,8 @@
                                  [:x.router/add-route! :main-page.category/route
                                                      {:client-event   [:main-page/load-page!]
                                                       :js-build       :site
-                                                      :route-template "/:category"}]]}})
+                                                      :route-template "/:category"}]
+                                 [:x.router/add-route! :main-page.model/route
+                                                   {:client-event   [:main-page/load-page!]
+                                                    :js-build       :site
+                                                    :route-template "/:category/:model"}]]}})
