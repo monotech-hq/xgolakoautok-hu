@@ -26,8 +26,8 @@
           :src   uri}])
 
 (defn- model [[id {:model/keys [name thumbnail] :as model-data}]]
- [:button {:key   id
-           :on-click #(r/dispatch [:models/select! id])}
+ [:button {:key      id
+           :on-click #(r/dispatch [:models/select! name])}
    [:div {:class "xgo-model-card"}
      [model-dimensions model-data]
      [model-name       name]
@@ -36,12 +36,14 @@
 
 (defn- models [{:keys [models-data]}]
   [:div {:id "xgo-models"}
-    (doall (map model models-data))])
+    (if (empty? models-data)
+      [:p "Empty..."]
+      (doall (map model models-data)))])
 
 ;; -----------------------------------------------------------------------------
 ;; -----------------------------------------------------------------------------
 
 (defn view []
-  (let [view-props {:models-data @(r/subscribe [:models/all])}]
+  (let [view-props {:models-data @(r/subscribe [:models/by-category])}]
     [:section {:id "xgo-models--container"}
               [models view-props]]))

@@ -1,8 +1,13 @@
 
 (ns site.xgo.pages.main-page.frontend.sections.models.effects
-    (:require [re-frame.api :as r]))
+    (:require [re-frame.api         :as r]
+              [x.router.api         :as x.router]
+              [mid-fruits.normalize :as normalize]))
 
 (r/reg-event-fx
   :models/select! 
- (fn [_ [_ id]]
-    {:dispatch-n [[:x.db/set-item! [:filters :model] id]]}))
+ (fn [{:keys [db]} [_ model-name]]
+   (let [model-name (normalize/clean-text model-name "-+")
+         category   (-> db (get-in [:filters :category]) (normalize/clean-text "-+"))]
+     {:dispatch-n   [[:x.db/set-item! [:filters :model] model-name]]
+      :url/set-url! (str category "/" model-name)})))
