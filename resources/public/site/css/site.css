@@ -226,8 +226,35 @@
 }
 
 .xgo-model-card--thumbnail {
-  width: 300px;
+  width: 250px;
+  min-height: 300px;
 }
 
 /***** Models *****/
+/******************************************************************************/
+
+/******************************************************************************/
+/***** Types *****/
+
+#xgo-type--model-name {
+  font-size: var( --font-size-xxl );
+  font-weight: 500;
+  line-height: var( --line-height-xxl );
+  text-align: center;
+}
+
+.xgo-type--name {
+  color: var( --grey-dark );
+  font-size: var( --font-size-l );
+  text-align: center;
+}
+
+.xgo-type--images {
+  border-radius: 10px;
+  margin-top: 150px;
+  overflow: hidden;
+  width: 1024px;
+}
+
+/***** Types *****/
 /******************************************************************************/
