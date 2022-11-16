@@ -31,3 +31,6 @@
 [submodule "submodules/fruits"]
 	path = submodules/fruits
 	url = git@github.com:bithandshake/fruits.git
+[submodule "submodules/docs-api"]
+	path = submodules/docs-api
+	url = git@github.com:bithandshake/docs-api.git
