@@ -14,5 +14,5 @@
 (r/reg-event-fx
   :categories/select!
   (fn [_ [_ name]]
-    {:dispatch-n [[:x.db/set-item! [:filters :category] (normalize/clean-text name "-+")]]
+    {:dispatch-n [[:x.db/set-item! [:filters] {:category (normalize/clean-text name "-+")}]]
      :url/set-url! (str "/" (normalize/clean-text name "-+"))}))
