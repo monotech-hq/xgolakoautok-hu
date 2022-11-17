@@ -18,8 +18,8 @@
               [forms.api                                :as forms]
               [layouts.surface-a.api                    :as surface-a]
               [mixed.api                                :as mixed]
-              [mid-fruits.string                        :as string]
-              [mid-fruits.vector                        :as vector]
+              [string.api                        :as string]
+              [vector.api                        :as vector]
               [re-frame.api                             :as r]
               [x.components.api                         :as x.components]))
 

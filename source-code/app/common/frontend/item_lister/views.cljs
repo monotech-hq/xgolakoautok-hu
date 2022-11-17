@@ -5,10 +5,10 @@
               [css.api                               :as css]
               [dom.api                               :as dom]
               [elements.api                          :as elements]
-              [mid-fruits.keyword                    :as keyword]
+              [keyword.api                    :as keyword]
               [logical.api                           :refer [nor]]
               [math.api                              :as math]
-              [mid-fruits.random                     :as random]
+              [random.api                     :as random]
               [re-frame.api                          :as r]
               [x.components.api                      :as x.components]))
 

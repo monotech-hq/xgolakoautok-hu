@@ -3,8 +3,8 @@
     (:require [app.common.frontend.item-selector.subs :as item-selector.subs]
               [candy.api                              :refer [return]]
               [engines.item-lister.api                :as item-lister]
-              [mid-fruits.map                         :refer [dissoc-in]]
-              [mid-fruits.vector                      :as vector]
+              [map.api                         :refer [dissoc-in]]
+              [vector.api                      :as vector]
               [re-frame.api                           :as r :refer [r]]))
 
 ;; ----------------------------------------------------------------------------

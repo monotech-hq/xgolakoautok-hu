@@ -1,7 +1,7 @@
 
 (ns site.components.frontend.credits.views
     (:require [elements.api                                   :as elements]
-              [mid-fruits.random                              :as random]
+              [random.api                              :as random]
               [re-frame.api                                   :as r]
               [site.components.frontend.copyright-label.views :as copyright-label.views]
               [site.components.frontend.mt-logo.views         :as mt-logo.views]

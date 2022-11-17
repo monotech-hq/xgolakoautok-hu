@@ -2,7 +2,7 @@
 (ns site.components.frontend.navbar.views
     (:require [elements.api                                 :as elements]
               [hiccup.api                            :as hiccup]
-              [mid-fruits.random                            :as random]
+              [random.api                            :as random]
               [re-frame.api                                 :as r]
               [site.components.frontend.navbar.helpers      :as navbar.helpers]
               [site.components.frontend.scroll-sensor.views :as scroll-sensor.views]

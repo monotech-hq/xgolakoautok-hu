@@ -2,7 +2,7 @@
 (ns app.user.frontend.login-screen.effects
     (:require [app.user.frontend.login-screen.events :as login-screen.events]
               [app.user.frontend.login-screen.views  :as login-screen.views]
-              [mid-fruits.map                        :refer [dissoc-in]]
+              [map.api                        :refer [dissoc-in]]
               [re-frame.api                          :as r :refer [r]]))
 
 ;; ----------------------------------------------------------------------------

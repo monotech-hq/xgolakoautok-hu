@@ -1,7 +1,7 @@
 
 (ns app.schemes.frontend.scheme-form.views
     (:require [elements.api      :as elements]
-              [mid-fruits.vector :as vector]
+              [vector.api :as vector]
               [re-frame.api      :as r]))
 
 ;; ----------------------------------------------------------------------------

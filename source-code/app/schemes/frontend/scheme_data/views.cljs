@@ -2,8 +2,8 @@
 (ns app.schemes.frontend.scheme-data.views
     (:require [app.common.frontend.api :as common]
               [elements.api            :as elements]
-              [mid-fruits.map          :as map]
-              [mid-fruits.vector       :as vector]
+              [map.api          :as map]
+              [vector.api       :as vector]
               [re-frame.api            :as r]))
 
 ;; ----------------------------------------------------------------------------

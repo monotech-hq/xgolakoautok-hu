@@ -3,8 +3,8 @@
     (:require [app.common.frontend.api :as common]
               [elements.api            :as elements]
               [layouts.popup-a.api     :as popup-a]
-              [mid-fruits.map          :as map]
-              [mid-fruits.vector       :as vector]
+              [map.api          :as map]
+              [vector.api       :as vector]
               [re-frame.api            :as r]
 
               ; TEMP

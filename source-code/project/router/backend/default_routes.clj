@@ -1,7 +1,7 @@
 
 (ns project.router.backend.default-routes
     (:require [project.ui.backend.api :as ui]
-              [server-fruits.http     :as http]))
+              [http.api     :as http]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

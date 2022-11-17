@@ -14,7 +14,7 @@
               [engines.item-lister.api                  :as item-lister]
               [engines.item-viewer.api                  :as item-viewer]
               [forms.api                                :as forms]
-              [mid-fruits.vector                        :as vector]
+              [vector.api                        :as vector]
               [layouts.surface-a.api                    :as surface-a]
               [re-frame.api                             :as r]
               [time.api                                 :as time]))

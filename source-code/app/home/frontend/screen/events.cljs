@@ -1,8 +1,8 @@
 
 (ns app.home.frontend.screen.events
     (:require [app.home.frontend.screen.prototypes :as screen.prototypes]
-              [mid-fruits.map                      :refer [dissoc-in]]
-              [mid-fruits.vector                   :as vector]
+              [map.api                      :refer [dissoc-in]]
+              [vector.api                   :as vector]
               [re-frame.api                        :as r]))
 
 ;; ----------------------------------------------------------------------------

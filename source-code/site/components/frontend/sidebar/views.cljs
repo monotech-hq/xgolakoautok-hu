@@ -2,7 +2,7 @@
 (ns site.components.frontend.sidebar.views
     (:require [elements.api                             :as elements]
               [re-frame.api                             :as r]
-              [mid-fruits.random                        :as random]
+              [random.api                        :as random]
               [x.components.api                         :as x.components]
               [x.environment.api                        :as x.environment]
               [site.components.frontend.sidebar.helpers :as sidebar.helpers]))

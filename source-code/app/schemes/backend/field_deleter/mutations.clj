@@ -1,7 +1,7 @@
 
 (ns app.schemes.backend.field-deleter.mutations
     (:require [com.wsscode.pathom3.connect.operation :as pathom.co :refer [defmutation]]
-              [mid-fruits.vector                     :as vector]
+              [vector.api                     :as vector]
               [mongo-db.api                          :as mongo-db]
               [pathom.api                            :as pathom]))
 
@@ -21,7 +21,7 @@
   ; nevekhez tartozó kollekciókban!
   (if-let [scheme (mongo-db/get-document-by-query "schemes" {:scheme/scheme-id scheme-id})]
           (letfn [(f [field-props] (not= field-id (:field/field-id field-props)))]
-                 (let [scheme (update scheme :scheme/fields vector/filter-items f)]
+                 (let [scheme (update scheme :scheme/fields vector/filter-items-by f)]
                       (mongo-db/save-document! "schemes" scheme)))))
 
 (defmutation delete-field!

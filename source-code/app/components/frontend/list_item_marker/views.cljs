@@ -3,7 +3,7 @@
     (:require [css.api           :as css]
               [elements.api      :as elements]
               [math.api          :as math]
-              [mid-fruits.random :as random]
+              [random.api :as random]
               [re-frame.api      :as r]))
 
 ;; ----------------------------------------------------------------------------

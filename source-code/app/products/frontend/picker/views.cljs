@@ -3,7 +3,7 @@
     (:require [app.products.frontend.picker.prototypes :as picker.prototypes]
               [app.products.frontend.preview.views     :as preview.views]
               [elements.api                            :as elements]
-              [mid-fruits.random                       :as random]
+              [random.api                       :as random]
               [re-frame.api                            :as r]))
 
 ;; ----------------------------------------------------------------------------

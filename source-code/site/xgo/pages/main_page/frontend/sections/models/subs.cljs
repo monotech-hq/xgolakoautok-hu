@@ -1,7 +1,7 @@
 
 (ns site.xgo.pages.main-page.frontend.sections.models.subs
     (:require [re-frame.api :as r]
-              [mid-fruits.normalize :as normalize]))
+              [normalize.api :as normalize]))
 
 ;; -----------------------------------------------------------------------------
 ;; ----- Filters -----

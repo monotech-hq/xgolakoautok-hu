@@ -2,7 +2,7 @@
 (ns site.xgo.pages.main-page.frontend.sections.models.effects
     (:require [re-frame.api         :as r]
               [x.router.api         :as x.router]
-              [mid-fruits.normalize :as normalize]))
+              [normalize.api :as normalize]))
 
 (r/reg-event-fx
   :models/select! 

@@ -3,7 +3,7 @@
     (:require [app.vehicle-models.frontend.picker.prototypes :as picker.prototypes]
               [app.vehicle-models.frontend.preview.views     :as preview.views]
               [elements.api                                  :as elements]
-              [mid-fruits.random                             :as random]
+              [random.api                             :as random]
               [reagent.api                                   :as reagent]))
 
 ;; ----------------------------------------------------------------------------

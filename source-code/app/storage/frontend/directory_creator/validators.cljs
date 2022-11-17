@@ -1,6 +1,6 @@
 
 (ns app.storage.frontend.directory-creator.validators
-    (:require [mid-fruits.map :as map]))
+    (:require [map.api :as map]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 
 (ns app.storage.frontend.file-uploader.events
     (:require [dom.api        :as dom]
-              [mid-fruits.map :refer [dissoc-in]]
+              [map.api :refer [dissoc-in]]
               [re-frame.api   :as r :refer [r]]))
 
 ;; ----------------------------------------------------------------------------

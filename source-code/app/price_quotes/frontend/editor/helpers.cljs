@@ -3,7 +3,7 @@
     (:require [candy.api         :refer [return]]
               [math.api          :as math]
               [mixed.api         :as mixed]
-              [mid-fruits.string :as string]
+              [string.api :as string]
               [re-frame.api      :as r]
               [time.api          :as time]))
 

@@ -1,7 +1,7 @@
 
 (ns app.storage.frontend.media-preview.prototypes
     (:require [candy.api         :refer [param]]
-              [mid-fruits.vector :as vector]))
+              [vector.api :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

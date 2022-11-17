@@ -3,7 +3,7 @@
     (:require [candy.api                :refer [return]]
               [engines.item-browser.api :as item-browser]
               [io.api                   :as io]
-              [mid-fruits.vector        :as vector]
+              [vector.api        :as vector]
               [re-frame.api             :as r :refer [r]]))
 
 ;; ----------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 
 (ns app.vehicle-categories.frontend.viewer.validators
-    (:require [mid-fruits.map :as map]))
+    (:require [map.api :as map]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

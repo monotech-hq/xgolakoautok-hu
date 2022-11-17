@@ -7,8 +7,8 @@
               [elements.api                               :as elements]
               [engines.item-viewer.api                    :as item-viewer]
               [forms.api                                  :as forms]
-              [mid-fruits.string                          :as string]
-              [mid-fruits.vector                          :as vector]
+              [string.api                          :as string]
+              [vector.api                          :as vector]
               [layouts.surface-a.api                      :as surface-a]
               [re-frame.api                               :as r]))
 

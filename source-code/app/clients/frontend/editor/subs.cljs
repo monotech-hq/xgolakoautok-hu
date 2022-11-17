@@ -1,6 +1,6 @@
 
 (ns app.clients.frontend.editor.subs
-    (:require [mid-fruits.string :as string]
+    (:require [string.api :as string]
               [re-frame.api      :as r :refer [r]]
               [x.locales.api     :as x.locales]))
 

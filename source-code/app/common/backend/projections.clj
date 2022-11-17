@@ -1,7 +1,7 @@
 
 (ns app.common.backend.projections
-    (:require [mid-fruits.keyword :as keyword]
-              [mid-fruits.map     :as map]))
+    (:require [keyword.api :as keyword]
+              [map.api     :as map]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

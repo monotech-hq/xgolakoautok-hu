@@ -1,6 +1,6 @@
 
 (ns templates.price-quotes.blank.items
-    (:require [mid-fruits.vector :as vector]
+    (:require [vector.api :as vector]
               [re-frame.api      :as r]))
 
 ;; ----------------------------------------------------------------------------

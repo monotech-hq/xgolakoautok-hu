@@ -4,9 +4,9 @@
               [css.api                                        :as css]
               [elements.api                                   :as elements]
               [math.api                                       :as math]
-              [mid-fruits.random                              :as random]
-              [mid-fruits.string                              :as string]
-              [mid-fruits.vector                              :as vector]))
+              [random.api                              :as random]
+              [string.api                              :as string]
+              [vector.api                              :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -70,7 +70,7 @@
   ;   :initials (string)(opt)}
   [avatar-id {:keys [colors initials] :as avatar-props}]
   [:div {:style {:width "60px" :height "60px"}}
-        (if (string/nonempty? initials) [user-avatar-initials avatar-id avatar-props]
+        (if (string/nonblank? initials) [user-avatar-initials avatar-id avatar-props]
                                         [user-avatar-icon     avatar-id avatar-props])
         (if (vector/nonempty? colors)   [user-avatar-colors   avatar-id avatar-props])])
 

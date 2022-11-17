@@ -3,7 +3,7 @@
     (:require [app.components.frontend.list-item-cell.helpers    :as list-item-cell.helpers]
               [app.components.frontend.list-item-cell.prototypes :as list-item-cell.prototypes]
               [elements.api                                      :as elements]
-              [mid-fruits.random                                 :as random]))
+              [random.api                                 :as random]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

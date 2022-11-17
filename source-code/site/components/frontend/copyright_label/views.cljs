@@ -1,7 +1,7 @@
 
 (ns site.components.frontend.copyright-label.views
     (:require [elements.api      :as elements]
-              [mid-fruits.random :as random]
+              [random.api :as random]
               [re-frame.api      :as r]
               [x.app-details     :as x.details]))
 

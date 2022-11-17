@@ -1,7 +1,7 @@
 
 (ns app.components.frontend.list-item-thumbnail.views
     (:require [elements.api      :as elements]
-              [mid-fruits.random :as random]))
+              [random.api :as random]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

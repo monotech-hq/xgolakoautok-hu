@@ -1,7 +1,7 @@
 
 (ns app.common.frontend.data-element.prototypes
     (:require [candy.api         :refer [param return]]
-              [mid-fruits.vector :as vector]))
+              [vector.api :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

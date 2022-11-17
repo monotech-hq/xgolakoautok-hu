@@ -1,6 +1,6 @@
 
 (ns site.components.frontend.scroll-icon.views
-    (:require [mid-fruits.random                            :as random]
+    (:require [random.api                            :as random]
               [site.components.frontend.scroll-icon.helpers :as scroll-icon.helpers]
               [site.components.frontend.scroll-sensor.views :as scroll-sensor.views]))
 

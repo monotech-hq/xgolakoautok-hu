@@ -3,7 +3,7 @@
     (:require [io.api               :as io]
               [x.core.api    :as x.core]
               [mongo-db.api         :as mongo-db]
-              [mid-fruits.normalize :as normalize]))
+              [normalize.api :as normalize]))
 
 (defn convert [key-fn data]
   (letfn [(vec->map [m v] (assoc m (key-fn v) v))]

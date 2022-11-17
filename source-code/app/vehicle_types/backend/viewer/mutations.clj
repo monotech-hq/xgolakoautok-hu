@@ -3,7 +3,7 @@
     (:require [app.common.backend.api                :as common]
               [candy.api                             :refer [return]]
               [com.wsscode.pathom3.connect.operation :as pathom.co :refer [defmutation]]
-              [mid-fruits.vector                     :as vector]
+              [vector.api                     :as vector]
               [mongo-db.api                          :as mongo-db]
               [pathom.api                            :as pathom]))
 

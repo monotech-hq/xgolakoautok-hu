@@ -1,8 +1,8 @@
 
 (ns app.storage.frontend.file-uploader.helpers
     (:require [io.api             :as io]
-              [mid-fruits.keyword :as keyword]
-              [mid-fruits.string  :as string]))
+              [keyword.api :as keyword]
+              [string.api  :as string]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

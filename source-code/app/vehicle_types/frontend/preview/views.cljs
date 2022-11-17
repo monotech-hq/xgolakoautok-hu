@@ -5,8 +5,8 @@
               [app.vehicle-types.frontend.preview.prototypes :as preview.prototypes]
               [elements.api                                  :as elements]
               [engines.item-preview.api                      :as item-preview]
-              [mid-fruits.random                             :as random]
-              [mid-fruits.vector                             :as vector]
+              [random.api                             :as random]
+              [vector.api                             :as vector]
               [re-frame.api                                  :as r]
 
               ; TEMP

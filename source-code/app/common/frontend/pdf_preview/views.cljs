@@ -1,6 +1,6 @@
 
 (ns app.common.frontend.pdf-preview.views
-    (:require [mid-fruits.random :as random]))
+    (:require [random.api :as random]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

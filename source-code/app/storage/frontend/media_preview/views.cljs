@@ -4,8 +4,8 @@
               [candy.api                                     :refer [return]]
               [elements.api                                  :as elements]
               [io.api                                        :as io]
-              [mid-fruits.random                             :as random]
-              [mid-fruits.vector                             :as vector]
+              [random.api                             :as random]
+              [vector.api                             :as vector]
 
               ; TEMP
               [plugins.dnd-kit.api :as dnd-kit]

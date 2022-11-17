@@ -1,6 +1,6 @@
 
 (ns site.components.frontend.social-media-links.views
-    (:require [mid-fruits.random :as random]))
+    (:require [random.api :as random]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

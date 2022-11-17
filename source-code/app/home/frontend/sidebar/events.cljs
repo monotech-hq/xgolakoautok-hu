@@ -1,7 +1,7 @@
 
 (ns app.home.frontend.sidebar.events
     (:require [app.home.frontend.sidebar.prototypes :as sidebar.prototypes]
-              [mid-fruits.vector                    :as vector]
+              [vector.api                    :as vector]
               [re-frame.api                         :as r]))
 
 ;; ----------------------------------------------------------------------------

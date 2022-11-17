@@ -9,7 +9,7 @@
               [format.api                                 :as format]
               [io.api                                     :as io]
               [layouts.surface-a.api                      :as surface-a]
-              [mid-fruits.keyword                         :as keyword]
+              [keyword.api                         :as keyword]
               [re-frame.api                               :as r]
               [x.components.api                           :as x.components]
               [x.media.api                                :as x.media]))

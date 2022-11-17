@@ -6,7 +6,7 @@
               [css.api                          :as css]
               [elements.api                     :as elements]
               [layouts.surface-a.api            :as surface-a]
-              [mid-fruits.vector                :as vector]
+              [vector.api                :as vector]
               [re-frame.api                     :as r]
               [x.components.api                 :as x.components]))
 

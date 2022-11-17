@@ -1,6 +1,6 @@
 
 (ns site.components.frontend.scroll-sensor.views
-    (:require [mid-fruits.random                              :as random]
+    (:require [random.api                              :as random]
               [reagent.api                                    :as reagent]
               [site.components.frontend.scroll-sensor.helpers :as scroll-sensor.helpers]))
    

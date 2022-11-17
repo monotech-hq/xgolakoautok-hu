@@ -1,6 +1,6 @@
 
 (ns app.vehicle-types.frontend.preview.subs
-    (:require [mid-fruits.string :as string]
+    (:require [string.api :as string]
               [re-frame.api      :as r]))
 
 ;; ----------------------------------------------------------------------------

@@ -1,8 +1,8 @@
 
 (ns app.schemes.frontend.field-deleter.events
     (:require [candy.api         :refer [return]]
-              [mid-fruits.map    :refer [dissoc-in]]
-              [mid-fruits.vector :as vector]
+              [map.api    :refer [dissoc-in]]
+              [vector.api :as vector]
               [re-frame.api      :as r :refer [r]]))
 
 ;; ----------------------------------------------------------------------------
@@ -23,7 +23,7 @@
   ; @return (map)
   [db [_ scheme-id field-id]]
   (letfn [(f [%] (not= field-id (:field/field-id %)))]
-         (update-in db [:schemes :form-handler/scheme-forms scheme-id :scheme/fields] vector/filter-items f)))
+         (update-in db [:schemes :form-handler/scheme-forms scheme-id :scheme/fields] vector/filter-items-by f)))
 
 (defn disable-field!
   ; @param (keyword) scheme-id

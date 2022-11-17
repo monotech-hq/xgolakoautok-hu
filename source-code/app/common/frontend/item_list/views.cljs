@@ -1,7 +1,7 @@
 
 (ns app.common.frontend.item-list.views
     (:require [elements.api      :as elements]
-              [mid-fruits.random :as random]))
+              [random.api :as random]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

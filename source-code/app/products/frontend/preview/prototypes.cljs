@@ -1,7 +1,7 @@
 
 (ns app.products.frontend.preview.prototypes
     (:require [candy.api         :refer [param]]
-              [mid-fruits.vector :as vector]))
+              [vector.api :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

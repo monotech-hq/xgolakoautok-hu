@@ -5,7 +5,7 @@
               [engines.item-editor.api :as item-editor]
               [forms.api               :as forms]
               [layouts.surface-a.api   :as surface-a]
-              [mid-fruits.string       :as string]
+              [string.api       :as string]
               [re-frame.api            :as r :refer [r]]
               [x.locales.api           :as x.locales]))
 

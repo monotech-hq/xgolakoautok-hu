@@ -1,6 +1,6 @@
 
 (ns app.rental-vehicles.mid.handler.helpers
-    (:require [mid-fruits.normalize :as normalize]))
+    (:require [normalize.api :as normalize]))
 
 ;; -----------------------------------------------------------------------------
 ;; -----------------------------------------------------------------------------

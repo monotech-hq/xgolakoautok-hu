@@ -3,7 +3,7 @@
     (:require [app.common.backend.api          :as common]
               [app.storage.backend.core.config :as core.config]
               [candy.api                       :refer [return]]
-              [mid-fruits.vector               :as vector]
+              [vector.api               :as vector]
               [mongo-db.api                    :as mongo-db]
               [x.media.api                     :as x.media]))
 
@@ -50,7 +50,7 @@
            (f [path] (when-let [{:media/keys [id]} (last path)]
                                (if operation (mongo-db/apply-document! "storage" id update-f {:prepare-f prepare-f})
                                              (mongo-db/apply-document! "storage" id return   {:prepare-f prepare-f}))
-                               (-> path vector/pop-last-item f)))]
+                               (-> path vector/remove-last-item f)))]
           (f path))))
 
 ;; ----------------------------------------------------------------------------

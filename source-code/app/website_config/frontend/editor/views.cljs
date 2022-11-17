@@ -7,7 +7,7 @@
               [engines.file-editor.api  :as file-editor]
               [forms.api                :as forms]
               [layouts.surface-a.api    :as surface-a]
-              [mid-fruits.vector        :as vector]
+              [vector.api        :as vector]
               [re-frame.api             :as r]))
 
 ;; ----------------------------------------------------------------------------

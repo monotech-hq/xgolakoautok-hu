@@ -1,7 +1,7 @@
 
 (ns app.schemes.backend.field-editor.prototypes
     (:require [candy.api         :refer [param]]
-              [mid-fruits.random :as random]))
+              [random.api :as random]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

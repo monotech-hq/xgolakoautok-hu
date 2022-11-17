@@ -4,7 +4,7 @@
               [elements.api            :as elements]
               [engines.item-lister.api :as item-lister]
               [layouts.surface-a.api   :as surface-a]
-              [mid-fruits.keyword      :as keyword]
+              [keyword.api      :as keyword]
               [re-frame.api            :as r]))
 
 ;; ----------------------------------------------------------------------------

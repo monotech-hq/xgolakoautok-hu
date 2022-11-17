@@ -1,6 +1,6 @@
 
 (ns app.storage.frontend.file-uploader.validators
-    (:require [mid-fruits.vector :as vector]))
+    (:require [vector.api :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

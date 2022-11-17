@@ -3,7 +3,7 @@
     (:require [app.home.frontend.handler.config :as handler.config]
               [elements.api                     :as elements]
               [layouts.sidebar-a.api            :as sidebar-a]
-              [mid-fruits.vector                :as vector]
+              [vector.api                :as vector]
               [re-frame.api                     :as r]
               [x.components.api                 :as x.components]))
 
@@ -109,7 +109,7 @@
   (let [app-title @(r/subscribe [:x.core/get-app-config-item :app-title])]
        [elements/label ::label
                        {:color       "#bfbfbf"
-                        :content     (mid-fruits.string/uppercase app-title)
+                        :content     (string.api/uppercase app-title)
                         :font-size   :xs
                         :font-weight :extra-bold
                         :line-height :block

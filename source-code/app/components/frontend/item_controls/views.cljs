@@ -2,7 +2,7 @@
 (ns app.components.frontend.item-controls.views
     (:require [app.components.frontend.surface-button.views :as surface-button.views]
               [elements.api                                 :as elements]
-              [mid-fruits.random                            :as random]))
+              [random.api                            :as random]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
