@@ -1,7 +1,7 @@
 
 (ns site.xgo.pages.main-page.frontend.sections.types.views
   (:require [re-frame.api :as r]
-            [site.xgo.pages.main-page.frontend.sections.types.slider :as slider]))
+            [site.components.frontend.api :as site.components]))
 
 ;; -----------------------------------------------------------------------------
 ;; -----------------------------------------------------------------------------
@@ -28,7 +28,7 @@
 
 (defn- type-images [images]
   [:div {:class "xgo-type--images"}
-    [slider/view 
+    [site.components/slider 
       (map (fn [{:media/keys [id uri]}]
               [:img {:src uri}])
            images)]])
