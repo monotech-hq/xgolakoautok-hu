@@ -1,6 +1,6 @@
 
 (ns site.components.frontend.mt-logo.views
-    (:require [css.api           :as css]
+    (:require [css.api    :as css]
               [random.api :as random]))
 
 ;; ----------------------------------------------------------------------------
@@ -16,8 +16,8 @@
   ; @usage
   ;  [mt-logo]
   [_ {:keys [theme]}]
-  [:div {:style {:background-image (case theme :dark (css/url "/monotech/logo/mt-logo-dark.png")
-                                                     (css/url "/monotech/logo/mt-logo-light.png"))
+  [:div {:style {:background-image (case theme :dark (css/url "/app/logo/mt-logo-dark.png")
+                                                     (css/url "/app/logo/mt-logo-light.png"))
                  :background-size  "cover"
                  :height           "72px"
                  :width            "72px"}}])

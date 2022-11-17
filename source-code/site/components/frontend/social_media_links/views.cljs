@@ -8,7 +8,7 @@
 (defn- social-media-links
   ; @param (map) component-props
   [_]
-  [:div {:class :si-social-media-links}])
+  [:div {:class :mt-social-media-links}])
 
 (defn component
   ; @param (map) component-props

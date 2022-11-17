@@ -1,6 +1,6 @@
 
 (ns site.components.frontend.scroll-icon.views
-    (:require [random.api                            :as random]
+    (:require [random.api                                   :as random]
               [site.components.frontend.scroll-icon.helpers :as scroll-icon.helpers]
               [site.components.frontend.scroll-sensor.views :as scroll-sensor.views]))
 
@@ -11,12 +11,12 @@
   ; @param (keyword) component-id
   ; @param (map) component-props
   ;  {:color (string)(opt)
-  ;   :style (map)}
+  ;   :style (map)(opt)}
   [_ {:keys [color style]}]
-  [:<> [:div {:style {:left 0 :position :absolute :top 0}}
-             [scroll-sensor.views/component ::scroll-sensor scroll-icon.helpers/scroll-f]]
-       [:div {:id :si-scroll-icon :style style}
-             [:div {:id :si-scroll-icon--body :style {"--icon-color" (or color "white")}}]]])
+  [:<> [scroll-sensor.views/component ::scroll-sensor {:callback-f scroll-icon.helpers/scroll-f
+                                                       :style {:left 2 :position "absolute" :top "0"}}]
+       [:div {:id :mt-scroll-icon :style style}
+             [:div {:id :mt-scroll-icon--body :style {"--icon-color" (or color "white")}}]]])
 
 (defn component
   ; @param (keyword)(opt) component-id

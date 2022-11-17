@@ -8,11 +8,11 @@
 (defn sidebar-visible?
   ; @return (boolean)
   [db _]
-  (get-in db [:site.components :sidebar/meta-items :visible?]))
+  (get-in db [:components :sidebar/meta-items :visible?]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 ; @usage
-;  [:site.components/sidebar-visible?]
-(r/reg-sub :site.components/sidebar-visible? sidebar-visible?)
+;  [:components.sidebar/sidebar-visible?]
+(r/reg-sub :components.sidebar/sidebar-visible? sidebar-visible?)
