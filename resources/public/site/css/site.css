@@ -251,9 +251,16 @@
 
 .xgo-type--images {
   border-radius: 10px;
-  margin-top: 150px;
+  margin: auto;
   overflow: hidden;
   width: 1024px;
+  height: 500px;
+}
+
+.xgo-type--back-button {
+  display: flex;
+  justify-content: center;
+  padding-top: 80px;
 }
 
 /***** Types *****/

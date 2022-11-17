@@ -16,8 +16,8 @@
 (defn slider
   [data]
   (let [configurations DEFAULT-CONFIG]
-    [:div [:> Carousel configurations]
-        data]))
+    [:div [:> Carousel configurations
+              data]]))
 
 (defn view
   [& data]
