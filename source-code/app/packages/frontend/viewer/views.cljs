@@ -9,8 +9,8 @@
               [engines.item-viewer.api              :as item-viewer]
               [forms.api                            :as forms]
               [layouts.surface-a.api                :as surface-a]
-              [vector.api                    :as vector]
               [re-frame.api                         :as r]
+              [vector.api                           :as vector]
               [x.components.api                     :as x.components]))
 
 ;; ----------------------------------------------------------------------------

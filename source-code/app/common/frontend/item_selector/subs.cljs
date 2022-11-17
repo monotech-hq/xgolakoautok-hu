@@ -2,8 +2,8 @@
 (ns app.common.frontend.item-selector.subs
     (:require [candy.api               :refer [return]]
               [engines.item-lister.api :as item-lister]
-              [vector.api       :as vector]
-              [re-frame.api            :as r :refer [r]]))
+              [re-frame.api            :as r :refer [r]]
+              [vector.api              :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

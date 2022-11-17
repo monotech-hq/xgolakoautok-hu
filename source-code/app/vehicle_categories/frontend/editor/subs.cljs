@@ -1,8 +1,8 @@
 
 (ns app.vehicle-categories.frontend.editor.subs
     (:require [normalize.api :as normalize]
-              [re-frame.api         :as r :refer [r]]
-              [x.router.api         :as x.router]))
+              [re-frame.api  :as r :refer [r]]
+              [x.router.api  :as x.router]))
 
 ;; -----------------------------------------------------------------------------
 ;; -----------------------------------------------------------------------------

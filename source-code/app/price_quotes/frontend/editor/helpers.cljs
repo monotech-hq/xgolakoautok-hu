@@ -1,11 +1,11 @@
 
 (ns app.price-quotes.frontend.editor.helpers
-    (:require [candy.api         :refer [return]]
-              [math.api          :as math]
-              [mixed.api         :as mixed]
-              [string.api :as string]
-              [re-frame.api      :as r]
-              [time.api          :as time]))
+    (:require [candy.api    :refer [return]]
+              [math.api     :as math]
+              [mixed.api    :as mixed]
+              [re-frame.api :as r]
+              [string.api   :as string]
+              [time.api     :as time]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

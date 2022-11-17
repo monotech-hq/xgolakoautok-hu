@@ -2,7 +2,7 @@
 (ns app.schemes.backend.form-handler.prototypes
     (:require [app.schemes.backend.field-editor.prototypes :as field-editor.prototypes]
               [candy.api                                   :refer [param]]
-              [vector.api                           :as vector]))
+              [vector.api                                  :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

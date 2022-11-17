@@ -1,8 +1,8 @@
 
 (ns app.clients.frontend.viewer.subs
-    (:require [string.api :as string]
-              [re-frame.api      :as r :refer [r]]
-              [x.locales.api     :as x.locales]))
+    (:require [re-frame.api  :as r :refer [r]]
+              [string.api    :as string]
+              [x.locales.api :as x.locales]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

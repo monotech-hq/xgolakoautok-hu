@@ -9,11 +9,11 @@
               [com.wsscode.pathom3.connect.operation        :as pathom.co :refer [defmutation]]
               [engines.item-browser.api                     :as item-browser]
               [io.api                                       :as io]
-              [map.api                               :as map]
-              [vector.api                            :as vector]
+              [map.api                                      :as map]
               [mongo-db.api                                 :as mongo-db]
               [pathom.api                                   :as pathom]
               [time.api                                     :as time]
+              [vector.api                                   :as vector]
               [x.media.api                                  :as x.media]))
 
 ;; -- Remove media-item links -------------------------------------------------

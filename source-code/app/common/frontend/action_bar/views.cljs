@@ -2,7 +2,7 @@
 (ns app.common.frontend.action-bar.views
     (:require [app.common.frontend.action-bar.prototypes :as action-bar.prototypes]
               [elements.api                              :as elements]
-              [random.api                         :as random]))
+              [random.api                                :as random]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

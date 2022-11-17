@@ -1,7 +1,7 @@
 
 (ns app.components.frontend.list-item-drag-handle.views
-    (:require [elements.api      :as elements]
-              [random.api :as random]))
+    (:require [elements.api :as elements]
+              [random.api   :as random]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -30,7 +30,7 @@
                   {:class     class
                    :disabled? disabled?
                    :indent    indent
-                   :content   [list-item-drag-handle-body handle-id handle-props ]
+                   :content   [list-item-drag-handle-body handle-id handle-props]
                    :style     style}])
 
 (defn component

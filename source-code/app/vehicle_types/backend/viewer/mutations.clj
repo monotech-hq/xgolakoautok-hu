@@ -3,9 +3,9 @@
     (:require [app.common.backend.api                :as common]
               [candy.api                             :refer [return]]
               [com.wsscode.pathom3.connect.operation :as pathom.co :refer [defmutation]]
-              [vector.api                     :as vector]
               [mongo-db.api                          :as mongo-db]
-              [pathom.api                            :as pathom]))
+              [pathom.api                            :as pathom]
+              [vector.api                            :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

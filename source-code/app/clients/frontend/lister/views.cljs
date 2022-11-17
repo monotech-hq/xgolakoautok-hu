@@ -3,8 +3,8 @@
     (:require [app.common.frontend.api :as common]
               [elements.api            :as elements]
               [engines.item-lister.api :as item-lister]
+              [keyword.api             :as keyword]
               [layouts.surface-a.api   :as surface-a]
-              [keyword.api      :as keyword]
               [re-frame.api            :as r]))
 
 ;; ----------------------------------------------------------------------------

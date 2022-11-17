@@ -3,7 +3,7 @@
     (:require [app.components.frontend.list-item-row.helpers    :as list-item-row.helpers]
               [app.components.frontend.list-item-row.prototypes :as list-item-row.prototypes]
               [elements.api                                     :as elements]
-              [random.api                                :as random]))
+              [random.api                                       :as random]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

@@ -3,8 +3,8 @@
     (:require [app.common.backend.api          :as common]
               [app.storage.backend.core.config :as core.config]
               [candy.api                       :refer [return]]
-              [vector.api               :as vector]
               [mongo-db.api                    :as mongo-db]
+              [vector.api                      :as vector]
               [x.media.api                     :as x.media]))
 
 ;; -- Attach/detach item functions --------------------------------------------

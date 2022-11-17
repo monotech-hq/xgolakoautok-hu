@@ -1,6 +1,6 @@
 
 (ns app.price-quote-templates.frontend.preview.prototypes
-    (:require [candy.api         :refer [param]]
+    (:require [candy.api  :refer [param]]
               [vector.api :as vector]))
 
 ;; ----------------------------------------------------------------------------

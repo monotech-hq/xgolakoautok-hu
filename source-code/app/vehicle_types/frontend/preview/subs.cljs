@@ -1,7 +1,7 @@
 
 (ns app.vehicle-types.frontend.preview.subs
-    (:require [string.api :as string]
-              [re-frame.api      :as r]))
+    (:require [re-frame.api :as r]
+              [string.api   :as string]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

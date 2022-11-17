@@ -2,7 +2,7 @@
 (ns app.components.frontend.surface-label.views
     (:require [elements.api          :as elements]
               [layouts.surface-a.api :as surface-a]
-              [random.api     :as random]
+              [random.api            :as random]
               [re-frame.api          :as r]))
 
 ;; ----------------------------------------------------------------------------

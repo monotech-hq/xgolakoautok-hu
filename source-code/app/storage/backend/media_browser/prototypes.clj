@@ -2,8 +2,8 @@
 (ns app.storage.backend.media-browser.prototypes
     (:require [app.common.backend.api           :as common]
               [app.storage.backend.core.helpers :as core.helpers]
-              [vector.api                :as vector]
-              [mongo-db.api                     :as mongo-db]))
+              [mongo-db.api                     :as mongo-db]
+              [vector.api                       :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

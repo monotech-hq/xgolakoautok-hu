@@ -3,8 +3,8 @@
     (:require [app.common.frontend.surface.views :as surface.views]
               [app.components.frontend.api       :as components]
               [elements.api                      :as elements]
-              [vector.api                 :as vector]
-              [re-frame.api                      :as r]))
+              [re-frame.api                      :as r]
+              [vector.api                        :as vector]))
 
 ;; -- Color-picker component --------------------------------------------------
 ;; ----------------------------------------------------------------------------

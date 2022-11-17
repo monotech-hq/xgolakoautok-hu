@@ -7,10 +7,10 @@
               [elements.api                               :as elements]
               [engines.item-viewer.api                    :as item-viewer]
               [forms.api                                  :as forms]
-              [string.api                          :as string]
-              [vector.api                          :as vector]
               [layouts.surface-a.api                      :as surface-a]
-              [re-frame.api                               :as r]))
+              [re-frame.api                               :as r]
+              [string.api                                 :as string]
+              [vector.api                                 :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

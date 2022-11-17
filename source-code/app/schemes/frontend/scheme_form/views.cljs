@@ -1,8 +1,8 @@
 
 (ns app.schemes.frontend.scheme-form.views
-    (:require [elements.api      :as elements]
-              [vector.api :as vector]
-              [re-frame.api      :as r]))
+    (:require [elements.api :as elements]
+              [re-frame.api :as r]
+              [vector.api   :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

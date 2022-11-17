@@ -3,7 +3,7 @@
     (:require [app.price-quote-templates.frontend.picker.prototypes :as picker.prototypes]
               [app.price-quote-templates.frontend.preview.views     :as preview.views]
               [elements.api                                         :as elements]
-              [random.api                                    :as random]))
+              [random.api                                           :as random]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

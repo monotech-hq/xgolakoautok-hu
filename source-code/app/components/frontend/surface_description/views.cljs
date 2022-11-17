@@ -2,7 +2,7 @@
 (ns app.components.frontend.surface-description.views
     (:require [app.components.frontend.surface-description.prototypes :as surface-description.prototypes]
               [elements.api                                           :as elements]
-              [random.api                                      :as random]))
+              [random.api                                             :as random]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

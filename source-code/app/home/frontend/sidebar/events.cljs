@@ -1,8 +1,8 @@
 
 (ns app.home.frontend.sidebar.events
     (:require [app.home.frontend.sidebar.prototypes :as sidebar.prototypes]
-              [vector.api                    :as vector]
-              [re-frame.api                         :as r]))
+              [re-frame.api                         :as r]
+              [vector.api                           :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

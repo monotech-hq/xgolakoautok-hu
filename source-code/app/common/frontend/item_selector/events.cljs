@@ -3,9 +3,9 @@
     (:require [app.common.frontend.item-selector.subs :as item-selector.subs]
               [candy.api                              :refer [return]]
               [engines.item-lister.api                :as item-lister]
-              [map.api                         :refer [dissoc-in]]
-              [vector.api                      :as vector]
-              [re-frame.api                           :as r :refer [r]]))
+              [map.api                                :refer [dissoc-in]]
+              [re-frame.api                           :as r :refer [r]]
+              [vector.api                             :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

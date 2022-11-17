@@ -1,9 +1,9 @@
 
 (ns app.schemes.frontend.field-deleter.events
     (:require [candy.api         :refer [return]]
-              [map.api    :refer [dissoc-in]]
-              [vector.api :as vector]
-              [re-frame.api      :as r :refer [r]]))
+              [map.api           :refer [dissoc-in]]
+              [re-frame.api      :as r :refer [r]]
+              [vector.api        :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

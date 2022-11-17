@@ -4,7 +4,7 @@
               [app.common.frontend.item-selector.prototypes :as item-selector.prototypes]
               [app.common.frontend.item-selector.subs       :as item-selector.subs]
               [engines.item-lister.api                      :as item-lister]
-              [random.api                            :as random]
+              [random.api                                   :as random]
               [re-frame.api                                 :as r :refer [r]]))
 
 ;; ----------------------------------------------------------------------------

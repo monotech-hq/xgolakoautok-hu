@@ -2,7 +2,7 @@
 (ns app.common.frontend.error-element.views
     (:require [app.common.frontend.error-element.prototypes :as error-element.prototypes]
               [elements.api                                 :as elements]
-              [random.api                            :as random]))
+              [random.api                                   :as random]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

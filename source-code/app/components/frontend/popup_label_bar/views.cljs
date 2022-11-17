@@ -2,7 +2,7 @@
 (ns app.components.frontend.popup-label-bar.views
     (:require [app.components.frontend.popup-label-bar.prototypes :as popup-label-bar.prototypes]
               [elements.api                                       :as elements]
-              [random.api                                  :as random]))
+              [random.api                                         :as random]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

@@ -9,8 +9,8 @@
               [io.api                                     :as io]
               [layouts.popup-a.api                        :as popup-a]
               [math.api                                   :as math]
-              [string.api                          :as string]
-              [re-frame.api                               :as r]))
+              [re-frame.api                               :as r]
+              [string.api                                 :as string]))
 
 ;; -- Temporary components ----------------------------------------------------
 ;; ----------------------------------------------------------------------------

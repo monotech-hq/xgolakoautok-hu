@@ -2,7 +2,7 @@
 (ns app.components.frontend.context-menu.views
     (:require [elements.api        :as elements]
               [layouts.popup-a.api :as popup-a]
-              [random.api   :as random]))
+              [random.api          :as random]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

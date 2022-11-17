@@ -26,5 +26,5 @@
 
               ; Az *.editor.effects névtér helyett a *.blank.effects névtéret
               ; használd, ha a projektnek nincsenek beállításai!
-              [app.settings.frontend.editor.effects]))
-             ;[app.settings.frontend.blank.effects]))
+            ;;   [app.settings.frontend.editor.effects]
+              [app.settings.frontend.blank.effects]))

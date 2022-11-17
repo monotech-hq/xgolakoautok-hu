@@ -7,8 +7,8 @@
               [engines.file-editor.api  :as file-editor]
               [forms.api                :as forms]
               [layouts.surface-a.api    :as surface-a]
-              [vector.api        :as vector]
-              [re-frame.api             :as r]))
+              [re-frame.api             :as r]
+              [vector.api               :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

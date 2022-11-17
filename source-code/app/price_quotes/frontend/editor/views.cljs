@@ -18,9 +18,9 @@
               [forms.api                                :as forms]
               [layouts.surface-a.api                    :as surface-a]
               [mixed.api                                :as mixed]
-              [string.api                        :as string]
-              [vector.api                        :as vector]
               [re-frame.api                             :as r]
+              [string.api                               :as string]
+              [vector.api                               :as vector]
               [x.components.api                         :as x.components]))
 
 ;; ----------------------------------------------------------------------------

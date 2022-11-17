@@ -3,8 +3,8 @@
     (:require [app.schemes.backend.form-handler.helpers      :as form-handler.helpers]
               [app.schemes.backend.form-handler.side-effects :as form-handler.side-effects]
               [candy.api                                     :refer [return]]
-              [vector.api                             :as vector]
-              [mongo-db.api                                  :as mongo-db]))
+              [mongo-db.api                                  :as mongo-db]
+              [vector.api                                    :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

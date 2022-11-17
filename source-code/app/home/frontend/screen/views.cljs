@@ -6,8 +6,8 @@
               [css.api                          :as css]
               [elements.api                     :as elements]
               [layouts.surface-a.api            :as surface-a]
-              [vector.api                :as vector]
               [re-frame.api                     :as r]
+              [vector.api                       :as vector]
               [x.components.api                 :as x.components]))
 
 ;; ----------------------------------------------------------------------------

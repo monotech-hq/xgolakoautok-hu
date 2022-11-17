@@ -1,9 +1,9 @@
 
 (ns app.schemes.backend.field-deleter.mutations
     (:require [com.wsscode.pathom3.connect.operation :as pathom.co :refer [defmutation]]
-              [vector.api                     :as vector]
               [mongo-db.api                          :as mongo-db]
-              [pathom.api                            :as pathom]))
+              [pathom.api                            :as pathom]
+              [vector.api                            :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

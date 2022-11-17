@@ -4,8 +4,8 @@
               [app.price-quotes.backend.handler.helpers :as handler.helpers]
               [candy.api                                :refer [return]]
               [com.wsscode.pathom3.connect.operation    :refer [defresolver]]
-              [keyword.api                       :as keyword]
-              [map.api                           :as map]
+              [keyword.api                              :as keyword]
+              [map.api                                  :as map]
               [math.api                                 :as math]
               [mongo-db.api                             :as mongo-db]
               [pathom.api                               :as pathom]))

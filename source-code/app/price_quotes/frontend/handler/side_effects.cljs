@@ -2,8 +2,8 @@
 (ns app.price-quotes.frontend.handler.side-effects
     (:require [ajax.api                                :as ajax]
               [app.price-quotes.frontend.handler.state :as handler.state]
-              [blob.api                         :as blob]
               [base64.api                              :as base64]
+              [blob.api                                :as blob]
               [reader.api                              :as reader]
               [re-frame.api                            :as r]))
 

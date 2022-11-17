@@ -8,8 +8,8 @@
               [engines.item-editor.api                    :as item-editor]
               [forms.api                                  :as forms]
               [layouts.surface-a.api                      :as surface-a]
-              [vector.api                          :as vector]
               [re-frame.api                               :as r]
+              [vector.api                                 :as vector]
               [x.components.api                           :as x.components]))
 
 ;; ----------------------------------------------------------------------------
@@ -22,7 +22,7 @@
                             {:disabled?        editor-disabled?
                              :suggestions-path [:vehicle-types :editor/suggestions]
                              :value-path       [:vehicle-types :editor/edited-item]}]))
- 
+
 (defn- type-technical-data-box
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :vehicle-types.editor])]

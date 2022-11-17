@@ -1,7 +1,7 @@
 
 (ns app.views.frontend.blank-page.events
-    (:require [map.api :refer [dissoc-in]]
-              [re-frame.api   :as r]))
+    (:require [map.api      :refer [dissoc-in]]
+              [re-frame.api :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

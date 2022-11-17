@@ -1,6 +1,6 @@
 
 (ns app.schemes.backend.field-editor.prototypes
-    (:require [candy.api         :refer [param]]
+    (:require [candy.api  :refer [param]]
               [random.api :as random]))
 
 ;; ----------------------------------------------------------------------------

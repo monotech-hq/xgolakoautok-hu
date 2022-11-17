@@ -3,7 +3,7 @@
     (:require [app.clients.frontend.picker.prototypes :as picker.prototypes]
               [app.clients.frontend.preview.views     :as preview.views]
               [elements.api                           :as elements]
-              [random.api                      :as random]))
+              [random.api                             :as random]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

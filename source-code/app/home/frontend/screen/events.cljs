@@ -1,9 +1,9 @@
 
 (ns app.home.frontend.screen.events
     (:require [app.home.frontend.screen.prototypes :as screen.prototypes]
-              [map.api                      :refer [dissoc-in]]
-              [vector.api                   :as vector]
-              [re-frame.api                        :as r]))
+              [map.api                             :refer [dissoc-in]]
+              [re-frame.api                        :as r]
+              [vector.api                          :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

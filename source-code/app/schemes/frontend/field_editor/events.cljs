@@ -3,9 +3,9 @@
     (:require [app.schemes.frontend.field-editor.subs :as field-editor.subs]
               [app.schemes.frontend.form-handler.subs :as form-handler.subs]
               [candy.api                              :refer [return]]
-              [map.api                         :refer [dissoc-in]]
-              [vector.api                      :as vector]
-              [re-frame.api                           :as r :refer [r]]))
+              [map.api                                :refer [dissoc-in]]
+              [re-frame.api                           :as r :refer [r]]
+              [vector.api                             :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

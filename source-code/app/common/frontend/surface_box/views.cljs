@@ -2,7 +2,7 @@
 (ns app.common.frontend.surface-box.views
     (:require [app.common.frontend.surface-box.prototypes :as surface-box.prototypes]
               [elements.api                               :as elements]
-              [random.api                          :as random]
+              [random.api                                 :as random]
               [re-frame.api                               :as r]
               [x.components.api                           :as x.components]))
 

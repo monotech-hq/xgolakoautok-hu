@@ -3,7 +3,7 @@
     (:require [app.components.frontend.list-header.helpers    :as list-header.helpers]
               [app.components.frontend.list-header.prototypes :as list-header.prototypes]
               [elements.api                                   :as elements]
-              [random.api                              :as random]))
+              [random.api                                     :as random]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

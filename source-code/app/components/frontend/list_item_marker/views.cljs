@@ -1,10 +1,10 @@
 
 (ns app.components.frontend.list-item-marker.views
-    (:require [css.api           :as css]
-              [elements.api      :as elements]
-              [math.api          :as math]
-              [random.api :as random]
-              [re-frame.api      :as r]))
+    (:require [css.api      :as css]
+              [elements.api :as elements]
+              [math.api     :as math]
+              [random.api   :as random]
+              [re-frame.api :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

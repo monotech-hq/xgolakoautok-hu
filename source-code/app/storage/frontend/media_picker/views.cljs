@@ -3,7 +3,7 @@
     (:require [app.storage.frontend.media-picker.prototypes :as media-picker.prototypes]
               [app.storage.frontend.media-preview.views     :as media-preview.views]
               [elements.api                                 :as elements]
-              [random.api                            :as random]
+              [random.api                                   :as random]
               [re-frame.api                                 :as r]))
 
 ;; ----------------------------------------------------------------------------

@@ -3,8 +3,8 @@
     (:require [app.home.frontend.handler.config :as handler.config]
               [elements.api                     :as elements]
               [layouts.sidebar-a.api            :as sidebar-a]
-              [vector.api                :as vector]
               [re-frame.api                     :as r]
+              [vector.api                       :as vector]
               [x.components.api                 :as x.components]))
 
 ;; ----------------------------------------------------------------------------

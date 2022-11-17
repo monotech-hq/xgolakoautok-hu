@@ -2,9 +2,9 @@
 (ns app.schemes.frontend.scheme-data.views
     (:require [app.common.frontend.api :as common]
               [elements.api            :as elements]
-              [map.api          :as map]
-              [vector.api       :as vector]
-              [re-frame.api            :as r]))
+              [map.api                 :as map]
+              [re-frame.api            :as r]
+              [vector.api              :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -25,12 +25,11 @@
 (defn- scheme-data-element
   ; @param (keyword) scheme-id
   ; @param (map) data-props
-  ;  {:disabled? (boolean)(opt)
-  ;   :value-path (vector)}
+  ;  {:value-path (vector)}
   ; @param (keyword) field-id
   [scheme-id {:keys [disabled? value-path]} field-id]
-  ; BUG#3007 (app.schemes.frontend.scheme-form.views)
-  (let [field-props @(r/subscribe [:schemes.form-handler/get-scheme-field scheme-id field-id])
+  ; BUG#3007 (source-code/app/schemes/frontend/scheme_form/views.cljs)
+  (let [field-props @(r/subscribe [:components.scheme-table/get-scheme-field scheme-id field-id])
         field-value @(r/subscribe [:x.db/get-item (vector/conj-item value-path field-id)])
         field-value (letfn [(f [value] (if-let [unit (:field/unit field-props)]
                                                {:content value :suffix (str " " unit)}

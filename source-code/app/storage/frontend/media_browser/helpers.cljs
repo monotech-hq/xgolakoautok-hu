@@ -2,7 +2,7 @@
 (ns app.storage.frontend.media-browser.helpers
     (:require [format.api        :as format]
               [io.api            :as io]
-              [vector.api :as vector]
+              [vector.api        :as vector]
               [x.components.api  :as x.components]
               [x.media.api       :as x.media]))
 

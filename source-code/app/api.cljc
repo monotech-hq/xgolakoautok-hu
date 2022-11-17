@@ -27,7 +27,6 @@
                      [app.common.frontend.api]
                      [app.components.frontend.api]
                      [app.contents.frontend.api]
-                     [app.frame.frontend.api]
                      [app.home.frontend.api]
                      [app.packages.frontend.api]
                      [app.pages.frontend.api]

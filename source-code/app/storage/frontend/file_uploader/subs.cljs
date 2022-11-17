@@ -4,9 +4,9 @@
               [app.storage.frontend.file-uploader.helpers :as file-uploader.helpers]
               [candy.api                                  :refer [param return]]
               [dom.api                                    :as dom]
-              [map.api                             :as map]
-              [vector.api                          :as vector]
+              [map.api                                    :as map]
               [re-frame.api                               :as r :refer [r]]
+              [vector.api                                 :as vector]
               [x.db.api                                   :as x.db]
               [x.sync.api                                 :as x.sync]))
 

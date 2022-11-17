@@ -1,8 +1,8 @@
 
 (ns app.schemes.frontend.form-handler.subs
-    (:require [candy.api         :refer [return]]
-              [re-frame.api      :as r :refer [r]]
-              [vector.api :as vector]))
+    (:require [candy.api    :refer [return]]
+              [re-frame.api :as r :refer [r]]
+              [vector.api   :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

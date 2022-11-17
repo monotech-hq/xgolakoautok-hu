@@ -3,9 +3,9 @@
     (:require [app.common.frontend.api :as common]
               [elements.api            :as elements]
               [layouts.popup-a.api     :as popup-a]
-              [map.api          :as map]
-              [vector.api       :as vector]
+              [map.api                 :as map]
               [re-frame.api            :as r]
+              [vector.api              :as vector]
 
               ; TEMP
               [plugins.dnd-kit.api :as dnd-kit]))

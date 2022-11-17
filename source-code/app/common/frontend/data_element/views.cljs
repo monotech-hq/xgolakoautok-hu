@@ -2,7 +2,7 @@
 (ns app.common.frontend.data-element.views
     (:require [app.common.frontend.data-element.prototypes :as data-element.prototypes]
               [elements.api                                :as elements]
-              [random.api                           :as random]))
+              [random.api                                  :as random]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

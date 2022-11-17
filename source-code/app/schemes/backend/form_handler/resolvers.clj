@@ -17,7 +17,7 @@
   ;   :pathom/target-value (namespaced map)}
   [env _]
   (let [scheme-id  (pathom/env->param env :scheme-id)
-        projection (common/get-document-projection :vehicle)]
+        projection (common/get-document-projection :scheme)]
        {:pathom/target-path  [:schemes :form-handler/scheme-forms scheme-id]
         :pathom/target-value (mongo-db/get-document-by-query "schemes" {:scheme/scheme-id scheme-id} projection)}))
 
