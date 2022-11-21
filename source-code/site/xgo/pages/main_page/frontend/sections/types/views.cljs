@@ -41,7 +41,8 @@
            images)]])
 
 (defn- type-table [id]
-  [:div {:class "#mt-scheme"}
+  [:div {:class "mt-scheme-table--container"}
+    [:h2.mt-scheme-table--header "Műszaki adatok"]
     [site.components/scheme-table {:placeholder :no-visible-data
                                    :scheme-id   :vehicle-types.technical-data
                                    :value-path  [:site :types id]}]])
