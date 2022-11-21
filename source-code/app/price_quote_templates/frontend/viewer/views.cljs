@@ -1,14 +1,15 @@
 
 (ns app.price-quote-templates.frontend.viewer.views
-    (:require [app.common.frontend.api   :as common]
-              [app.contents.frontend.api :as contents]
-              [app.storage.frontend.api  :as storage]
-              [elements.api              :as elements]
-              [engines.item-lister.api   :as item-lister]
-              [engines.item-viewer.api   :as item-viewer]
-              [forms.api                 :as forms]
-              [layouts.surface-a.api     :as surface-a]
-              [re-frame.api              :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [app.contents.frontend.api   :as contents]
+              [app.storage.frontend.api    :as storage]
+              [elements.api                :as elements]
+              [engines.item-lister.api     :as item-lister]
+              [engines.item-viewer.api     :as item-viewer]
+              [forms.api                   :as forms]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -341,20 +342,20 @@
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :price-quote-templates.viewer])
         template-name    @(r/subscribe [:x.db/get-item [:price-quote-templates :viewer/viewed-item :name]])]
-       [common/surface-breadcrumbs :price-quote-templates.viewer/view
-                                   {:crumbs [{:label :app-home :route "/@app-home"}
-                                             {:label :price-quote-templates    :route "/@app-home/price-quote-templates"}
-                                             {:label template-name :placeholder :unnamed-price-quote-template}]
-                                    :disabled? viewer-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home :route "/@app-home"}
+                                                 {:label :price-quote-templates    :route "/@app-home/price-quote-templates"}
+                                                 {:label template-name :placeholder :unnamed-price-quote-template}]
+                                        :disabled? viewer-disabled?}]))
 
 (defn- label
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :price-quote-templates.viewer])
         template-name    @(r/subscribe [:x.db/get-item [:price-quote-templates :viewer/viewed-item :name]])]
-       [common/surface-label :price-quote-templates.viewer/view
-                             {:disabled?   viewer-disabled?
-                              :label       template-name
-                              :placeholder :unnamed-price-quote-template}]))
+       [components/surface-label ::label
+                                 {:disabled?   viewer-disabled?
+                                  :label       template-name
+                                  :placeholder :unnamed-price-quote-template}]))
 
 (defn- header
   []
@@ -378,7 +379,7 @@
   []
   [item-viewer/body :price-quote-templates.viewer
                     {:auto-title?   true
-                     :error-element [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                     :error-element [components/error-content {:error :the-item-you-opened-may-be-broken}]
                      :ghost-element #'common/item-viewer-ghost-element
                      :item-element  #'view-structure
                      :item-path     [:price-quote-templates :viewer/viewed-item]

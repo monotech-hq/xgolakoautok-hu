@@ -1,12 +1,13 @@
 
 (ns app.clients.frontend.viewer.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [engines.item-viewer.api :as item-viewer]
-              [forms.api               :as forms]
-              [layouts.surface-a.api   :as surface-a]
-              [re-frame.api            :as r]
-              [x.locales.api           :as x.locales]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [engines.item-viewer.api     :as item-viewer]
+              [forms.api                   :as forms]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]
+              [x.locales.api               :as x.locales]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -298,20 +299,20 @@
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :clients.viewer])
         client-name      @(r/subscribe [:clients.viewer/get-client-name])]
-       [common/surface-breadcrumbs :clients.viewer/view
-                                   {:crumbs [{:label :app-home   :route "/@app-home"}
-                                             {:label :clients    :route "/@app-home/clients"}
-                                             {:label client-name :placeholder :unnamed-client}]
-                                    :disabled? viewer-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home   :route "/@app-home"}
+                                                 {:label :clients    :route "/@app-home/clients"}
+                                                 {:label client-name :placeholder :unnamed-client}]
+                                        :disabled? viewer-disabled?}]))
 
 (defn- label
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :clients.viewer])
         client-name      @(r/subscribe [:clients.viewer/get-client-name])]
-       [common/surface-label :clients.viewer/view
-                             {:disabled?   viewer-disabled?
-                              :label       client-name
-                              :placeholder :unnamed-client}]))
+       [components/surface-label ::label
+                                 {:disabled?   viewer-disabled?
+                                  :label       client-name
+                                  :placeholder :unnamed-client}]))
 
 (defn- header
   []
@@ -338,7 +339,7 @@
   [_]
   [item-viewer/body :clients.viewer
                     {:auto-title?   true
-                     :error-element [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                     :error-element [components/error-content {:error :the-item-you-opened-may-be-broken}]
                      :ghost-element #'common/item-viewer-ghost-element
                      :item-element  #'view-structure
                      :item-path     [:clients :viewer/viewed-item]

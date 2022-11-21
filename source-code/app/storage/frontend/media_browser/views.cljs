@@ -46,11 +46,11 @@
         item-count  (x.components/content {:content :n-items :replacements [(count items)]})
         size        (-> size io/B->MB format/decimals (str " MB"))
         icon-family (if (empty? items) :material-icons-outlined :material-icons-filled)]
-       [common/list-item-structure {:cells [[common/list-item-thumbnail {:icon :folder :icon-family icon-family}]
+       [common/list-item-structure {:cells [[ {:icon :folder :icon-family icon-family}]
                                             [common/list-item-label     {:content alias :stretch? true}]
                                             [common/list-item-details   {:contents [size item-count] :width "160px"}]
                                             [common/list-item-detail    {:content timestamp :width "160px"}]
-                                            [common/list-item-marker    {:icon :navigate_next}]]
+                                            [components/list-item-marker    {:icon :navigate_next}]]
                                     :separator (if-not item-last? :bottom)}]))
 
 (defn directory-item
@@ -65,13 +65,13 @@
   (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
         item-last? @(r/subscribe [:item-browser/item-last? browser-id item-dex])
         size        (-> size io/B->MB format/decimals (str " MB"))]
-       [common/list-item-structure {:cells [[common/list-item-thumbnail (if (io/filename->image? alias)
+       [common/list-item-structure {:cells [[ (if (io/filename->image? alias)
                                                                             {:thumbnail (x.media/filename->media-thumbnail-uri filename)}
                                                                             {:icon :insert_drive_file :icon-family :material-icons-outlined})]
                                             [common/list-item-label  {:content alias     :stretch? true}]
                                             [common/list-item-detail {:content size      :width "160px"}]
                                             [common/list-item-detail {:content timestamp :width "160px"}]
-                                            [common/list-item-marker {:icon :more_vert}]]
+                                            [components/list-item-marker {:icon :more_vert}]]
                                     :separator (if-not item-last? :bottom)}]))
 
 (defn file-item
@@ -90,8 +90,9 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- media-list
-  [lister-id items]
-  [common/item-list lister-id {:item-element #'media-item :items items}])
+  []
+  (let [items @(r/subscribe [:item-browser/get-downloaded-items :storage.media-browser])]
+       [common/item-list :storage.media-browser {:item-element #'media-item :items items}]))
 
 (defn media-browser-body
   []
@@ -99,13 +100,13 @@
                      {:auto-title?      true
                       :default-item-id   core.config/ROOT-DIRECTORY-ID
                       :default-order-by :modified-at/descending
-                      :error-element    [common/error-content {:error :the-content-you-opened-may-be-broken}]
-                      :ghost-element    #'common/item-lister-ghost-element
                       :item-path        [:storage :media-browser/browsed-item]
                       :items-path       [:storage :media-browser/downloaded-items]
+                      :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
+                      :ghost-element    [common/item-lister-ghost-element]
+                      :list-element     [media-list]
                       :items-key        :items
                       :label-key        :alias
-                      :list-element     #'media-list
                       :path-key         :path}])
 
 ;; ----------------------------------------------------------------------------
@@ -211,18 +212,18 @@
 (defn- breadcrumbs
   []
   (let [browser-disabled? @(r/subscribe [:item-browser/browser-disabled? :storage.media-browser])]
-       [common/surface-breadcrumbs :storage.media-browser/view
-                                   {:crumbs [{:label :app-home :route "/@app-home"}
-                                             {:label :storage}]
-                                    :disabled? browser-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                        {:crumbs [{:label :app-home :route "/@app-home"}
+                                                  {:label :storage}]
+                                         :disabled? browser-disabled?}]))
 
 (defn- label
   []
   (let [browser-disabled? @(r/subscribe [:item-browser/browser-disabled? :storage.media-browser])
         directory-alias @(r/subscribe [:item-browser/get-current-item-label :storage.media-browser])]
-       [common/surface-label :storage.media-browser/view
-                             {:disabled? browser-disabled?
-                              :label     directory-alias}]))
+       [components/surface-label ::label
+                                 {:disabled? browser-disabled?
+                                  :label     directory-alias}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

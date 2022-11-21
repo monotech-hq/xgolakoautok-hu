@@ -1,9 +1,10 @@
 
 (ns app.schemes.frontend.field-editor.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [layouts.popup-a.api     :as popup-a]
-              [re-frame.api            :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [layouts.popup-a.api         :as popup-a]
+              [re-frame.api                :as r]))
 
 ;; -- XXX#5561 ----------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -21,17 +22,17 @@
   (let [field-name @(r/subscribe [:x.db/get-item [:schemes :field-editor/field-item :field/name]])]
        ; XXX#5561
        ;field-group @(r/subscribe [:x.db/get-item [:schemes :field-editor/field-item :field/group]])
-       [common/popup-label-bar :schemes.field-editor/view
-                               {:primary-button   {:disabled? (empty? field-name)
-                                                  ; XXX#5561
-                                                  ;:disabled? (or (empty? field-name) (empty? field-group))
-                                                   :on-click [:schemes.field-editor/save-field! scheme-id field-id]
-                                                   :label    (if field-id :save! :create!)
-                                                   :keypress {:key-code 13 :required? true}}
-                                :secondary-button {:on-click [:x.ui/remove-popup! :schemes.field-editor/view]
-                                                   :label    :cancel!
-                                                   :keypress {:key-code 27 :required? true}}
-                                :label            (if field-id :edit-field! :add-field!)}]))
+       [components/popup-label-bar :schemes.field-editor/view
+                                   {:primary-button   {:disabled? (empty? field-name)
+                                                      ; XXX#5561
+                                                      ;:disabled? (or (empty? field-name) (empty? field-group))
+                                                       :on-click [:schemes.field-editor/save-field! scheme-id field-id]
+                                                       :label    (if field-id :save! :create!)
+                                                       :keypress {:key-code 13 :required? true}}
+                                    :secondary-button {:on-click [:x.ui/remove-popup! :schemes.field-editor/view]
+                                                       :label    :cancel!
+                                                       :keypress {:key-code 27 :required? true}}
+                                    :label            (if field-id :edit-field! :add-field!)}]))
 
 (defn- header
   ; @param (keyword) scheme-id

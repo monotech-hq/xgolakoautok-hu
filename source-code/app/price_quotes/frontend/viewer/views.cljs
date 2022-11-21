@@ -1,6 +1,7 @@
 
 (ns app.price-quotes.frontend.viewer.views
     (:require [app.common.frontend.api                  :as common]
+              [app.components.frontend.api              :as components]
               [app.contents.frontend.api                :as contents]
               [app.clients.frontend.api                 :as clients]
               [app.packages.frontend.api                :as packages]
@@ -183,21 +184,31 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- price-quote-product-previews
+(defn- price-quote-product-picker
   []
-  (let [viewer-disabled?     @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])
-        price-quote-products @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :products]])]
-       [products/product-preview ::price-quote-product-previews
-                                 {:disabled?   viewer-disabled?
-                                  :indent      {:top :m :vertical :s}
-                                  :items       price-quote-products
-                                  :placeholder "-"}]))
+  (let [viewer-disabled?     @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])]
+        ;price-quote-products @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :products]])]
+       [products/product-picker ::price-quote-product-previews
+                                {:autosave?     false
+                                 :disabled?     viewer-disabled?
+                                 :indent        {:vertical :s}
+                                 :multi-select? true
+                                 :placeholder   "-"
+                                 :sortable?     true
+                                 :value-path    [:price-quotes :viewer/viewed-item :products]
+                                 ; TEMP#0051
+                                 :read-only? true}]))
+
+                                ;{:disabled?   viewer-disabled?
+                                ; :indent      {:top :m :vertical :s}
+                                 ;:items       price-quote-products
+                                 ;:placeholder "-"}]))
 
 (defn- price-quote-products-box
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])]
        [common/surface-box ::price-quote-products-box
-                           {:content [:<> [price-quote-product-previews]
+                           {:content [:<> [price-quote-product-picker]
                                           [elements/horizontal-separator {:size :s}]]
                             :disabled? viewer-disabled?
                             :indent    {:top :m}
@@ -387,19 +398,19 @@
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])
         price-quote-name @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :name]])]
-       [common/surface-breadcrumbs :price-quotes.viewer/view
-                                   {:crumbs [{:label :app-home     :route "/@app-home"}
-                                             {:label :price-quotes :route "/@app-home/price-quotes"}
-                                             {:label price-quote-name}]
-                                    :disabled? viewer-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home     :route "/@app-home"}
+                                                 {:label :price-quotes :route "/@app-home/price-quotes"}
+                                                 {:label price-quote-name}]
+                                        :disabled? viewer-disabled?}]))
 
 (defn- label
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :price-quotes.viewer])
         price-quote-name @(r/subscribe [:x.db/get-item [:price-quotes :viewer/viewed-item :name]])]
-       [common/surface-label :price-quotes.viewer/view
-                             {:disabled?   viewer-disabled?
-                              :label       {:content :price-quote-n :replacements [price-quote-name]}}]))
+       [components/surface-label ::label
+                                 {:disabled?   viewer-disabled?
+                                  :label       {:content :price-quote-n :replacements [price-quote-name]}}]))
 
 (defn- header
   []
@@ -423,7 +434,7 @@
   []
   [item-viewer/body :price-quotes.viewer
                     {:auto-title?   true
-                     :error-element [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                     :error-element [components/error-content {:error :the-item-you-opened-may-be-broken}]
                      :ghost-element #'common/item-viewer-ghost-element
                      :item-element  #'view-structure
                      :item-path     [:price-quotes :viewer/viewed-item]

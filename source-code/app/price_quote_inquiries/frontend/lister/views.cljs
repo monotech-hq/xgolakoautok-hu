@@ -1,10 +1,11 @@
 
 (ns app.price-quote-inquiries.frontend.lister.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [engines.item-lister.api :as item-lister]
-              [layouts.surface-a.api   :as surface-a]
-              [re-frame.api            :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [engines.item-lister.api     :as item-lister]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -17,39 +18,40 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- price-quote-template-item-structure
+(defn- inquiry-item-structure
   [lister-id item-dex {:keys [modified-at name issuer-logo]}]
   (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
         item-last? @(r/subscribe [:item-lister/item-last? lister-id item-dex])]
-       [common/list-item-structure {:cells [[common/list-item-thumbnail {:thumbnail (:media/uri issuer-logo)}]
-                                            [common/list-item-label     {:content name :stretch? true :placeholder :unnamed-price-quote-template}]
+       [common/list-item-structure {:cells [[ {:thumbnail (:media/uri issuer-logo)}]
+                                            [common/list-item-label     {:content name :stretch? true :placeholder :unnamed-price-quote-inquiry}]
                                             [common/list-item-detail    {:content timestamp :width "160px"}]
-                                            [common/list-item-marker    {:icon :navigate_next}]]
+                                            [components/list-item-marker    {:icon :navigate_next}]]
                                     :separator (if-not item-last? :bottom)}]))
 
-(defn- price-quote-template-item
-  [lister-id item-dex {:keys [id] :as price-quote-template-item}]
-  [elements/toggle {:content     [price-quote-template-item-structure lister-id item-dex price-quote-template-item]
+(defn- inquiry-item
+  [lister-id item-dex {:keys [id] :as price-quote-inquiry-item}]
+  [elements/toggle {:content     [inquiry-item-structure lister-id item-dex inquiry-item]
                     :hover-color :highlight
                     :on-click    [:x.router/go-to! (str "/@app-home/price-quote-inquiries/"id)]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- price-quote-template-list
-  [lister-id items]
-  [common/item-list lister-id {:item-element #'price-quote-template-item :items items}])
+(defn- inquiry-list
+  []
+  (let [items @(r/subscribe [:item-lister/get-downloaded-items :price-quote-inquiries.lister])]
+       [common/item-list :price-quote-inquiries.lister {:item-element #'inquiry-item :items items}]))
 
-(defn- price-quote-template-lister-body
+(defn- inquiry-lister-body
   []
   [item-lister/body :price-quote-inquiries.lister
                     {:default-order-by :modified-at/descending
                      :items-path       [:price-quote-inquiries :lister/downloaded-items]
-                     :error-element    [common/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    #'common/item-lister-ghost-element
-                     :list-element     #'price-quote-template-list}])
+                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
+                     :ghost-element    [common/item-lister-ghost-element]
+                     :list-element     [inquiry-list]}])
 
-(defn- price-quote-template-lister-header
+(defn- inquiry-lister-header
   []
   [common/item-lister-header :price-quote-inquiries.lister
                              {:cells [[common/item-lister-header-spacer :price-quote-inquiries.lister {:width "108px"}]
@@ -60,8 +62,8 @@
 (defn- body
   []
   [common/item-lister-wrapper :price-quote-inquiries.lister
-                              {:body   #'price-quote-template-lister-body
-                               :header #'price-quote-template-lister-header}])
+                              {:body   #'inquiry-lister-body
+                               :header #'inquiry-lister-header}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -69,10 +71,10 @@
 (defn create-item-button
   []
   (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :price-quote-inquiries.lister])
-        create-price-quote-template-uri (str "/@app-home/price-quote-inquiries/create")]
+        create-price-quote-inquiry-uri (str "/@app-home/price-quote-inquiries/create")]
        [common/item-lister-create-item-button :price-quote-inquiries.lister
                                               {:disabled?       lister-disabled?
-                                               :create-item-uri create-price-quote-template-uri}]))
+                                               :create-item-uri create-price-quote-inquiry-uri}]))
 
 (defn- search-field
   []
@@ -91,17 +93,17 @@
 (defn- breadcrumbs
   []
   (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :price-quote-inquiries.lister])]
-       [common/surface-breadcrumbs :price-quote-inquiries.lister/view
-                                   {:crumbs [{:label :app-home :route "/@app-home"}
-                                             {:label :price-quote-inquiries}]
-                                    :disabled? lister-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home :route "/@app-home"}
+                                                 {:label :price-quote-inquiries}]
+                                        :disabled? lister-disabled?}]))
 
 (defn- label
   []
   (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :price-quote-inquiries.lister])]
-       [common/surface-label :price-quote-inquiries.lister/view
-                             {:disabled? lister-disabled?
-                              :label     :price-quote-inquiries}]))
+       [components/surface-label ::label
+                                 {:disabled? lister-disabled?
+                                  :label     :price-quote-inquiries}]))
 
 (defn- header
   []

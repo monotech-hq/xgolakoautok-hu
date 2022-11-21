@@ -1,10 +1,11 @@
 
 (ns app.price-quotes.frontend.lister.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [engines.item-lister.api :as item-lister]
-              [layouts.surface-a.api   :as surface-a]
-              [re-frame.api            :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [engines.item-lister.api     :as item-lister]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -22,10 +23,10 @@
   (let [timestamp       @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
         item-last?      @(r/subscribe [:item-lister/item-last? lister-id item-dex])
         price-quote-name {:content :price-quote-n :replacements [name]}]
-       [common/list-item-structure {:cells [[common/list-item-thumbnail {:icon :request_quote :icon-family :material-icons-outlined}]
+       [common/list-item-structure {:cells [[ {:icon :request_quote :icon-family :material-icons-outlined}]
                                             [common/list-item-label     {:content price-quote-name :stretch? true :placeholder :unnamed-price-quote}]
                                             [common/list-item-detail    {:content timestamp :width "160px"}]
-                                            [common/list-item-marker    {:icon :navigate_next}]]
+                                            [components/list-item-marker    {:icon :navigate_next}]]
                                     :separator (if-not item-last? :bottom)}]))
 
 (defn- price-quote-item
@@ -38,17 +39,18 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- price-quote-list
-  [lister-id items]
-  [common/item-list lister-id {:item-element #'price-quote-item :items items}])
+  []
+  (let [items @(r/subscribe [:item-lister/get-downloaded-items :price-quotes.lister])]
+       [common/item-list :price-quote.lister {:item-element #'price-quote-item :items items}]))
 
 (defn- price-quote-lister-body
   []
   [item-lister/body :price-quotes.lister
                     {:default-order-by :modified-at/descending
                      :items-path       [:price-quotes :lister/downloaded-items]
-                     :error-element    [common/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    #'common/item-lister-ghost-element
-                     :list-element     #'price-quote-list}])
+                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
+                     :ghost-element    [common/item-lister-ghost-element]
+                     :list-element     [price-quote-list]}])
 
 (defn- price-quote-lister-header
   []
@@ -92,17 +94,17 @@
 (defn- breadcrumbs
   []
   (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :price-quotes.lister])]
-       [common/surface-breadcrumbs :price-quotes.lister/view
-                                   {:crumbs [{:label :app-home :route "/@app-home"}
-                                             {:label :price-quotes}]
-                                    :disabled? lister-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home :route "/@app-home"}
+                                                 {:label :price-quotes}]
+                                        :disabled? lister-disabled?}]))
 
 (defn- label
   []
   (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :price-quotes.lister])]
-       [common/surface-label :price-quotes.lister/view
-                             {:disabled? lister-disabled?
-                              :label     :price-quotes}]))
+       [components/surface-label ::label
+                                 {:disabled? lister-disabled?
+                                  :label     :price-quotes}]))
 
 (defn- header
   []

@@ -1,6 +1,7 @@
 
 (ns app.price-quote-templates.frontend.preview.views
     (:require [app.common.frontend.api                               :as common]
+              [app.components.frontend.api                           :as components]
               [app.price-quote-templates.frontend.preview.prototypes :as preview.prototypes]
               [app.storage.frontend.api                              :as storage]
               [elements.api                                          :as elements]
@@ -84,7 +85,7 @@
   [preview-id preview-props item-dex {:template/keys [id] :as template-link} {:keys [handle-attributes item-attributes]}]
   [:div (update item-attributes :style merge {:align-items "center" :display "flex" :grid-column-gap "18px"})
         (if @(r/subscribe [:item-preview/data-received? (keyword id)])
-             [common/list-item-drag-handle {:drag-attributes handle-attributes}])
+             [components/list-item-drag-handle {:drag-attributes handle-attributes}])
         [template-preview-static-body preview-id preview-props template-link]])
 
 ;; ----------------------------------------------------------------------------
@@ -153,7 +154,7 @@
   [preview-id {:keys [indent items] :as preview-props}]
   [elements/blank preview-id
                   {:content [:<> [template-preview-label preview-id preview-props]
-                                 (if (vector/nonempty? items)
+                                 (if (vector/nonempty?             items)
                                      [template-preview-list        preview-id preview-props]
                                      [template-preview-placeholder preview-id preview-props])]
                    :indent  indent}])

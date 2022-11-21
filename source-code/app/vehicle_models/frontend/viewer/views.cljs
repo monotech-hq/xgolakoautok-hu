@@ -1,13 +1,14 @@
 
 (ns app.vehicle-models.frontend.viewer.views
-    (:require [app.common.frontend.api  :as common]
-              [app.storage.frontend.api :as storage]
-              [elements.api             :as elements]
-              [engines.item-lister.api  :as item-lister]
-              [engines.item-viewer.api  :as item-viewer]
-              [forms.api                :as forms]
-              [layouts.surface-a.api    :as surface-a]
-              [re-frame.api             :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [app.storage.frontend.api    :as storage]
+              [elements.api                :as elements]
+              [engines.item-lister.api     :as item-lister]
+              [engines.item-viewer.api     :as item-viewer]
+              [forms.api                   :as forms]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -27,7 +28,7 @@
        [common/list-item-structure {:cells [[:div {:style {:height "60px" :width "12px"}}]
                                             [:div {:style {:padding-left "6px"}}]
                                             [common/list-item-primary-cell {:label name :description timestamp :stretch? true :placeholder :unnamed-vehicle-type}]
-                                            [common/list-item-marker       {:icon :drag_handle :style {:cursor :grab}}]]
+                                            [components/list-item-marker       {:icon :drag_handle :style {:cursor :grab}}]]
                                     :separator (if-not item-last? :bottom)}]))
 
 (defn- type-item
@@ -53,8 +54,9 @@
                            :on-click  on-click}]))
 
 (defn- type-list
-  [lister-id items]
-  [common/item-list lister-id {:item-element #'type-item :items items}])
+  [lister-id]
+  (let [items @(r/subscribe [:item-lister/get-downloaded-items lister-id])]
+       [common/item-list lister-id {:item-element #'type-item :items items}]))
 
 (defn- type-lister
   []
@@ -62,7 +64,7 @@
        [item-lister/body :vehicle-types.lister
                          {:default-order-by :modified-at/descending
                           :items-path    [:vehicle-types :lister/downloaded-items]
-                          :error-element [common/error-content {:error :the-content-you-opened-may-be-broken}]
+                          :error-element [components/error-content {:error :the-content-you-opened-may-be-broken}]
                           :ghost-element #'common/item-lister-ghost-element
                           :list-element  #'type-list
                           :placeholder   :no-items-to-show
@@ -138,10 +140,11 @@
   (let [viewer-disabled?          @(r/subscribe [:item-viewer/viewer-disabled? :vehicle-models.viewer])
         model-product-description @(r/subscribe [:x.db/get-item [:vehicle-models :viewer/viewed-item :product-description]])]
        [common/data-element ::model-product-description
-                            {:disabled? viewer-disabled?
-                             :indent    {:top :m :vertical :s}
-                             :label     :product-description
-                             :value     model-product-description}]))
+                            {:disabled?   viewer-disabled?
+                             :indent      {:top :m :vertical :s}
+                             :label       :product-description
+                             :placeholder "-"
+                             :value       model-product-description}]))
 
 (defn- model-name
   []
@@ -229,20 +232,20 @@
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :vehicle-models.viewer])
         model-name       @(r/subscribe [:x.db/get-item [:vehicle-models :viewer/viewed-item :name]])]
-       [common/surface-breadcrumbs :vehicle-models.viewer/view
-                                   {:crumbs [{:label :app-home       :route "/@app-home"}
-                                             {:label :vehicle-models :route "/@app-home/vehicle-models"}
-                                             {:label model-name :placeholder :unnamed-model}]
-                                    :disabled? viewer-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home       :route "/@app-home"}
+                                                 {:label :vehicle-models :route "/@app-home/vehicle-models"}
+                                                 {:label model-name :placeholder :unnamed-model}]
+                                        :disabled? viewer-disabled?}]))
 
 (defn- label
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :vehicle-models.viewer])
         model-name       @(r/subscribe [:x.db/get-item [:vehicle-models :viewer/viewed-item :name]])]
-       [common/surface-label :vehicle-models.viewer/view
-                             {:disabled?   viewer-disabled?
-                              :label       model-name
-                              :placeholder :unnamed-model}]))
+       [components/surface-label ::label
+                                 {:disabled?   viewer-disabled?
+                                  :label       model-name
+                                  :placeholder :unnamed-model}]))
 
 (defn- header
   []
@@ -266,7 +269,7 @@
   []
   [item-viewer/body :vehicle-models.viewer
                     {:auto-title?   true
-                     :error-element [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                     :error-element [components/error-content {:error :the-item-you-opened-may-be-broken}]
                      :ghost-element #'common/item-viewer-ghost-element
                      :item-element  #'view-structure
                      :item-path     [:vehicle-models :viewer/viewed-item]

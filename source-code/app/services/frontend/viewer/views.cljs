@@ -1,13 +1,14 @@
 
 (ns app.services.frontend.viewer.views
-    (:require [app.common.frontend.api  :as common]
-              [app.storage.frontend.api :as storage]
-              [elements.api             :as elements]
-              [engines.item-lister.api  :as item-lister]
-              [engines.item-viewer.api  :as item-viewer]
-              [forms.api                :as forms]
-              [layouts.surface-a.api    :as surface-a]
-              [re-frame.api             :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [app.storage.frontend.api    :as storage]
+              [elements.api                :as elements]
+              [engines.item-lister.api     :as item-lister]
+              [engines.item-viewer.api     :as item-viewer]
+              [forms.api                   :as forms]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -134,20 +135,20 @@
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :services.viewer])
         service-name     @(r/subscribe [:x.db/get-item [:services :viewer/viewed-item :name]])]
-       [common/surface-breadcrumbs :services.viewer/view
-                                   {:crumbs [{:label :app-home    :route "/@app-home"}
-                                             {:label :services    :route "/@app-home/services"}
-                                             {:label service-name :placeholder :unnamed-service}]
-                                    :disabled? viewer-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home    :route "/@app-home"}
+                                                 {:label :services    :route "/@app-home/services"}
+                                                 {:label service-name :placeholder :unnamed-service}]
+                                        :disabled? viewer-disabled?}]))
 
 (defn- label
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :services.viewer])
         service-name     @(r/subscribe [:x.db/get-item [:services :viewer/viewed-item :name]])]
-       [common/surface-label :services.viewer/view
-                             {:disabled?   viewer-disabled?
-                              :label       service-name
-                              :placeholder :unnamed-service}]))
+       [components/surface-label ::label
+                                 {:disabled?   viewer-disabled?
+                                  :label       service-name
+                                  :placeholder :unnamed-service}]))
 
 (defn- header
   []
@@ -171,7 +172,7 @@
   []
   [item-viewer/body :services.viewer
                     {:auto-title?   true
-                     :error-element [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                     :error-element [components/error-content {:error :the-item-you-opened-may-be-broken}]
                      :ghost-element #'common/item-viewer-ghost-element
                      :item-element  #'view-structure
                      :item-path     [:services :viewer/viewed-item]

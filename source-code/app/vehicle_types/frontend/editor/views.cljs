@@ -1,6 +1,7 @@
 
 (ns app.vehicle-types.frontend.editor.views
     (:require [app.common.frontend.api                    :as common]
+              [app.components.frontend.api                :as components]
               [app.schemes.frontend.api                   :as schemes]
               [app.storage.frontend.api                   :as storage]
               [app.vehicle-types.frontend.handler.queries :as handler.queries]
@@ -268,26 +269,26 @@
         model-id         @(r/subscribe [:x.router/get-current-route-path-param :model-id])
         model-uri         (str "/@app-home/vehicle-models/" model-id "/types")
         type-uri          (str "/@app-home/vehicle-models/" model-id "/types/" type-id)]
-       [common/surface-breadcrumbs :vehicle-types.editor/view
-                                   {:crumbs (if type-id [{:label :app-home       :route "/@app-home"}
-                                                         {:label :vehicle-models :route "/@app-home/vehicle-models"}
-                                                         {:label model-name      :route model-uri :placeholder :unnamed-vehicle-model}
-                                                         {:label type-name       :route type-uri  :placeholder :unnamed-vehicle-type}
-                                                         {:label :edit!}]
-                                                        [{:label :app-home       :route "/@app-home"}
-                                                         {:label :vehicle-models :route "/@app-home/vehicle-models"}
-                                                         {:label model-name      :route model-uri :placeholder :unnamed-vehicle-model}
-                                                         {:label :add!}])
-                                    :disabled? editor-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs (if type-id [{:label :app-home       :route "/@app-home"}
+                                                             {:label :vehicle-models :route "/@app-home/vehicle-models"}
+                                                             {:label model-name      :route model-uri :placeholder :unnamed-vehicle-model}
+                                                             {:label type-name       :route type-uri  :placeholder :unnamed-vehicle-type}
+                                                             {:label :edit!}]
+                                                            [{:label :app-home       :route "/@app-home"}
+                                                             {:label :vehicle-models :route "/@app-home/vehicle-models"}
+                                                             {:label model-name      :route model-uri :placeholder :unnamed-vehicle-model}
+                                                             {:label :add!}])
+                                        :disabled? editor-disabled?}]))
 
 (defn- label
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :vehicle-types.editor])
         type-name        @(r/subscribe [:x.db/get-item [:vehicle-types :editor/edited-item :name]])]
-       [common/surface-label :vehicle-types.editor/view
-                             {:disabled?   editor-disabled?
-                              :label       type-name
-                              :placeholder :unnamed-vehicle-type}]))
+       [components/surface-label ::label
+                                 {:disabled?   editor-disabled?
+                                  :label       type-name
+                                  :placeholder :unnamed-vehicle-type}]))
 
 (defn- header
   []
@@ -313,7 +314,7 @@
        [item-editor/body :vehicle-types.editor
                          {:auto-title?      true
                           :form-element     #'view-structure
-                          :error-element    [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                          :error-element    [components/error-content {:error :the-item-you-opened-may-be-broken}]
                           :ghost-element    #'common/item-editor-ghost-element
                           :initial-item     {:model-id model-id}
                           :item-path        [:vehicle-types :editor/edited-item]

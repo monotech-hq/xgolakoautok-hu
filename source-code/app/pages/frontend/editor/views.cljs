@@ -1,12 +1,13 @@
 
 (ns app.pages.frontend.editor.views
-    (:require [app.common.frontend.api  :as common]
-              [app.storage.frontend.api :as storage]
-              [elements.api             :as elements]
-              [engines.item-editor.api  :as item-editor]
-              [forms.api                :as forms]
-              [layouts.surface-a.api    :as surface-a]
-              [re-frame.api             :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [app.storage.frontend.api    :as storage]
+              [elements.api                :as elements]
+              [engines.item-editor.api     :as item-editor]
+              [forms.api                   :as forms]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -35,24 +36,24 @@
         page-name        @(r/subscribe [:x.db/get-item [:pages :editor/edited-item :name]])
         page-id          @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         page-uri          (str "/@app-home/pages/" page-id)]
-       [common/surface-breadcrumbs :pages.editor/view
-                                   {:crumbs (if page-id [{:label :app-home :route "/@app-home"}
-                                                         {:label :pages    :route "/@app-home/pages"}
-                                                         {:label page-name :route page-uri :placeholder :unnamed-page}
-                                                         {:label :edit!}]
-                                                        [{:label :app-home :route "/@app-home"}
-                                                         {:label :pages    :route "/@app-home/pages"}
-                                                         {:label :add!}])
-                                    :disabled? editor-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs (if page-id [{:label :app-home :route "/@app-home"}
+                                                             {:label :pages    :route "/@app-home/pages"}
+                                                             {:label page-name :route page-uri :placeholder :unnamed-page}
+                                                             {:label :edit!}]
+                                                            [{:label :app-home :route "/@app-home"}
+                                                             {:label :pages    :route "/@app-home/pages"}
+                                                             {:label :add!}])
+                                        :disabled? editor-disabled?}]))
 
 (defn- label
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :pages.editor])
         page-name        @(r/subscribe [:x.db/get-item [:pages :editor/edited-item :name]])]
-       [common/surface-label :pages.editor/view
-                             {:disabled?   editor-disabled?
-                              :label       page-name
-                              :placeholder :unnamed-page}]))
+       [components/surface-label ::label
+                                 {:disabled?   editor-disabled?
+                                  :label       page-name
+                                  :placeholder :unnamed-page}]))
 
 (defn- header
   []
@@ -76,7 +77,7 @@
   [item-editor/body :pages.editor
                     {:auto-title?      true
                      :form-element     #'view-structure
-                     :error-element    [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                     :error-element    [components/error-content {:error :the-item-you-opened-may-be-broken}]
                      :ghost-element    #'common/item-editor-ghost-element
                      :initial-item     {:visibility :public}
                      :item-path        [:pages :editor/edited-item]

@@ -1,10 +1,11 @@
 
 (ns app.services.frontend.lister.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [engines.item-lister.api :as item-lister]
-              [layouts.surface-a.api   :as surface-a]
-              [re-frame.api            :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [engines.item-lister.api     :as item-lister]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -21,11 +22,11 @@
   [lister-id item-dex {:keys [item-number modified-at name]}]
   (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
         item-last? @(r/subscribe [:item-lister/item-last? lister-id item-dex])]
-       [common/list-item-structure {:cells [[common/list-item-thumbnail {:icon :workspace_premium}]
+       [common/list-item-structure {:cells [[ {:icon :workspace_premium}]
                                             [common/list-item-label     {:content name :stretch? true :placeholder :unnamed-service}]
                                             [common/list-item-detail    {:content item-number :width "160px"}]
                                             [common/list-item-detail    {:content timestamp :width "160px"}]
-                                            [common/list-item-marker    {:icon :navigate_next}]]
+                                            [components/list-item-marker    {:icon :navigate_next}]]
                                     :separator (if-not item-last? :bottom)}]))
 
 (defn- service-item
@@ -38,17 +39,18 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- service-list
-  [lister-id items]
-  [common/item-list lister-id {:item-element #'service-item :items items}])
+  []
+  (let [items @(r/subscribe [:item-lister/get-downloaded-items :services.lister])]
+       [common/item-list :services.lister {:item-element #'service-item :items items}]))
 
 (defn- service-lister-body
   []
   [item-lister/body :services.lister
                     {:default-order-by :modified-at/descending
                      :items-path       [:services :lister/downloaded-items]
-                     :error-element    [common/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    #'common/item-lister-ghost-element
-                     :list-element     #'service-list}])
+                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
+                     :ghost-element    [common/item-lister-ghost-element]
+                     :list-element     [service-list]}])
 
 (defn- service-lister-header
   []
@@ -93,17 +95,17 @@
 (defn- breadcrumbs
   []
   (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :services.lister])]
-       [common/surface-breadcrumbs :services.lister/view
-                                   {:crumbs [{:label :app-home :route "/@app-home"}
-                                             {:label :services}]
-                                    :disabled? lister-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home :route "/@app-home"}
+                                                 {:label :services}]
+                                        :disabled? lister-disabled?}]))
 
 (defn- label
   []
   (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :services.lister])]
-       [common/surface-label :services.lister/view
-                             {:disabled? lister-disabled?
-                              :label     :services}]))
+       [components/surface-label ::label
+                                 {:disabled? lister-disabled?
+                                  :label     :services}]))
 
 (defn- header
   []

@@ -1,14 +1,15 @@
 
 (ns app.website-config.frontend.editor.views
-    (:require [app.common.frontend.api  :as common]
-              [app.storage.frontend.api :as storage]
-              [css.api                  :as css]
-              [elements.api             :as elements]
-              [engines.file-editor.api  :as file-editor]
-              [forms.api                :as forms]
-              [layouts.surface-a.api    :as surface-a]
-              [re-frame.api             :as r]
-              [vector.api               :as vector]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [app.storage.frontend.api    :as storage]
+              [css.api                     :as css]
+              [elements.api                :as elements]
+              [engines.file-editor.api     :as file-editor]
+              [forms.api                   :as forms]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]
+              [vector.api                  :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -515,17 +516,17 @@
 (defn- breadcrumbs
   []
   (let [editor-disabled? @(r/subscribe [:file-editor/editor-disabled? :website-config.editor])]
-       [common/surface-breadcrumbs :website-config.editor/view
-                                   {:crumbs [{:label :app-home :route "/@app-home"}
-                                             {:label :website-config}]
-                                    :disabled? editor-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home :route "/@app-home"}
+                                                 {:label :website-config}]
+                                        :disabled? editor-disabled?}]))
 
 (defn- label
   []
   (let [editor-disabled? @(r/subscribe [:file-editor/editor-disabled? :website-config.editor])]
-       [common/surface-label :website-config.editor/view
-                             {:disabled? editor-disabled?
-                              :label     :website-config}]))
+       [components/surface-label ::label
+                                 {:disabled? editor-disabled?
+                                  :label     :website-config}]))
 
 (defn- header
   []
@@ -549,7 +550,7 @@
   [file-editor/body :website-config.editor
                     {:content-path  [:website-config :editor/edited-item]
                      :form-element  #'view-structure
-                     :error-element [common/error-content {:error :the-content-you-opened-may-be-broken}]
+                     :error-element [components/error-content {:error :the-content-you-opened-may-be-broken}]
                      :ghost-element #'common/file-editor-ghost-element}])
 
 (defn view

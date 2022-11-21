@@ -1,10 +1,11 @@
 
 (ns app.price-quote-templates.frontend.lister.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [engines.item-lister.api :as item-lister]
-              [layouts.surface-a.api   :as surface-a]
-              [re-frame.api            :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [engines.item-lister.api     :as item-lister]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -21,10 +22,10 @@
   [lister-id item-dex {:keys [modified-at name issuer-logo]}]
   (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
         item-last? @(r/subscribe [:item-lister/item-last? lister-id item-dex])]
-       [common/list-item-structure {:cells [[common/list-item-thumbnail {:thumbnail (:media/uri issuer-logo)}]
+       [common/list-item-structure {:cells [[ {:thumbnail (:media/uri issuer-logo)}]
                                             [common/list-item-label     {:content name :stretch? true :placeholder :unnamed-price-quote-template}]
                                             [common/list-item-detail    {:content timestamp :width "160px"}]
-                                            [common/list-item-marker    {:icon :navigate_next}]]
+                                            [components/list-item-marker    {:icon :navigate_next}]]
                                     :separator (if-not item-last? :bottom)}]))
 
 (defn- template-item
@@ -37,17 +38,18 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- template-list
-  [lister-id items]
-  [common/item-list lister-id {:item-element #'template-item :items items}])
+  []
+  (let [items @(r/subscribe [:item-lister/get-downloaded-items :price-quote-templates.lister])]
+       [common/item-list :price-quote-templates.lister {:item-element #'template-item :items items}]))
 
 (defn- template-lister-body
   []
   [item-lister/body :price-quote-templates.lister
                     {:default-order-by :modified-at/descending
                      :items-path       [:price-quote-templates :lister/downloaded-items]
-                     :error-element    [common/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    #'common/item-lister-ghost-element
-                     :list-element     #'template-list}])
+                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
+                     :ghost-element    [common/item-lister-ghost-element]
+                     :list-element     [template-list]}])
 
 (defn- template-lister-header
   []
@@ -91,17 +93,17 @@
 (defn- breadcrumbs
   []
   (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :price-quote-templates.lister])]
-       [common/surface-breadcrumbs :price-quote-templates.lister/view
-                                   {:crumbs [{:label :app-home :route "/@app-home"}
-                                             {:label :price-quote-templates}]
-                                    :disabled? lister-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home :route "/@app-home"}
+                                                 {:label :price-quote-templates}]
+                                        :disabled? lister-disabled?}]))
 
 (defn- label
   []
   (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :price-quote-templates.lister])]
-       [common/surface-label :price-quote-templates.lister/view
-                             {:disabled? lister-disabled?
-                              :label     :price-quote-templates}]))
+       [components/surface-label ::label
+                                 {:disabled? lister-disabled?
+                                  :label     :price-quote-templates}]))
 
 (defn- header
   []

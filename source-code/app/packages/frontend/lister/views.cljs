@@ -1,10 +1,11 @@
 
 (ns app.packages.frontend.lister.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [engines.item-lister.api :as item-lister]
-              [layouts.surface-a.api   :as surface-a]
-              [re-frame.api            :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [engines.item-lister.api     :as item-lister]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -22,11 +23,11 @@
   (let [timestamp    @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
         item-last?   @(r/subscribe [:item-lister/item-last? lister-id item-dex])
         product-count {:content :n-items :replacements [(count products)]}]
-       [common/list-item-structure {:cells [[common/list-item-thumbnail    {:thumbnail (:media/uri thumbnail)}]
+       [common/list-item-structure {:cells [[components/list-item-thumbnail    {:thumbnail (:media/uri thumbnail)}]
                                             [common/list-item-primary-cell {:label name :stretch? true :placeholder :unnamed-package :description product-count}]
                                             [common/list-item-detail       {:content item-number :width "160px"}]
                                             [common/list-item-detail       {:content timestamp :width "160px"}]
-                                            [common/list-item-marker       {:icon :navigate_next}]]
+                                            [components/list-item-marker       {:icon :navigate_next}]]
                                     :separator (if-not item-last? :bottom)}]))
 
 (defn- package-item
@@ -39,17 +40,18 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- package-list
-  [lister-id items]
-  [common/item-list lister-id {:item-element #'package-item :items items}])
+  []
+  (let [items @(r/subscribe [:item-lister/get-downloaded-items :packages.lister])]
+       [common/item-list :packages.lister {:item-element #'package-item :items items}]))
 
 (defn- package-lister-body
   []
   [item-lister/body :packages.lister
                     {:default-order-by :modified-at/descending
                      :items-path       [:packages :lister/downloaded-items]
-                     :error-element    [common/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    #'common/item-lister-ghost-element
-                     :list-element     #'package-list}])
+                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
+                     :ghost-element    [common/item-lister-ghost-element]
+                     :list-element     [package-list]}])
 
 (defn- package-lister-header
   []
@@ -94,17 +96,17 @@
 (defn- breadcrumbs
   []
   (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :packages.lister])]
-       [common/surface-breadcrumbs :packages.lister/view
-                                   {:crumbs [{:label :app-home :route "/@app-home"}
-                                             {:label :packages}]
-                                    :disabled? lister-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home :route "/@app-home"}
+                                                 {:label :packages}]
+                                        :disabled? lister-disabled?}]))
 
 (defn- label
   []
   (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :packages.lister])]
-       [common/surface-label :packages.lister/view
-                             {:disabled? lister-disabled?
-                              :label     :packages}]))
+       [components/surface-label ::label
+                                 {:disabled? lister-disabled?
+                                  :label     :packages}]))
 
 (defn- header
   []

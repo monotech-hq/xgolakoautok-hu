@@ -1,6 +1,7 @@
 
 (ns app.vehicle-types.frontend.preview.views
     (:require [app.common.frontend.api                       :as common]
+              [app.components.frontend.api                   :as components]
               [app.storage.frontend.api                      :as storage]
               [app.vehicle-types.frontend.preview.prototypes :as preview.prototypes]
               [elements.api                                  :as elements]
@@ -76,7 +77,7 @@
   [preview-id preview-props item-dex {:type/keys [id] :as type-link} {:keys [handle-attributes item-attributes]}]
   [:div (update item-attributes :style merge {:align-items "center" :display "flex" :grid-column-gap "18px"})
         (if @(r/subscribe [:item-preview/data-received? (keyword id)])
-             [common/list-item-drag-handle {:drag-attributes handle-attributes}])
+             [components/list-item-drag-handle {:drag-attributes handle-attributes}])
         [type-preview-static-body preview-id preview-props type-link]])
 
 ;; ----------------------------------------------------------------------------
@@ -145,7 +146,7 @@
   [preview-id {:keys [indent items] :as preview-props}]
   [elements/blank preview-id
                   {:content [:<> [type-preview-label preview-id preview-props]
-                                 (if (vector/nonempty? items)
+                                 (if (vector/nonempty?         items)
                                      [type-preview-list        preview-id preview-props]
                                      [type-preview-placeholder preview-id preview-props])]
                    :indent  indent}])

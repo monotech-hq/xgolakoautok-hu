@@ -1,13 +1,14 @@
 
 (ns app.vehicle-models.frontend.editor.views
-    (:require [app.common.frontend.api  :as common]
-              [app.storage.frontend.api :as storage]
-              [elements.api             :as elements]
-              [engines.item-editor.api  :as item-editor]
-              [engines.item-lister.api  :as item-lister]
-              [forms.api                :as forms]
-              [layouts.surface-a.api    :as surface-a]
-              [re-frame.api             :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [app.storage.frontend.api    :as storage]
+              [elements.api                :as elements]
+              [engines.item-editor.api     :as item-editor]
+              [engines.item-lister.api     :as item-lister]
+              [forms.api                   :as forms]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -159,24 +160,24 @@
         model-name       @(r/subscribe [:x.db/get-item [:vehicle-models :editor/edited-item :name]])
         model-id         @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         model-uri         (str "/@app-home/vehicle-models/" model-id)]
-       [common/surface-breadcrumbs :vehicle-models.editor/view
-                                   {:crumbs (if model-id [{:label :app-home       :route "/@app-home"}
-                                                          {:label :vehicle-models :route "/@app-home/vehicle-models"}
-                                                          {:label model-name      :route model-uri :placeholder :unnamed-vehicle-model}
-                                                          {:label :edit!}]
-                                                         [{:label :app-home       :route "/@app-home"}
-                                                          {:label :vehicle-models :route "/@app-home/vehicle-models"}
-                                                          {:label :add!}])
-                                    :disabled? editor-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs (if model-id [{:label :app-home       :route "/@app-home"}
+                                                              {:label :vehicle-models :route "/@app-home/vehicle-models"}
+                                                              {:label model-name      :route model-uri :placeholder :unnamed-vehicle-model}
+                                                              {:label :edit!}]
+                                                             [{:label :app-home       :route "/@app-home"}
+                                                              {:label :vehicle-models :route "/@app-home/vehicle-models"}
+                                                              {:label :add!}])
+                                        :disabled? editor-disabled?}]))
 
 (defn- label
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :vehicle-models.editor])
         model-name       @(r/subscribe [:x.db/get-item [:vehicle-models :editor/edited-item :name]])]
-       [common/surface-label :vehicle-models.editor/view
-                             {:disabled?   editor-disabled?
-                              :label       model-name
-                              :placeholder :unnamed-vehicle-model}]))
+       [components/surface-label ::label
+                                 {:disabled?   editor-disabled?
+                                  :label       model-name
+                                  :placeholder :unnamed-vehicle-model}]))
 
 (defn- header
   []
@@ -200,7 +201,7 @@
   [item-editor/body :vehicle-models.editor
                     {:auto-title?      true
                      :form-element     #'view-structure
-                     :error-element    [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                     :error-element    [components/error-content {:error :the-item-you-opened-may-be-broken}]
                      :ghost-element    #'common/item-editor-ghost-element
                      :item-path        [:vehicle-models :editor/edited-item]
                      :label-key        :name

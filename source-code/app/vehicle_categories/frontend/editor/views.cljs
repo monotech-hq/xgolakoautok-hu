@@ -1,12 +1,13 @@
 
 (ns app.vehicle-categories.frontend.editor.views
-    (:require [app.common.frontend.api  :as common]
-              [app.storage.frontend.api :as storage]
-              [elements.api             :as elements]
-              [engines.item-editor.api  :as item-editor]
-              [forms.api                :as forms]
-              [layouts.surface-a.api    :as surface-a]
-              [re-frame.api             :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [app.storage.frontend.api    :as storage]
+              [elements.api                :as elements]
+              [engines.item-editor.api     :as item-editor]
+              [forms.api                   :as forms]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -174,24 +175,24 @@
         category-name    @(r/subscribe [:x.db/get-item [:vehicle-categories :editor/edited-item :name]])
         category-id      @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         category-uri      (str "/@app-home/vehicle-categories/" category-id)]
-       [common/surface-breadcrumbs :vehicle-categories.editor/view
-                                   {:crumbs (if category-id [{:label :app-home           :route "/@app-home"}
-                                                             {:label :vehicle-categories :route "/@app-home/vehicle-categories"}
-                                                             {:label category-name       :route category-uri :placeholder :unnamed-vehicle-category}
-                                                             {:label :edit!}]
-                                                            [{:label :app-home           :route "/@app-home"}
-                                                             {:label :vehicle-categories :route "/@app-home/vehicle-categories"}
-                                                             {:label :add!}])
-                                    :disabled? editor-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs (if category-id [{:label :app-home           :route "/@app-home"}
+                                                                 {:label :vehicle-categories :route "/@app-home/vehicle-categories"}
+                                                                 {:label category-name       :route category-uri :placeholder :unnamed-vehicle-category}
+                                                                 {:label :edit!}]
+                                                                [{:label :app-home           :route "/@app-home"}
+                                                                 {:label :vehicle-categories :route "/@app-home/vehicle-categories"}
+                                                                 {:label :add!}])
+                                        :disabled? editor-disabled?}]))
 
 (defn- label
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :vehicle-categories.editor])
         category-name    @(r/subscribe [:x.db/get-item [:vehicle-categories :editor/edited-item :name]])]
-       [common/surface-label :vehicle-categories.editor/view
-                             {:disabled?   editor-disabled?
-                              :label       category-name
-                              :placeholder :unnamed-vehicle-category}]))
+       [components/surface-label ::label
+                                 {:disabled?   editor-disabled?
+                                  :label       category-name
+                                  :placeholder :unnamed-vehicle-category}]))
 
 (defn- header
   []
@@ -215,7 +216,7 @@
   [item-editor/body :vehicle-categories.editor
                     {:auto-title?      true
                      :form-element     #'view-structure
-                     :error-element    [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                     :error-element    [components/error-content {:error :the-item-you-opened-may-be-broken}]
                      :ghost-element    #'common/item-editor-ghost-element
                      :initial-item     {:visibility :public}
                      :item-path        [:vehicle-categories :editor/edited-item]

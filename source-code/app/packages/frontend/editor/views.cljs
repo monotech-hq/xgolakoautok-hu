@@ -1,13 +1,14 @@
 
 (ns app.packages.frontend.editor.views
-    (:require [app.common.frontend.api  :as common]
-              [app.storage.frontend.api :as storage]
-              [elements.api             :as elements]
-              [engines.item-editor.api  :as item-editor]
-              [engines.item-lister.api  :as item-lister]
-              [forms.api                :as forms]
-              [layouts.surface-a.api    :as surface-a]
-              [re-frame.api             :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [app.storage.frontend.api    :as storage]
+              [elements.api                :as elements]
+              [engines.item-editor.api     :as item-editor]
+              [engines.item-lister.api     :as item-lister]
+              [forms.api                   :as forms]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -234,24 +235,24 @@
         package-name @(r/subscribe [:x.db/get-item [:packages :editor/edited-item :name]])
         package-id   @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         package-uri   (str "/@app-home/packages/" package-id)]
-       [common/surface-breadcrumbs :packages.editor/view
-                                   {:crumbs (if package-id [{:label :app-home    :route "/@app-home"}
-                                                            {:label :packages    :route "/@app-home/packages"}
-                                                            {:label package-name :route package-uri :placeholder :unnamed-package}
-                                                            {:label :edit!}]
-                                                           [{:label :app-home    :route "/@app-home"}
-                                                            {:label :packages    :route "/@app-home/packages"}
-                                                            {:label :add!}])
-                                    :disabled? editor-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs (if package-id [{:label :app-home    :route "/@app-home"}
+                                                                {:label :packages    :route "/@app-home/packages"}
+                                                                {:label package-name :route package-uri :placeholder :unnamed-package}
+                                                                {:label :edit!}]
+                                                               [{:label :app-home    :route "/@app-home"}
+                                                                {:label :packages    :route "/@app-home/packages"}
+                                                                {:label :add!}])
+                                        :disabled? editor-disabled?}]))
 
 (defn- label
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :packages.editor])
         package-name     @(r/subscribe [:x.db/get-item [:packages :editor/edited-item :name]])]
-       [common/surface-label :packages.editor/view
-                             {:disabled?   editor-disabled?
-                              :label       package-name
-                              :placeholder :unnamed-package}]))
+       [components/surface-label ::label
+                                 {:disabled?   editor-disabled?
+                                  :label       package-name
+                                  :placeholder :unnamed-package}]))
 
 (defn- header
   []
@@ -275,7 +276,7 @@
   [item-editor/body :packages.editor
                     {:auto-title?      true
                      :form-element     #'view-structure
-                     :error-element    [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                     :error-element    [components/error-content {:error :the-item-you-opened-may-be-broken}]
                      :ghost-element    #'common/item-editor-ghost-element
                      :initial-item     {:automatic-pricing? true :quantity-unit {:label :unit :value :n-units}}
                      :item-path        [:packages :editor/edited-item]

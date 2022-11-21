@@ -1,11 +1,12 @@
 
 (ns app.website-dictionary.frontend.editor.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [engines.file-editor.api :as file-editor]
-              [forms.api               :as forms]
-              [layouts.surface-a.api   :as surface-a]
-              [re-frame.api            :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [engines.file-editor.api     :as file-editor]
+              [forms.api                   :as forms]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -55,17 +56,17 @@
 (defn- breadcrumbs
   []
   (let [editor-disabled? @(r/subscribe [:file-editor/editor-disabled? :website-dictionary.editor])]
-       [common/surface-breadcrumbs :website-dictionary.editor/view
-                                   {:crumbs [{:label :app-home :route "/@app-home"}
-                                             {:label :website-dictionary}]
-                                    :disabled? editor-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home :route "/@app-home"}
+                                                 {:label :website-dictionary}]
+                                        :disabled? editor-disabled?}]))
 
 (defn- label
   []
   (let [editor-disabled? @(r/subscribe [:file-editor/editor-disabled? :website-dictionary.editor])]
-       [common/surface-label :website-dictionary.editor/view
-                             {:disabled? editor-disabled?
-                              :label     :website-dictionary}]))
+       [components/surface-label ::label
+                                 {:disabled? editor-disabled?
+                                  :label     :website-dictionary}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -90,7 +91,7 @@
   [file-editor/body :website-dictionary.editor
                     {:content-path  [:website-dictionary :editor/edited-item]
                      :form-element  #'view-structure
-                     :error-element [common/error-content {:error :the-content-you-opened-may-be-broken}]
+                     :error-element [components/error-content {:error :the-content-you-opened-may-be-broken}]
                      :ghost-element #'common/file-editor-ghost-element}])
 
 (defn view

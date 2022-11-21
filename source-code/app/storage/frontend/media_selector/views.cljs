@@ -1,6 +1,7 @@
 
 (ns app.storage.frontend.media-selector.views
     (:require [app.common.frontend.api          :as common]
+              [app.components.frontend.api      :as components]
               [app.storage.frontend.core.config :as core.config]
               [elements.api                     :as elements]
               [engines.item-browser.api         :as item-browser]
@@ -36,9 +37,9 @@
         size        (str (-> size io/B->MB format/decimals (str " MB\u00A0\u00A0\u00A0|\u00A0\u00A0\u00A0"))
                          (x.components/content {:content :n-items :replacements [(count items)]}))
         icon-family (if (empty? items) :material-icons-outlined :material-icons-filled)]
-       [common/list-item-structure {:cells [[common/list-item-thumbnail    {:icon :folder :icon-family icon-family}]
+       [common/list-item-structure {:cells [[    {:icon :folder :icon-family icon-family}]
                                             [common/list-item-primary-cell {:label alias :description size :timestamp timestamp :stretch? true}]
-                                            [common/list-item-marker       {:icon :navigate_next}]]
+                                            [components/list-item-marker       {:icon :navigate_next}]]
                                     :separator (if-not item-last? :bottom)}]))
 
 (defn- directory-item
@@ -52,7 +53,7 @@
   (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
         item-last? @(r/subscribe [:item-lister/item-last? selector-id item-dex])
         size        (-> size io/B->MB format/decimals (str " MB"))]
-       [common/list-item-structure {:cells [[common/list-item-thumbnail (if (io/filename->image? alias)
+       [common/list-item-structure {:cells [[ (if (io/filename->image? alias)
                                                                             {:thumbnail (x.media/filename->media-thumbnail-uri filename)}
                                                                             {:icon :insert_drive_file :icon-family :material-icons-outlined})]
                                             [common/list-item-primary-cell {:label alias :description size :timestamp timestamp :stretch? true}]
@@ -75,21 +76,22 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- media-list
-  [lister-id items]
-  [common/item-list lister-id {:item-element #'media-item :items items}])
+  []
+  (let [items @(r/subscribe [:item-browser/get-downloaded-items :storage.media-selector])]
+       [common/item-list :storage.media-selector {:item-element #'media-item :items items}]))
 
 (defn- media-browser
   []
   [item-browser/body :storage.media-selector
                      {:default-item-id  core.config/ROOT-DIRECTORY-ID
                       :default-order-by :modified-at/descending
-                      :error-element    [common/error-content {:error :the-content-you-opened-may-be-broken}]
-                      :ghost-element    #'common/item-selector-ghost-element
                       :item-path        [:storage :media-selector/browsed-item]
-                      :items-key        :items
                       :items-path       [:storage :media-selector/downloaded-items]
+                      :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
+                      :ghost-element    [common/item-selector-ghost-element]
+                      :list-element     [media-list]
+                      :items-key        :items
                       :label-key        :alias
-                      :list-element     #'media-list
                       :path-key         :path}])
 
 (defn- body
@@ -177,12 +179,12 @@
 (defn- header
   [selector-id]
   (let [header-label @(r/subscribe [:item-browser/get-current-item-label :storage.media-selector])]
-       [:<> [common/popup-label-bar :storage.media-selector/view
-                                    {:primary-button   {:label :save! :on-click [:item-selector/save-selection! :storage.media-selector]}
-                                     :secondary-button (if-let [autosaving? @(r/subscribe [:item-selector/autosaving? :storage.media-selector])]
-                                                               {:label :abort!  :on-click [:item-selector/abort-autosave! :storage.media-selector]}
-                                                               {:label :cancel! :on-click [:x.ui/remove-popup! :storage.media-selector/view]})
-                                     :label header-label}]
+       [:<> [components/popup-label-bar :storage.media-selector/view
+                                        {:primary-button   {:label :save! :on-click [:item-selector/save-selection! :storage.media-selector]}
+                                         :secondary-button (if-let [autosaving? @(r/subscribe [:item-selector/autosaving? :storage.media-selector])]
+                                                                   {:label :abort!  :on-click [:item-selector/abort-autosave! :storage.media-selector]}
+                                                                   {:label :cancel! :on-click [:x.ui/remove-popup! :storage.media-selector/view]})
+                                         :label header-label}]
             (if-let [first-data-received? @(r/subscribe [:item-browser/first-data-received? :storage.media-selector])]
                     [control-bar]
                     [elements/horizontal-separator {:size :xxl}])]))

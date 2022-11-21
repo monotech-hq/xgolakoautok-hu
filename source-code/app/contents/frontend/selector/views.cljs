@@ -1,6 +1,7 @@
 
 (ns app.contents.frontend.selector.views
     (:require [app.common.frontend.api               :as common]
+              [app.components.frontend.api           :as components]
               [app.contents.frontend.handler.helpers :as handler.helpers]
               [elements.api                          :as elements]
               [engines.item-lister.api               :as item-lister]
@@ -16,7 +17,7 @@
   (let [timestamp   @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
         item-last?  @(r/subscribe [:item-lister/item-last? selector-id item-dex])
         content-body (-> body handler.helpers/parse-content-body hiccup/to-string)]
-       [common/list-item-structure {:cells [[common/list-item-thumbnail {:icon :article :icon-family :material-icons-outlined}]
+       [common/list-item-structure {:cells [[components/list-item-thumbnail {:icon :article :icon-family :material-icons-outlined}]
                                             ; HACK#4506
                                             [:div {:style {:flex-grow 1 :max-width "calc(100% - 144px)" :padding-right "24px"}}
                                                   [common/list-item-primary-cell {:label name :placeholder :unnamed-content :description content-body :timestamp timestamp}]]
@@ -33,17 +34,18 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- content-list
-  [lister-id items]
-  [common/item-list lister-id {:item-element #'content-item :items items}])
+  []
+  (let [items @(r/subscribe [:item-lister/get-downloaded-items :contents.selector])]
+       [common/item-list :contents.selector {:item-element #'content-item :items items}]))
 
 (defn- content-lister
   []
   [item-lister/body :contents.selector
                     {:default-order-by :modified-at/descending
                      :items-path       [:contents :selector/downloaded-items]
-                     :error-element    [common/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    #'common/item-selector-ghost-element
-                     :list-element     #'content-list}])
+                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
+                     :ghost-element    [common/item-selector-ghost-element]
+                     :list-element     [content-list]}])
 
 (defn- body
   []
@@ -65,12 +67,12 @@
 (defn- label-bar
   []
   (let [multi-select? @(r/subscribe [:item-lister/get-meta-item :contents.selector :multi-select?])]
-       [common/popup-label-bar :contents.selector/view
-                               {:primary-button   {:label :save! :on-click [:item-selector/save-selection! :contents.selector]}
-                                :secondary-button (if-let [autosaving? @(r/subscribe [:item-selector/autosaving? :contents.selector])]
-                                                          {:label :abort!  :on-click [:item-selector/abort-autosave! :contents.selector]}
-                                                          {:label :cancel! :on-click [:x.ui/remove-popup! :contents.selector/view]})
-                                :label            (if multi-select? :select-contents! :select-content!)}]))
+       [components/popup-label-bar :contents.selector/view
+                                   {:primary-button   {:label :save! :on-click [:item-selector/save-selection! :contents.selector]}
+                                    :secondary-button (if-let [autosaving? @(r/subscribe [:item-selector/autosaving? :contents.selector])]
+                                                              {:label :abort!  :on-click [:item-selector/abort-autosave! :contents.selector]}
+                                                              {:label :cancel! :on-click [:x.ui/remove-popup! :contents.selector/view]})
+                                    :label            (if multi-select? :select-contents! :select-content!)}]))
 
 (defn- header
   []

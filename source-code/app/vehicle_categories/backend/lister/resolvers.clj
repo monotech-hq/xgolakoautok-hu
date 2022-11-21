@@ -23,15 +23,15 @@
         :all-item-count (mongo-db/count-documents-by-pipeline "vehicle_categories" count-pipeline)}))
 
 (defresolver get-items
-             ; @param (map) env
-             ; @param (map) resolver-props
-             ;
-             ; @return (namespaced map)
-             ;  {:vehicle-categories.lister/get-items (map)
-             ;    {:document-count (integer)
-             ;     :documents (namespaced maps in vector)}}
-             [env resolver-props]
-             {:vehicle-categories.lister/get-items (get-items-f env resolver-props)})
+  ; @param (map) env
+  ; @param (map) resolver-props
+  ;
+  ; @return (namespaced map)
+  ;  {:vehicle-categories.lister/get-items (map)
+  ;    {:document-count (integer)
+  ;     :documents (namespaced maps in vector)}}
+  [env resolver-props]
+  {:vehicle-categories.lister/get-items (get-items-f env resolver-props)})
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

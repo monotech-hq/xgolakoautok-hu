@@ -2,6 +2,7 @@
 (ns app.price-quotes.frontend.editor.views
     (:require [app.clients.frontend.api                 :as clients]
               [app.common.frontend.api                  :as common]
+              [app.components.frontend.api              :as components]
               [app.contents.frontend.api                :as contents]
               [app.vehicle-models.frontend.api          :as vehicle-models]
               [app.packages.frontend.api                :as packages]
@@ -689,24 +690,24 @@
         price-quote-name @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :name]])
         price-quote-id   @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         price-quote-uri   (str "/@app-home/price-quotes/" price-quote-id)]
-       [common/surface-breadcrumbs :price-quotes.editor/view
-                                   {:crumbs (if price-quote-id [{:label :app-home        :route "/@app-home"}
-                                                                {:label :price-quotes    :route "/@app-home/price-quotes"}
-                                                                {:label price-quote-name :route price-quote-uri}
-                                                                {:label :edit!}]
-                                                               [{:label :app-home        :route "/@app-home"}
-                                                                {:label :price-quotes    :route "/@app-home/price-quotes"}
-                                                                {:label :add!}])
-                                    :disabled? editor-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs (if price-quote-id [{:label :app-home        :route "/@app-home"}
+                                                                    {:label :price-quotes    :route "/@app-home/price-quotes"}
+                                                                    {:label price-quote-name :route price-quote-uri}
+                                                                    {:label :edit!}]
+                                                                   [{:label :app-home        :route "/@app-home"}
+                                                                    {:label :price-quotes    :route "/@app-home/price-quotes"}
+                                                                    {:label :add!}])
+                                        :disabled? editor-disabled?}]))
 
 (defn- label
   []
   (let [price-quote-name @(r/subscribe [:x.db/get-item [:price-quotes :editor/edited-item :name]])
         editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :price-quotes.editor])]
-       [common/surface-label :price-quotes.editor/view
-                             {:disabled?   editor-disabled?
-                              :label       {:content :price-quote-n :replacements [price-quote-name]}
-                              :placeholder :new-price-quote}]))
+       [components/surface-label ::label
+                                 {:disabled?   editor-disabled?
+                                  :label       {:content :price-quote-n :replacements [price-quote-name]}
+                                  :placeholder :new-price-quote}]))
 
 (defn- header
   []
@@ -732,7 +733,7 @@
        [item-editor/body :price-quotes.editor
                          {:auto-title?      true
                           :form-element     #'view-structure
-                          :error-element    [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                          :error-element    [components/error-content {:error :the-item-you-opened-may-be-broken}]
                           :ghost-element    #'common/item-editor-ghost-element
                           :initial-item     initial-values
                           :item-path        [:price-quotes :editor/edited-item]

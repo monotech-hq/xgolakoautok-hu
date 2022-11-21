@@ -1,10 +1,11 @@
 
 (ns app.rental-vehicles.frontend.lister.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [engines.item-lister.api :as item-lister]
-              [layouts.surface-a.api   :as surface-a]
-              [re-frame.api            :as r]
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [engines.item-lister.api     :as item-lister]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]
 
               ; TEMP
               [plugins.dnd-kit.api :as dnd-kit]))
@@ -21,21 +22,21 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- vehicle-item-structure
-  [lister-id item-dex {:keys [modified-at name thumbnail]} {:keys [handle-attributes] :as drag-props}]
+  [item-dex {:keys [modified-at name thumbnail]} {:keys [handle-attributes] :as drag-props}]
   (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
-        item-last? @(r/subscribe [:item-lister/item-last? lister-id item-dex])]
-       [common/list-item-structure {:cells [[common/list-item-drag-handle {:indent {:left :xs} :drag-attributes handle-attributes}]
-                                            [common/list-item-thumbnail    {:thumbnail (:media/uri thumbnail)}]
+        item-last? @(r/subscribe [:item-lister/item-last? :rental-vehicles.lister item-dex])]
+       [common/list-item-structure {:cells [[components/list-item-drag-handle {:indent {:left :xs} :drag-attributes handle-attributes}]
+                                            [    {:thumbnail (:media/uri thumbnail)}]
                                             [common/list-item-primary-cell {:label name :stretch? true :placeholder :unnamed-vehicle}]
                                             [common/list-item-detail       {:content timestamp :width "160px"}]
-                                            [common/list-item-marker       {:icon :navigate_next}]]
+                                            [components/list-item-marker       {:icon :navigate_next}]]
                                     :separator (if-not item-last? :bottom)}]))
 
 (defn vehicle-item
-  [lister-id item-dex {:keys [id] :as item} {:keys [dragging? item-attributes] :as drag-props}]
+  [item-dex {:keys [id] :as item} {:keys [dragging? item-attributes] :as drag-props}]
   [:div item-attributes
         [elements/toggle {:background-color (if dragging? :highlight)
-                          :content          [vehicle-item-structure lister-id item-dex item drag-props]
+                          :content          [vehicle-item-structure item-dex item drag-props]
                           :hover-color      :highlight
                           :on-click         [:x.router/go-to! (str "/@app-home/rental-vehicles/"id)]}]])
 
@@ -43,12 +44,13 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- vehicle-list
-  [_ items]
-  [dnd-kit/body :rental-vehicles.lister
-                {:items            items
-                 :item-id-f        :id
-                 :item-element     #'vehicle-item
-                 :on-order-changed (fn [_ _ %] (r/dispatch-sync [:item-lister/reorder-items! :rental-vehicles.lister %]))}])
+  []
+  (let [items @(r/subscribe [:item-lister/get-downloaded-items :rental-vehicles.lister])]
+       [dnd-kit/body :rental-vehicles.lister
+                     {:items            items
+                      :item-id-f        :id
+                      :item-element     #'vehicle-item
+                      :on-order-changed (fn [_ _ %] (r/dispatch-sync [:item-lister/reorder-items! :rental-vehicles.lister %]))}]))
 
 (defn- vehicle-lister-body
   []
@@ -56,9 +58,9 @@
                     {:default-order-by :order/ascending
                      :order-key        :order
                      :items-path       [:rental-vehicles :lister/downloaded-items]
-                     :error-element    [common/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    #'common/item-lister-ghost-element
-                     :list-element     #'vehicle-list}])
+                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
+                     :ghost-element    [common/item-lister-ghost-element]
+                     :list-element     [vehicle-list]}])
 
 (defn- vehicle-lister-header
   []
@@ -103,17 +105,17 @@
 (defn- breadcrumbs
   []
   (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :rental-vehicles.lister])]
-       [common/surface-breadcrumbs :rental-vehicles.lister/view
-                                   {:crumbs [{:label :app-home :route "/@app-home"}
-                                             {:label :rental-vehicles}]
-                                    :disabled? lister-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home :route "/@app-home"}
+                                                 {:label :rental-vehicles}]
+                                        :disabled? lister-disabled?}]))
 
 (defn- label
   []
   (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :rental-vehicles.lister])]
-       [common/surface-label :rental-vehicles.lister/view
-                             {:disabled? lister-disabled?
-                              :label     :rental-vehicles}]))
+       [components/surface-label ::label
+                                 {:disabled? lister-disabled?
+                                  :label     :rental-vehicles}]))
 
 (defn- header
   []

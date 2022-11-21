@@ -40,7 +40,7 @@
   ;  [surface-label {...}]
   ;
   ; @usage
-  ;  [surface-label :my-label {...}]
+  ;  [surface-label :my-surface-label {...}]
   ([label-props]
    [component (random/generate-keyword) label-props])
 

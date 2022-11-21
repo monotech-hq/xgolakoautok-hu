@@ -102,7 +102,7 @@
   [preview-id preview-props item-dex {:client/keys [id] :as client-link} {:keys [handle-attributes item-attributes]}]
   [:div (update item-attributes :style merge {:align-items "center" :display "flex" :grid-column-gap "18px"})
         (if @(r/subscribe [:item-preview/data-received? (keyword id)])
-             [common/list-item-drag-handle {:drag-attributes handle-attributes}])
+             [components/list-item-drag-handle {:drag-attributes handle-attributes}])
         [client-preview-static-body preview-id preview-props client-link]])
 
 ;; ----------------------------------------------------------------------------
@@ -171,7 +171,7 @@
   [preview-id {:keys [indent items] :as preview-props}]
   [elements/blank preview-id
                   {:content [:<> [client-preview-label preview-id preview-props]
-                                 (if (vector/nonempty? items)
+                                 (if (vector/nonempty?           items)
                                      [client-preview-list        preview-id preview-props]
                                      [client-preview-placeholder preview-id preview-props])]
                    :indent  indent}])

@@ -1,10 +1,11 @@
 
 (ns app.products.frontend.selector.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [engines.item-lister.api :as item-lister]
-              [layouts.popup-a.api     :as popup-a]
-              [re-frame.api            :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [engines.item-lister.api     :as item-lister]
+              [layouts.popup-a.api         :as popup-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -28,11 +29,11 @@
         item-number    {:content :item-number-n :replacements [item-number]}
         item-count     {:content (:value quantity-unit) :replacements [product-count]}]
        [common/list-item-structure {:cells [[common/selector-item-counter  selector-id item-dex {:item-id id}]
-                                            [common/list-item-thumbnail    {:thumbnail (:media/uri thumbnail)}]
-                                            [common/list-item-cell {:rows [{:content name :placeholder :unnamed-product}
-                                                                           {:content item-number :font-size :xs :color :muted}
-                                                                           {:content item-count  :font-size :xs :color :muted}]
-                                                                    :width :stretch}]
+                                            [components/list-item-thumbnail    {:thumbnail (:media/uri thumbnail)}]
+                                            [components/list-item-cell {:rows [{:content name :placeholder :unnamed-product}
+                                                                               {:content item-number :font-size :xs :color :muted}
+                                                                               {:content item-count  :font-size :xs :color :muted}]
+                                                                        :width :stretch}]
                                             [common/selector-item-marker   selector-id item-dex {:item-id id}]]
                                     :separator (if-not item-last? :bottom)}]))
 
@@ -46,17 +47,18 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- product-list
-  [lister-id items]
-  [common/item-list lister-id {:item-element #'product-item :items items}])
+  []
+  (let [items @(r/subscribe [:item-lister/get-downloaded-items :products.selector])]
+       [common/item-list :products.selector {:item-element #'product-item :items items}]))
 
 (defn- product-lister
   []
   [item-lister/body :products.selector
                     {:default-order-by :modified-at/descending
                      :items-path       [:products :selector/downloaded-items]
-                     :error-element    [common/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    #'common/item-selector-ghost-element
-                     :list-element     #'product-list}])
+                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
+                     :ghost-element    [common/item-selector-ghost-element]
+                     :list-element     [product-list]}])
 
 (defn- body
   []
@@ -78,10 +80,10 @@
 (defn- label-bar
   []
   (let [multi-select? @(r/subscribe [:item-lister/get-meta-item :products.selector :multi-select?])]
-       [common/popup-label-bar :products.selector/view
-                               {:primary-button   {:label :save!   :on-click [:item-selector/save-selection! :products.selector]}
-                                :secondary-button {:label :cancel! :on-click [:x.ui/remove-popup! :products.selector/view]}
-                                :label            (if multi-select? :select-products! :select-product!)}]))
+       [components/popup-label-bar :products.selector/view
+                                   {:primary-button   {:label :save!   :on-click [:item-selector/save-selection! :products.selector]}
+                                    :secondary-button {:label :cancel! :on-click [:x.ui/remove-popup! :products.selector/view]}
+                                    :label            (if multi-select? :select-products! :select-product!)}]))
 
 (defn- header
   []

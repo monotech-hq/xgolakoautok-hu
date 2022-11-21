@@ -1,13 +1,14 @@
 
 (ns app.contents.frontend.editor.views
-    (:require [app.common.frontend.api  :as common]
-              [app.storage.frontend.api :as storage]
-              [elements.api             :as elements]
-              [engines.item-editor.api  :as item-editor]
-              [engines.text-editor.api  :as text-editor]
-              [forms.api                :as forms]
-              [layouts.surface-a.api    :as surface-a]
-              [re-frame.api             :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [app.storage.frontend.api    :as storage]
+              [elements.api                :as elements]
+              [engines.item-editor.api     :as item-editor]
+              [engines.text-editor.api     :as text-editor]
+              [forms.api                   :as forms]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -140,24 +141,24 @@
         content-name     @(r/subscribe [:x.db/get-item [:contents :editor/edited-item :name]])
         content-id       @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         content-uri       (str "/@app-home/contents/" content-id)]
-       [common/surface-breadcrumbs :contents.editor/view
-                                   {:crumbs (if content-id [{:label :app-home    :route "/@app-home"}
-                                                            {:label :contents    :route "/@app-home/contents"}
-                                                            {:label content-name :route content-uri :placeholder :unnamed-content}
-                                                            {:label :edit!}]
-                                                           [{:label :app-home    :route "/@app-home"}
-                                                            {:label :contents    :route "/@app-home/contents"}
-                                                            {:label :add!}])
-                                    :disabled? editor-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs (if content-id [{:label :app-home    :route "/@app-home"}
+                                                                {:label :contents    :route "/@app-home/contents"}
+                                                                {:label content-name :route content-uri :placeholder :unnamed-content}
+                                                                {:label :edit!}]
+                                                               [{:label :app-home    :route "/@app-home"}
+                                                                {:label :contents    :route "/@app-home/contents"}
+                                                                {:label :add!}])
+                                        :disabled? editor-disabled?}]))
 
 (defn- label
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :contents.editor])
         content-name     @(r/subscribe [:x.db/get-item [:contents :editor/edited-item :name]])]
-       [common/surface-label :contents.editor/view
-                             {:disabled?   editor-disabled?
-                              :label       content-name
-                              :placeholder :unnamed-content}]))
+       [components/surface-label ::label
+                                 {:disabled?   editor-disabled?
+                                  :label       content-name
+                                  :placeholder :unnamed-content}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -182,7 +183,7 @@
   [item-editor/body :contents.editor
                     {:auto-title?      true
                      :form-element     #'view-structure
-                     :error-element    [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                     :error-element    [components/error-content {:error :the-item-you-opened-may-be-broken}]
                      :ghost-element    #'common/item-editor-ghost-element
                      :initial-item     {:visibility :public}
                      :item-path        [:contents :editor/edited-item]

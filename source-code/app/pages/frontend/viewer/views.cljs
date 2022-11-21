@@ -1,11 +1,12 @@
 
 (ns app.pages.frontend.viewer.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [engines.item-lister.api :as item-lister]
-              [engines.item-viewer.api :as item-viewer]
-              [layouts.surface-a.api   :as surface-a]
-              [re-frame.api            :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [engines.item-lister.api     :as item-lister]
+              [engines.item-viewer.api     :as item-viewer]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -52,20 +53,20 @@
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :pages.viewer])
         page-name        @(r/subscribe [:x.db/get-item [:pages :viewer/viewed-item :name]])]
-       [common/surface-breadcrumbs :pages.viewer/view
-                                   {:crumbs [{:label :app-home :route "/@app-home"}
-                                             {:label :pages    :route "/@app-home/pages"}
-                                             {:label page-name :placeholder :unnamed-page}]
-                                    :disabled? viewer-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home :route "/@app-home"}
+                                                 {:label :pages    :route "/@app-home/pages"}
+                                                 {:label page-name :placeholder :unnamed-page}]
+                                        :disabled? viewer-disabled?}]))
 
 (defn- label
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :pages.viewer])
         page-name        @(r/subscribe [:x.db/get-item [:pages :viewer/viewed-item :name]])]
-       [common/surface-label :pages.viewer/view
-                             {:disabled?   viewer-disabled?
-                              :label       page-name
-                              :placeholder :unnamed-page}]))
+       [components/surface-label ::label
+                                 {:disabled?   viewer-disabled?
+                                  :label       page-name
+                                  :placeholder :unnamed-page}]))
 
 (defn- header
   []
@@ -89,7 +90,7 @@
   []
   [item-viewer/body :pages.viewer
                     {:auto-title?   true
-                     :error-element [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                     :error-element [components/error-content {:error :the-item-you-opened-may-be-broken}]
                      :ghost-element #'common/item-viewer-ghost-element
                      :item-element  #'view-structure
                      :item-path     [:pages :viewer/viewed-item]

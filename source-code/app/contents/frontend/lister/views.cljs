@@ -1,6 +1,7 @@
 
 (ns app.contents.frontend.lister.views
     (:require [app.common.frontend.api               :as common]
+              [app.components.frontend.api           :as components]
               [app.contents.frontend.handler.helpers :as handler.helpers]
               [elements.api                          :as elements]
               [engines.item-lister.api               :as item-lister]
@@ -16,14 +17,14 @@
   (let [timestamp   @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
         item-last?  @(r/subscribe [:item-lister/item-last? lister-id item-dex])
         content-body (-> body handler.helpers/parse-content-body hiccup/to-string)]
-       [common/list-item-structure {:cells [[common/list-item-thumbnail {:icon :article :icon-family :material-icons-outlined}]
+       [common/list-item-structure {:cells [[components/list-item-thumbnail {:icon :article :icon-family :material-icons-outlined}]
                                             ; HACK#4506
                                             ; A túl hosszú tartalom ne lógjon ki az elemből!
                                             ; Ez a megoldás ideiglenes!
                                             [:div {:style {:flex-grow 1 :max-width "calc(100% - 304px)" :padding-right "24px"}}
                                                   [common/list-item-primary-cell {:label name :placeholder :unnamed-content :description content-body}]]
                                             [common/list-item-detail {:content timestamp :width "160px"}]
-                                            [common/list-item-marker {:icon    :navigate_next}]]
+                                            [components/list-item-marker {:icon    :navigate_next}]]
                                     :separator (if-not item-last? :bottom)}]))
 
 (defn- content-item
@@ -36,17 +37,18 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- content-list
-  [lister-id items]
-  [common/item-list lister-id {:item-element #'content-item :items items}])
+  []
+  (let [items @(r/subscribe [:item-lister/get-downloaded-items :contents.lister])]
+       [common/item-list :contents.lister {:item-element #'content-item :items items}]))
 
 (defn- content-lister-body
   []
   [item-lister/body :contents.lister
                     {:default-order-by :modified-at/descending
                      :items-path       [:contents :lister/downloaded-items]
-                     :error-element    [common/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    #'common/item-lister-ghost-element
-                     :list-element     #'content-list}])
+                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
+                     :ghost-element    [common/item-lister-ghost-element]
+                     :list-element     [content-list]}])
 
 (defn- content-lister-header
   []
@@ -84,17 +86,17 @@
 (defn- breadcrumbs
   []
   (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :contents.lister])]
-       [common/surface-breadcrumbs :contents.lister/view
-                                   {:crumbs [{:label :app-home :route "/@app-home"}
-                                             {:label :contents}]
-                                    :disabled? lister-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home :route "/@app-home"}
+                                                 {:label :contents}]
+                                        :disabled? lister-disabled?}]))
 
 (defn- label
   []
   (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :contents.lister])]
-       [common/surface-label :contents.lister/view
-                             {:disabled? lister-disabled?
-                              :label     :contents}]))
+       [components/surface-label ::label
+                                 {:disabled? lister-disabled?
+                                  :label     :contents}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

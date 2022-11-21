@@ -1,13 +1,14 @@
 
 (ns app.products.frontend.viewer.views
-    (:require [app.common.frontend.api  :as common]
-              [app.storage.frontend.api :as storage]
-              [elements.api             :as elements]
-              [engines.item-lister.api  :as item-lister]
-              [engines.item-viewer.api  :as item-viewer]
-              [forms.api                :as forms]
-              [layouts.surface-a.api    :as surface-a]
-              [re-frame.api             :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [app.storage.frontend.api    :as storage]
+              [elements.api                :as elements]
+              [engines.item-lister.api     :as item-lister]
+              [engines.item-viewer.api     :as item-viewer]
+              [forms.api                   :as forms]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -184,20 +185,20 @@
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :products.viewer])
         product-name     @(r/subscribe [:x.db/get-item [:products :viewer/viewed-item :name]])]
-       [common/surface-breadcrumbs :products.viewer/view
-                                   {:crumbs [{:label :app-home    :route "/@app-home"}
-                                             {:label :products    :route "/@app-home/products"}
-                                             {:label product-name :placeholder :unnamed-product}]
-                                    :disabled? viewer-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home    :route "/@app-home"}
+                                                 {:label :products    :route "/@app-home/products"}
+                                                 {:label product-name :placeholder :unnamed-product}]
+                                        :disabled? viewer-disabled?}]))
 
 (defn- label
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :products.viewer])
         product-name     @(r/subscribe [:x.db/get-item [:products :viewer/viewed-item :name]])]
-       [common/surface-label :products.viewer/view
-                             {:disabled?   viewer-disabled?
-                              :label       product-name
-                              :placeholder :unnamed-product}]))
+       [components/surface-label ::label
+                                 {:disabled?   viewer-disabled?
+                                  :label       product-name
+                                  :placeholder :unnamed-product}]))
 
 (defn- header
   []
@@ -221,7 +222,7 @@
   []
   [item-viewer/body :products.viewer
                     {:auto-title?   true
-                     :error-element [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                     :error-element [components/error-content {:error :the-item-you-opened-may-be-broken}]
                      :ghost-element #'common/item-viewer-ghost-element
                      :item-element  #'view-structure
                      :item-path     [:products :viewer/viewed-item]

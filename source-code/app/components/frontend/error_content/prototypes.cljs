@@ -1,5 +1,5 @@
 
-(ns app.common.frontend.error-content.prototypes
+(ns app.components.frontend.error-content.prototypes
     (:require [candy.api :refer [param]]))
 
 ;; ----------------------------------------------------------------------------

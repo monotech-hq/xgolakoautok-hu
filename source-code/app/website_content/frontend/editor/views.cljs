@@ -1,15 +1,16 @@
 
 (ns app.website-content.frontend.editor.views
-    (:require [app.common.frontend.api   :as common]
-              [app.contents.frontend.api :as contents]
-              [app.storage.frontend.api  :as storage]
-              [css.api                   :as css]
-              [elements.api              :as elements]
-              [engines.file-editor.api   :as file-editor]
-              [forms.api                 :as forms]
-              [layouts.surface-a.api     :as surface-a]
-              [re-frame.api              :as r]
-              [vector.api                :as vector]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [app.contents.frontend.api   :as contents]
+              [app.storage.frontend.api    :as storage]
+              [css.api                     :as css]
+              [elements.api                :as elements]
+              [engines.file-editor.api     :as file-editor]
+              [forms.api                   :as forms]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]
+              [vector.api                  :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -344,17 +345,17 @@
 (defn- breadcrumbs
   []
   (let [editor-disabled? @(r/subscribe [:file-editor/editor-disabled? :website-content.editor])]
-       [common/surface-breadcrumbs :website-content.editor/view
-                                   {:crumbs [{:label :app-home :route "/@app-home"}
-                                             {:label :website-content}]
-                                    :disabled? editor-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home :route "/@app-home"}
+                                                 {:label :website-content}]
+                                        :disabled? editor-disabled?}]))
 
 (defn- label
   []
   (let [editor-disabled? @(r/subscribe [:file-editor/editor-disabled? :website-content.editor])]
-       [common/surface-label :website-content.editor/view
-                             {:disabled? editor-disabled?
-                              :label     :website-content}]))
+       [components/surface-label ::label
+                                 {:disabled? editor-disabled?
+                                  :label     :website-content}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -379,7 +380,7 @@
   [file-editor/body :website-content.editor
                     {:content-path  [:website-content :editor/edited-item]
                      :form-element  #'view-structure
-                     :error-element [common/error-content {:error :the-content-you-opened-may-be-broken}]
+                     :error-element [components/error-content {:error :the-content-you-opened-may-be-broken}]
                      :ghost-element #'common/file-editor-ghost-element}])
 
 (defn view

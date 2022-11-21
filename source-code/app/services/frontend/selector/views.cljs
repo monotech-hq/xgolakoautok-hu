@@ -1,10 +1,11 @@
 
 (ns app.services.frontend.selector.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [engines.item-lister.api :as item-lister]
-              [layouts.popup-a.api     :as popup-a]
-              [re-frame.api            :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [engines.item-lister.api     :as item-lister]
+              [layouts.popup-a.api         :as popup-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -27,7 +28,7 @@
         service-count @(r/subscribe [:item-selector/get-item-count selector-id id])
         item-count     {:content (:value quantity-unit) :replacements [service-count]}]
        [common/list-item-structure {:cells [[common/selector-item-counter  selector-id item-dex {:item-id id}]
-                                            [common/list-item-thumbnail    {:icon :workspace_premium}]
+                                            [    {:icon :workspace_premium}]
                                             [common/list-item-primary-cell {:label name :timestamp timestamp :stretch? true :placeholder :unnamed-service :description item-count}]
                                             [common/selector-item-marker   selector-id item-dex {:item-id id}]]
                                     :separator (if-not item-last? :bottom)}]))
@@ -42,17 +43,18 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- service-list
-  [lister-id items]
-  [common/item-list lister-id {:item-element #'service-item :items items}])
+  [selector-id]
+  (let [items @(r/subscribe [:item-lister/get-downloaded-items :services.selector])]
+       [common/item-list :services.selector {:item-element #'service-item :items items}]))
 
 (defn- service-lister
   []
   [item-lister/body :services.selector
                     {:default-order-by :modified-at/descending
                      :items-path       [:services :selector/downloaded-items]
-                     :error-element    [common/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    #'common/item-selector-ghost-element
-                     :list-element     #'service-list}])
+                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
+                     :ghost-element    [common/item-selector-ghost-element]
+                     :list-element     [service-list]}])
 
 (defn- body
   []
@@ -74,10 +76,10 @@
 (defn- label-bar
   []
   (let [multi-select? @(r/subscribe [:item-lister/get-meta-item :services.selector :multi-select?])]
-       [common/popup-label-bar :services.selector/view
-                               {:primary-button   {:label :save!   :on-click [:item-selector/save-selection! :services.selector]}
-                                :secondary-button {:label :cancel! :on-click [:x.ui/remove-popup! :services.selector/view]}
-                                :label            (if multi-select? :select-services! :select-service!)}]))
+       [components/popup-label-bar :services.selector/view
+                                   {:primary-button   {:label :save!   :on-click [:item-selector/save-selection! :services.selector]}
+                                    :secondary-button {:label :cancel! :on-click [:x.ui/remove-popup! :services.selector/view]}
+                                    :label            (if multi-select? :select-services! :select-service!)}]))
 
 (defn- header
   []

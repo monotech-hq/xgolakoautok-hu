@@ -1,14 +1,15 @@
 
 (ns app.rental-vehicles.frontend.viewer.views
-    (:require [app.common.frontend.api   :as common]
-              [app.contents.frontend.api :as contents]
-              [app.storage.frontend.api  :as storage]
-              [elements.api              :as elements]
-              [engines.item-lister.api   :as item-lister]
-              [engines.item-viewer.api   :as item-viewer]
-              [forms.api                 :as forms]
-              [layouts.surface-a.api     :as surface-a]
-              [re-frame.api              :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [app.contents.frontend.api   :as contents]
+              [app.storage.frontend.api    :as storage]
+              [elements.api                :as elements]
+              [engines.item-lister.api     :as item-lister]
+              [engines.item-viewer.api     :as item-viewer]
+              [forms.api                   :as forms]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -274,20 +275,20 @@
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :rental-vehicles.viewer])
         vehicle-name     @(r/subscribe [:x.db/get-item [:rental-vehicles :viewer/viewed-item :name]])]
-       [common/surface-breadcrumbs :rental-vehicles.viewer/view
-                                   {:crumbs [{:label :app-home    :route "/@app-home"}
-                                             {:label :rental-vehicles    :route "/@app-home/rental-vehicles"}
-                                             {:label vehicle-name :placeholder :unnamed-vehicle}]
-                                    :disabled? viewer-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home    :route "/@app-home"}
+                                                 {:label :rental-vehicles    :route "/@app-home/rental-vehicles"}
+                                                 {:label vehicle-name :placeholder :unnamed-vehicle}]
+                                        :disabled? viewer-disabled?}]))
 
 (defn- label
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :rental-vehicles.viewer])
         vehicle-name     @(r/subscribe [:x.db/get-item [:rental-vehicles :viewer/viewed-item :name]])]
-       [common/surface-label :rental-vehicles.viewer/view
-                             {:disabled?   viewer-disabled?
-                              :label       vehicle-name
-                              :placeholder :unnamed-vehicle}]))
+       [components/surface-label ::label
+                                 {:disabled?   viewer-disabled?
+                                  :label       vehicle-name
+                                  :placeholder :unnamed-vehicle}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -311,7 +312,7 @@
   []
   [item-viewer/body :rental-vehicles.viewer
                     {:auto-title?   true
-                     :error-element [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                     :error-element [components/error-content {:error :the-item-you-opened-may-be-broken}]
                      :ghost-element #'common/item-viewer-ghost-element
                      :item-element  #'view-structure
                      :item-path     [:rental-vehicles :viewer/viewed-item]

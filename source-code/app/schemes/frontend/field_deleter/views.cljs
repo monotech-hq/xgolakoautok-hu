@@ -1,9 +1,10 @@
 
 (ns app.schemes.frontend.field-deleter.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [layouts.popup-a.api     :as popup-a]
-              [re-frame.api            :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [layouts.popup-a.api         :as popup-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -12,14 +13,14 @@
   ; @param (keyword) scheme-id
   ; @param (keyword) field-id
   [scheme-id field-id]
-  [common/popup-label-bar :schemes.field-deleter/consent
-                          {:primary-button   {:color :warning
-                                              :on-click [:schemes.field-deleter/delete-field! scheme-id field-id]
-                                              :label    :delete!
-                                              :keypress {:key-code 13}}
-                           :secondary-button {:on-click [:x.ui/remove-popup! :schemes.field-deleter/consent]
-                                              :label    :cancel!
-                                              :keypress {:key-code 27}}}])
+  [components/popup-label-bar :schemes.field-deleter/consent
+                              {:primary-button   {:color :warning
+                                                  :on-click [:schemes.field-deleter/delete-field! scheme-id field-id]
+                                                  :label    :delete!
+                                                  :keypress {:key-code 13}}
+                               :secondary-button {:on-click [:x.ui/remove-popup! :schemes.field-deleter/consent]
+                                                  :label    :cancel!
+                                                  :keypress {:key-code 27}}}])
 
 (defn field-name-label
   ; @param (keyword) scheme-id

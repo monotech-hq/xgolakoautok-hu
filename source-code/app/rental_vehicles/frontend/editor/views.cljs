@@ -1,14 +1,15 @@
 
 (ns app.rental-vehicles.frontend.editor.views
-    (:require [app.common.frontend.api   :as common]
-              [app.contents.frontend.api :as contents]
-              [app.storage.frontend.api  :as storage]
-              [elements.api              :as elements]
-              [engines.item-editor.api   :as item-editor]
-              [forms.api                 :as forms]
-              [layouts.surface-a.api     :as surface-a]
-              [re-frame.api              :as r]
-              [time.api                  :as time]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [app.contents.frontend.api   :as contents]
+              [app.storage.frontend.api    :as storage]
+              [elements.api                :as elements]
+              [engines.item-editor.api     :as item-editor]
+              [forms.api                   :as forms]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]
+              [time.api                    :as time]))
 
 ;; -----------------------------------------------------------------------------
 ;; -----------------------------------------------------------------------------
@@ -295,20 +296,20 @@
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :rental-vehicles.editor])
         vehicle-name     @(r/subscribe [:x.db/get-item [:rental-vehicles :editor/edited-item :name]])]
-       [common/surface-breadcrumbs :rental-vehicles.editor/view
-                                   {:crumbs [{:label :app-home    :route "/@app-home"}
-                                             {:label :rental-vehicles    :route "/@app-home/rental-vehicles"}
-                                             {:label vehicle-name :placeholder :unnamed-vehicle}]
-                                    :disabled? editor-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home    :route "/@app-home"}
+                                                 {:label :rental-vehicles    :route "/@app-home/rental-vehicles"}
+                                                 {:label vehicle-name :placeholder :unnamed-vehicle}]
+                                        :disabled? editor-disabled?}]))
 
 (defn- label
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :rental-vehicles.editor])
         vehicle-name     @(r/subscribe [:x.db/get-item [:rental-vehicles :editor/edited-item :name]])]
-       [common/surface-label :rental-vehicles.editor/view
-                             {:disabled?   editor-disabled?
-                              :label       vehicle-name
-                              :placeholder :unnamed-vehicle}]))
+       [components/surface-label ::label
+                                 {:disabled?   editor-disabled?
+                                  :label       vehicle-name
+                                  :placeholder :unnamed-vehicle}]))
 
 (defn- header
   []
@@ -333,7 +334,7 @@
        [item-editor/body :rental-vehicles.editor
                          {:auto-title?      true
                           :form-element     #'view-structure
-                          :error-element    [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                          :error-element    [components/error-content {:error :the-item-you-opened-may-be-broken}]
                           :ghost-element    #'common/item-editor-ghost-element
                           :initial-item     {:construction-year current-year
                                              :number-of-bunks   0

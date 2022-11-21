@@ -1,13 +1,14 @@
 
 (ns app.clients.frontend.editor.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [engines.item-editor.api :as item-editor]
-              [forms.api               :as forms]
-              [layouts.surface-a.api   :as surface-a]
-              [re-frame.api            :as r :refer [r]]
-              [string.api              :as string]
-              [x.locales.api           :as x.locales]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [engines.item-editor.api     :as item-editor]
+              [forms.api                   :as forms]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r :refer [r]]
+              [string.api                  :as string]
+              [x.locales.api               :as x.locales]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -290,25 +291,25 @@
         client-name      @(r/subscribe [:clients.editor/get-client-name])
         client-id        @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         client-uri        (str "/@app-home/clients/" client-id)]
-       [common/surface-breadcrumbs :clients.editor/view
-                                   {:crumbs (if client-id [{:label :app-home   :route "/@app-home"}
-                                                           {:label :clients    :route "/@app-home/clients"}
-                                                           {:label client-name :route client-uri :placeholder :unnamed-client}
-                                                           {:label :edit!}]
-                                                          [{:label :app-home   :route "/@app-home"}
-                                                           {:label :clients    :route "/@app-home/clients"}
-                                                           {:label :add!}])
-                                    :disabled? editor-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs (if client-id [{:label :app-home   :route "/@app-home"}
+                                                               {:label :clients    :route "/@app-home/clients"}
+                                                               {:label client-name :route client-uri :placeholder :unnamed-client}
+                                                               {:label :edit!}]
+                                                              [{:label :app-home   :route "/@app-home"}
+                                                               {:label :clients    :route "/@app-home/clients"}
+                                                               {:label :add!}])
+                                        :disabled? editor-disabled?}]))
 
 (defn- label
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :clients.editor])
         client-name      @(r/subscribe [:clients.editor/get-client-name])
         client-colors    @(r/subscribe [:x.db/get-item [:clients :editor/edited-item :colors]])]
-       [common/surface-label :clients.editor/view
-                             {:disabled?   editor-disabled?
-                              :label       client-name
-                              :placeholder :unnamed-client}]))
+       [components/surface-label ::label
+                                 {:disabled?   editor-disabled?
+                                  :label       client-name
+                                  :placeholder :unnamed-client}]))
 
 (defn- header
   []
@@ -333,9 +334,9 @@
         user-country-name (get-in x.locales/COUNTRY-LIST [user-locale :native])]
        [item-editor/body :clients.editor
                          {:auto-title?      true
-                          :form-element     #'view-structure
-                          :error-element    [common/error-content {:error :the-item-you-opened-may-be-broken}]
-                          :ghost-element    #'common/item-editor-ghost-element
+                          :form-element     [view-structure]
+                          :error-element    [components/error-content {:error :the-item-you-opened-may-be-broken}]
+                          :ghost-element    [common/item-editor-ghost-element]
                           :initial-item     {:country user-country-name}
                           :item-path        [:clients :editor/edited-item]
                           :label-key        :name

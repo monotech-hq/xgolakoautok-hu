@@ -1,8 +1,8 @@
 
-(ns app.common.frontend.error-content.views
-    (:require [app.common.frontend.error-content.prototypes :as error-content.prototypes]
-              [elements.api                                 :as elements]
-              [random.api                                   :as random]))
+(ns app.components.frontend.error-content.views
+    (:require [app.components.frontend.error-content.prototypes :as error-content.prototypes]
+              [elements.api                                     :as elements]
+              [random.api                                       :as random]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -35,7 +35,7 @@
   [:<> [error-occured-label content-id content-props]
        [error-message-label content-id content-props]])
 
-(defn element
+(defn component
   ; @param (keyword)(opt) content-id
   ; @param (map) content-props
   ;  {:error (metamorphic-content)}
@@ -46,8 +46,8 @@
   ; @usage
   ;  [error-content :my-error-content {...}]
   ([content-props]
-   [element (random/generate-keyword) content-props])
+   [component (random/generate-keyword) content-props])
 
   ([content-id content-props]
-   (let [content-props (error-content.prototypes/content-props-prototype content-props)]
+   (let [];content-props (error-content.prototypes/content-props-prototype content-props)
         [error-content content-id content-props])))

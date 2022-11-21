@@ -1,12 +1,13 @@
 
 (ns app.products.frontend.editor.views
-    (:require [app.common.frontend.api  :as common]
-              [app.storage.frontend.api :as storage]
-              [elements.api             :as elements]
-              [engines.item-editor.api  :as item-editor]
-              [forms.api                :as forms]
-              [layouts.surface-a.api    :as surface-a]
-              [re-frame.api             :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [app.storage.frontend.api    :as storage]
+              [elements.api                :as elements]
+              [engines.item-editor.api     :as item-editor]
+              [forms.api                   :as forms]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -207,24 +208,24 @@
         product-name        @(r/subscribe [:x.db/get-item [:products :editor/edited-item :name]])
         product-id          @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         product-uri          (str "/@app-home/products/" product-id)]
-       [common/surface-breadcrumbs :products.editor/view
-                                   {:crumbs (if product-id [{:label :app-home    :route "/@app-home"}
-                                                            {:label :products    :route "/@app-home/products"}
-                                                            {:label product-name :route product-uri :placeholder :unnamed-product}
-                                                            {:label :edit!}]
-                                                           [{:label :app-home :route "/@app-home"}
-                                                            {:label :products :route "/@app-home/products"}
-                                                            {:label :add!}])
-                                    :disabled? editor-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs (if product-id [{:label :app-home    :route "/@app-home"}
+                                                                {:label :products    :route "/@app-home/products"}
+                                                                {:label product-name :route product-uri :placeholder :unnamed-product}
+                                                                {:label :edit!}]
+                                                               [{:label :app-home :route "/@app-home"}
+                                                                {:label :products :route "/@app-home/products"}
+                                                                {:label :add!}])
+                                        :disabled? editor-disabled?}]))
 
 (defn- label
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :products.editor])
         product-name        @(r/subscribe [:x.db/get-item [:products :editor/edited-item :name]])]
-       [common/surface-label :products.editor/view
-                             {:disabled?   editor-disabled?
-                              :label       product-name
-                              :placeholder :unnamed-product}]))
+       [components/surface-label ::label
+                                 {:disabled?   editor-disabled?
+                                  :label       product-name
+                                  :placeholder :unnamed-product}]))
 
 (defn- header
   []
@@ -248,7 +249,7 @@
   [item-editor/body :products.editor
                     {:auto-title?      true
                      :form-element     #'view-structure
-                     :error-element    [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                     :error-element    [components/error-content {:error :the-item-you-opened-may-be-broken}]
                      :ghost-element    #'common/item-editor-ghost-element
                      :initial-item     {:quantity-unit {:label :piece :value :n-pieces}}
                      :item-path        [:products :editor/edited-item]

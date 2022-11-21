@@ -147,8 +147,8 @@
 
 (defn- breadcrumbs
   []
-  [common/surface-breadcrumbs :home.screen/view
-                              {:crumbs [{:label :app-home}]}])
+  [components/surface-breadcrumbs ::breadcrumbs
+                                  {:crumbs [{:label :app-home}]}])
 
 (defn- label
   []
@@ -156,8 +156,8 @@
   (let [user-first-name @(r/subscribe [:x.user/get-user-first-name])
         user-last-name  @(r/subscribe [:x.user/get-user-last-name])
         user-full-name  @(r/subscribe [:x.locales/get-ordered-name user-first-name user-last-name])]
-       [common/surface-label :home.screen/view
-                             {:label {:content :welcome-n :replacements [user-full-name]}}]))
+       [components/surface-label ::label
+                                 {:label {:content :welcome-n :replacements [user-full-name]}}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -169,6 +169,12 @@
           [:<> [label]
                [breadcrumbs]
                ;[elements/horizontal-separator {:size :xxl}]
+               [elements/card {:background-color "#bad3e6"
+                               :content [:div {:style {:color "white" :font-weight "500"}} ""]
+                               :border-radius :m
+                               :style {:height "160px"}
+                               :indent {:top :m}}]
+
                [menu-groups]
                [last-login-label]]
           [common/surface-box-layout-ghost-view :home.screen/view {:breadcrumb-count 1}]))

@@ -2,8 +2,10 @@
 (ns app.components.frontend.api
     (:require [app.components.frontend.consent-dialog.effects]
               [app.components.frontend.context-menu.effects]
+              [app.components.frontend.error-content.views         :as error-content.views]
               [app.components.frontend.item-controls.views         :as item-controls.views]
               [app.components.frontend.list-header.views           :as list-header.views]
+              [app.components.frontend.list-item-button.views      :as list-item-button.views]
               [app.components.frontend.list-item-cell.views        :as list-item-cell.views]
               [app.components.frontend.list-item-drag-handle.views :as list-item-drag-handle.views]
               [app.components.frontend.list-item-marker.views      :as list-item-marker.views]
@@ -20,8 +22,10 @@
 ;; ----------------------------------------------------------------------------
 
 ; app.components.frontend.*.views
+(def error-content         error-content.views/component)
 (def item-controls         item-controls.views/component)
 (def list-header           list-header.views/component)
+(def list-item-button      list-item-button.views/component)
 (def list-item-cell        list-item-cell.views/component)
 (def list-item-drag-handle list-item-drag-handle.views/component)
 (def list-item-marker      list-item-marker.views/component)

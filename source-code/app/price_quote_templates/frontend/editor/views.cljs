@@ -1,6 +1,7 @@
 
 (ns app.price-quote-templates.frontend.editor.views
   (:require [app.common.frontend.api                      :as common]
+            [app.components.frontend.api                  :as components]
             [app.contents.frontend.api                    :as contents]
             [app.storage.frontend.api                     :as storage]
             [app.price-quote-templates.mid.handler.config :as handler.config]
@@ -337,24 +338,24 @@
         template-name    @(r/subscribe [:x.db/get-item [:price-quote-templates :editor/edited-item :name]])
         template-id      @(r/subscribe [:x.router/get-current-route-path-param :item-id])
         template-uri      (str "/@app-home/price-quote-templates/" template-id)]
-       [common/surface-breadcrumbs :price-quote-templates.editor/view
-                                   {:crumbs (if template-id [{:label :app-home              :route "/@app-home"}
-                                                             {:label :price-quote-templates :route "/@app-home/price-quote-templates"}
-                                                             {:label template-name          :route template-uri :placeholder :unnamed-price-quote-template}
-                                                             {:label :edit!}]
-                                                            [{:label :app-home              :route "/@app-home"}
-                                                             {:label :price-quote-templates :route "/@app-home/price-quote-templates"}
-                                                             {:label :add!}])
-                                    :disabled? editor-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs (if template-id [{:label :app-home              :route "/@app-home"}
+                                                                 {:label :price-quote-templates :route "/@app-home/price-quote-templates"}
+                                                                 {:label template-name          :route template-uri :placeholder :unnamed-price-quote-template}
+                                                                 {:label :edit!}]
+                                                                [{:label :app-home              :route "/@app-home"}
+                                                                 {:label :price-quote-templates :route "/@app-home/price-quote-templates"}
+                                                                 {:label :add!}])
+                                        :disabled? editor-disabled?}]))
 
 (defn- label
   []
   (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :price-quote-templates.editor])
         template-name    @(r/subscribe [:x.db/get-item [:price-quote-templates :editor/edited-item :name]])]
-       [common/surface-label :price-quote-templates.editor/view
-                             {:disabled?   editor-disabled?
-                              :label       template-name
-                              :placeholder :unnamed-price-quote-template}]))
+       [components/surface-label ::label
+                                 {:disabled?   editor-disabled?
+                                  :label       template-name
+                                  :placeholder :unnamed-price-quote-template}]))
 
 (defn- header
   []
@@ -383,7 +384,7 @@
                      :item-path     [:price-quote-templates :editor/edited-item]
                      :label-key     :name
                      :form-element  #'view-structure
-                     :error-element [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                     :error-element [components/error-content {:error :the-item-you-opened-may-be-broken}]
                      :ghost-element #'common/item-editor-ghost-element}])
 
 (defn view

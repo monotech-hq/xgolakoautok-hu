@@ -1,10 +1,11 @@
 
 (ns app.vehicle-models.frontend.selector.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [engines.item-lister.api :as item-lister]
-              [layouts.popup-a.api     :as popup-a]
-              [re-frame.api            :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [engines.item-lister.api     :as item-lister]
+              [layouts.popup-a.api         :as popup-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -24,7 +25,7 @@
   [selector-id item-dex {:keys [id modified-at name thumbnail]}]
   (let [timestamp @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
         item-last? @(r/subscribe [:item-lister/item-last? selector-id item-dex])]
-       [common/list-item-structure {:cells [[common/list-item-thumbnail    {:thumbnail (:media/uri thumbnail)}]
+       [common/list-item-structure {:cells [[    {:thumbnail (:media/uri thumbnail)}]
                                             [common/list-item-primary-cell {:label name :timestamp timestamp :stretch? true :placeholder :unnamed-vehicle-model}]
                                             [common/selector-item-marker   selector-id item-dex {:item-id id}]]
                                     :separator (if-not item-last? :bottom)}]))
@@ -39,17 +40,18 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- model-list
-  [lister-id items]
-  [common/item-list lister-id {:item-element #'model-item :items items}])
+  []
+  (let [items @(r/subscribe [:item-lister/get-downloaded-items :vehicle-models.selector])]
+       [common/item-list :vehicle-models.selector {:item-element #'model-item :items items}]))
 
 (defn- model-lister
   []
   [item-lister/body :vehicle-models.selector
                     {:default-order-by :modified-at/descending
                      :items-path       [:vehicle-models :selector/downloaded-items]
-                     :error-element    [common/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    #'common/item-selector-ghost-element
-                     :list-element     #'model-list}])
+                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
+                     :ghost-element    [common/item-selector-ghost-element]
+                     :list-element     [model-list]}])
 
 (defn- body
   []
@@ -71,12 +73,12 @@
 (defn- label-bar
   []
   (let [multi-select? @(r/subscribe [:item-lister/get-meta-item :vehicle-models.selector :multi-select?])]
-       [common/popup-label-bar :vehicle-models.selector/view
-                               {:primary-button   {:label :save! :on-click [:item-selector/save-selection! :vehicle-models.selector]}
-                                :secondary-button (if-let [autosaving? @(r/subscribe [:item-selector/autosaving? :vehicle-models.selector])]
-                                                          {:label :abort!  :on-click [:item-selector/abort-autosave! :vehicle-models.selector]}
-                                                          {:label :cancel! :on-click [:x.ui/remove-popup! :vehicle-models.selector/view]})
-                                :label            (if multi-select? :select-vehicle-models! :select-vehicle-model!)}]))
+       [components/popup-label-bar :vehicle-models.selector/view
+                                    {:primary-button   {:label :save! :on-click [:item-selector/save-selection! :vehicle-models.selector]}
+                                     :secondary-button (if-let [autosaving? @(r/subscribe [:item-selector/autosaving? :vehicle-models.selector])]
+                                                               {:label :abort!  :on-click [:item-selector/abort-autosave! :vehicle-models.selector]}
+                                                               {:label :cancel! :on-click [:x.ui/remove-popup! :vehicle-models.selector/view]})
+                                     :label            (if multi-select? :select-vehicle-models! :select-vehicle-model!)}]))
 
 (defn- header
   []

@@ -1,6 +1,7 @@
 
 (ns app.vehicle-types.frontend.viewer.views
     (:require [app.common.frontend.api                    :as common]
+              [app.components.frontend.api                :as components]
               [app.schemes.frontend.api                   :as schemes]
               [app.storage.frontend.api                   :as storage]
               [app.vehicle-types.frontend.handler.queries :as handler.queries]
@@ -226,21 +227,21 @@
         model-name       @(r/subscribe [:x.db/get-item [:vehicle-types :handler/model-item :name]])
         model-id         @(r/subscribe [:x.router/get-current-route-path-param :model-id])
         model-uri         (str "/@app-home/vehicle-models/" model-id "/types")]
-       [common/surface-breadcrumbs :vehicle-types.viewer/view
-                                   {:crumbs [{:label :app-home  :route "/@app-home"}
-                                             {:label :models    :route "/@app-home/vehicle-models"}
-                                             {:label model-name :route model-uri :placeholder :unnamed-vehicle-model}
-                                             {:label type-name  :placeholder :unnamed-vehicle-type}]
-                                    :disabled? viewer-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home  :route "/@app-home"}
+                                                 {:label :models    :route "/@app-home/vehicle-models"}
+                                                 {:label model-name :route model-uri :placeholder :unnamed-vehicle-model}
+                                                 {:label type-name  :placeholder :unnamed-vehicle-type}]
+                                        :disabled? viewer-disabled?}]))
 
 (defn- label
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :vehicle-types.viewer])
         type-name        @(r/subscribe [:x.db/get-item [:vehicle-types :viewer/viewed-item :name]])]
-       [common/surface-label :vehicle-types.viewer/view
-                             {:disabled?   viewer-disabled?
-                              :label       type-name
-                              :placeholder :unnamed-type}]))
+       [components/surface-label ::label
+                                 {:disabled?   viewer-disabled?
+                                  :label       type-name
+                                  :placeholder :unnamed-type}]))
 
 (defn- header
   []
@@ -264,7 +265,7 @@
   []
   [item-viewer/body :vehicle-types.viewer
                     {:auto-title?   true
-                     :error-element [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                     :error-element [components/error-content {:error :the-item-you-opened-may-be-broken}]
                      :ghost-element #'common/item-viewer-ghost-element
                      :item-element  #'view-structure
                      :item-path     [:vehicle-types :viewer/viewed-item]

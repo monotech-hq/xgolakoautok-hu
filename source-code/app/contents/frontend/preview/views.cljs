@@ -1,6 +1,7 @@
 
 (ns app.contents.frontend.preview.views
     (:require [app.common.frontend.api                  :as common]
+              [app.components.frontend.api              :as components]
               [app.contents.frontend.handler.helpers    :as handler.helpers]
               [app.contents.frontend.preview.prototypes :as preview.prototypes]
               [elements.api                             :as elements]
@@ -71,7 +72,7 @@
   [preview-id preview-props item-dex {:content/keys [id] :as content-link} {:keys [handle-attributes item-attributes]}]
   [:div (update item-attributes :style merge {:align-items "center" :display "flex" :grid-column-gap "18px"})
         (if @(r/subscribe [:item-preview/data-received? (keyword id)])
-             [common/list-item-drag-handle {:drag-attributes handle-attributes}])
+             [components/list-item-drag-handle {:drag-attributes handle-attributes}])
         [content-preview-static-body preview-id preview-props content-link]])
 
 ;; ----------------------------------------------------------------------------
@@ -140,7 +141,7 @@
   [preview-id {:keys [indent items] :as preview-props}]
   [elements/blank preview-id
                   {:content [:<> [content-preview-label preview-id preview-props]
-                                 (if (vector/nonempty? items)
+                                 (if (vector/nonempty?            items)
                                      [content-preview-list        preview-id preview-props]
                                      [content-preview-placeholder preview-id preview-props])]
                    :indent  indent}])

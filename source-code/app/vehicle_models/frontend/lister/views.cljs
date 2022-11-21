@@ -1,10 +1,11 @@
 
 (ns app.vehicle-models.frontend.lister.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [engines.item-lister.api :as item-lister]
-              [layouts.surface-a.api   :as surface-a]
-              [re-frame.api            :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [engines.item-lister.api     :as item-lister]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -22,10 +23,10 @@
   (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
         item-last? @(r/subscribe [:item-lister/item-last? lister-id item-dex])
         type-count {:content :n-items :replacements [(count types)]}]
-       [common/list-item-structure {:cells [[common/list-item-thumbnail    {:thumbnail (:media/uri thumbnail)}]
+       [common/list-item-structure {:cells [[    {:thumbnail (:media/uri thumbnail)}]
                                             [common/list-item-primary-cell {:label name :stretch? true :placeholder :unnamed-vehicle-model :description type-count}]
                                             [common/list-item-detail       {:content timestamp :width "160px"}]
-                                            [common/list-item-marker       {:icon :navigate_next}]]
+                                            [components/list-item-marker       {:icon :navigate_next}]]
                                     :separator (if-not item-last? :bottom)}]))
 
 (defn- model-item
@@ -38,17 +39,18 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- model-list
-  [lister-id items]
-  [common/item-list lister-id {:item-element #'model-item :items items}])
+  []
+  (let [items @(r/subscribe [:item-lister/get-downloaded-items :vehicle-models.lister])]
+       [common/item-list :vehicle-models.lister {:item-element #'model-item :items items}]))
 
 (defn- model-lister-body
   []
   [item-lister/body :vehicle-models.lister
                     {:default-order-by :modified-at/descending
                      :items-path       [:vehicle-models :lister/downloaded-items]
-                     :error-element    [common/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    #'common/item-lister-ghost-element
-                     :list-element     #'model-list}])
+                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
+                     :ghost-element    [common/item-lister-ghost-element]
+                     :list-element     [model-list]}])
 
 (defn- model-lister-header
   []
@@ -92,17 +94,17 @@
 (defn- breadcrumbs
   []
   (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :vehicle-models.lister])]
-       [common/surface-breadcrumbs :vehicle-models.lister/view
-                                   {:crumbs [{:label :app-home :route "/@app-home"}
-                                             {:label :vehicle-models}]
-                                    :disabled? lister-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home :route "/@app-home"}
+                                                 {:label :vehicle-models}]
+                                        :disabled? lister-disabled?}]))
 
 (defn- label
   []
   (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :vehicle-models.lister])]
-       [common/surface-label :vehicle-models.lister/view
-                             {:disabled? lister-disabled?
-                              :label     :vehicle-models}]))
+       [components/surface-label ::label
+                                 {:disabled? lister-disabled?
+                                  :label     :vehicle-models}]))
 
 (defn- header
   []

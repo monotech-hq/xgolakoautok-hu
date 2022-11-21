@@ -98,8 +98,8 @@
   ;   :item-attributes (map)}
   [preview-id preview-props item-dex {:product/keys [id] :as product-link} {:keys [handle-attributes item-attributes]}]
   [:div (update item-attributes :style merge {:align-items "center" :display "flex" :grid-column-gap "18px"})
-        (if @(r/subscribe [:item-preview/data-received? (keyword id)])
-             [common/list-item-drag-handle {:drag-attributes handle-attributes}])
+        ;; (if @(r/subscribe [:item-preview/data-received? (keyword id)])
+            ;;  [common/list-item-drag-handle {:drag-attributes handle-attributes}])
         [product-preview-static-body preview-id preview-props product-link]])
 
 ;; ----------------------------------------------------------------------------

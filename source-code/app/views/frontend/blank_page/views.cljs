@@ -1,9 +1,10 @@
 
 (ns app.views.frontend.blank-page.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [layouts.surface-a.api   :as surface-a]
-              [re-frame.api            :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -30,8 +31,8 @@
 
 (defn- title
   [surface-id {:keys [title]}]
-  [common/surface-label surface-id
-                        {:label title}])
+  [components/surface-label surface-id
+                            {:label title}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

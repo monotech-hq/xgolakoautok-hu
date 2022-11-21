@@ -54,7 +54,7 @@
        [:<> [dnd-kit/body scheme-id
                           {:items            scheme-fields
                            :item-id-f        :field/field-id
-                           :item-element     #'field-sorter-item
+                           :item-element     [field-sorter-item scheme-id]
                            :on-order-changed (fn [_ _ %] (r/dispatch-sync [:schemes.field-sorter/reorder-fields! scheme-id %]))}]
             [elements/horizontal-separator {:size :s}]]))
 

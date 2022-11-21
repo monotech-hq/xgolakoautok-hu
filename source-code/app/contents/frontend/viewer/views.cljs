@@ -1,6 +1,7 @@
 
 (ns app.contents.frontend.viewer.views
     (:require [app.common.frontend.api               :as common]
+              [app.components.frontend.api           :as components]
               [app.contents.frontend.handler.helpers :as handler.helpers]
               [elements.api                          :as elements]
               [engines.item-lister.api               :as item-lister]
@@ -108,20 +109,20 @@
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :contents.viewer])
         content-name     @(r/subscribe [:x.db/get-item [:contents :viewer/viewed-item :name]])]
-       [common/surface-breadcrumbs :contents.viewer/view
-                                   {:crumbs [{:label :app-home   :route "/@app-home"}
-                                             {:label :contents    :route "/@app-home/contents"}
-                                             {:label content-name :placeholder :unnamed-content}]
-                                    :disabled? viewer-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home   :route "/@app-home"}
+                                                 {:label :contents    :route "/@app-home/contents"}
+                                                 {:label content-name :placeholder :unnamed-content}]
+                                        :disabled? viewer-disabled?}]))
 
 (defn- label
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :contents.viewer])
         content-name     @(r/subscribe [:x.db/get-item [:contents :viewer/viewed-item :name]])]
-       [common/surface-label :contents.viewer/view
-                             {:disabled?   viewer-disabled?
-                              :label       content-name
-                              :placeholder :unnamed-content}]))
+       [components/surface-label ::label
+                                 {:disabled?   viewer-disabled?
+                                  :label       content-name
+                                  :placeholder :unnamed-content}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -146,7 +147,7 @@
   [_]
   [item-viewer/body :contents.viewer
                     {:auto-title?   true
-                     :error-element [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                     :error-element [components/error-content {:error :the-item-you-opened-may-be-broken}]
                      :ghost-element #'common/item-viewer-ghost-element
                      :item-element  #'view-structure
                      :item-path     [:contents :viewer/viewed-item]

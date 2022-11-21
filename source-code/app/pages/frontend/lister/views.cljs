@@ -1,10 +1,11 @@
 
 (ns app.pages.frontend.lister.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [engines.item-lister.api :as item-lister]
-              [layouts.surface-a.api   :as surface-a]
-              [re-frame.api            :as r]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [engines.item-lister.api     :as item-lister]
+              [layouts.surface-a.api       :as surface-a]
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -21,10 +22,10 @@
   [lister-id item-dex {:keys [body modified-at name]}]
   (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
         item-last? @(r/subscribe [:item-lister/item-last? lister-id item-dex])]
-       [common/list-item-structure {:cells [[common/list-item-thumbnail    {:icon :article :icon-family :material-icons-outlined}]
+       [common/list-item-structure {:cells [[    {:icon :article :icon-family :material-icons-outlined}]
                                             [common/list-item-primary-cell {:label name :stretch? true :placeholder :unnamed-page :description body}]
                                             [common/list-item-detail       {:page timestamp :width "160px"}]
-                                            [common/list-item-marker       {:icon :navigate_next}]]
+                                            [components/list-item-marker       {:icon :navigate_next}]]
                                     :separator (if-not item-last? :bottom)}]))
 
 (defn- page-item
@@ -37,17 +38,18 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- page-list
-  [lister-id items]
-  [common/item-list lister-id {:item-element #'page-item :items items}])
+  []
+  (let [items @(r/subscribe [:item-lister/get-downloaded-items :pages.lister])]
+       [common/item-list :pages.lister {:item-element #'page-item :items items}]))
 
 (defn- page-lister-body
   []
   [item-lister/body :pages.lister
                     {:default-order-by :modified-at/descending
                      :items-path       [:pages :lister/downloaded-items]
-                     :error-element    [common/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    #'common/item-lister-ghost-element
-                     :list-element     #'page-list}])
+                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
+                     :ghost-element    [common/item-lister-ghost-element]
+                     :list-element     [page-list]}])
 
 (defn- page-lister-header
   []
@@ -91,17 +93,17 @@
 (defn- breadcrumbs
   []
   (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :pages.lister])]
-       [common/surface-breadcrumbs :pages.lister/view
-                                   {:crumbs [{:label :app-home :route "/@app-home"}
-                                             {:label :pages}]
-                                    :disabled? lister-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home :route "/@app-home"}
+                                                 {:label :pages}]
+                                        :disabled? lister-disabled?}]))
 
 (defn- label
   []
   (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :pages.lister])]
-       [common/surface-label :pages.lister/view
-                             {:disabled? lister-disabled?
-                              :label     :pages}]))
+       [components/surface-label ::label
+                                 {:disabled? lister-disabled?
+                                  :label     :pages}]))
 
 (defn- header
   []

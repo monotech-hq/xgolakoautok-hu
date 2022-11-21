@@ -1,6 +1,7 @@
 
 (ns app.packages.frontend.viewer.views
     (:require [app.common.frontend.api              :as common]
+              [app.components.frontend.api          :as components]
               [app.packages.frontend.viewer.queries :as viewer.queries]
               [app.storage.frontend.api             :as storage]
               [candy.api                            :refer [return]]
@@ -30,9 +31,9 @@
         item-last?    @(r/subscribe [:item-lister/item-last? lister-id item-dex])
         service-count @(r/subscribe [:packages.viewer/get-service-count id])
         service-count  {:content (:value quantity-unit) :replacements [service-count]}]
-       [common/list-item-structure {:cells [[common/list-item-thumbnail    {:icon :workspace_premium}]
+       [common/list-item-structure {:cells [[    {:icon :workspace_premium}]
                                             [common/list-item-primary-cell {:label name :timestamp timestamp :stretch? true :description service-count :placeholder :unnamed-service}]
-                                            [common/list-item-marker       {:icon :drag_handle :style {:cursor :grab}}]]
+                                            [components/list-item-marker       {:icon :drag_handle :style {:cursor :grab}}]]
                                     :separator (if-not item-last? :bottom)}]))
 
 (defn- service-item
@@ -62,8 +63,9 @@
                            :on-click  on-click}]))
 
 (defn- service-list
-  [lister-id items]
-  [common/item-list lister-id {:item-element #'service-item :items items}])
+  [lister-id]
+  (let [items @(r/subscribe [:item-lister/get-downloaded-items lister-id])]
+       [common/item-list lister-id {:item-element #'service-item :items items}]))
 
 (defn- service-lister
   []
@@ -72,7 +74,7 @@
        [item-lister/body :services.lister
                          {:default-order-by :modified-at/descending
                           :items-path    [:services :lister/downloaded-items]
-                          :error-element [common/error-content {:error :the-content-you-opened-may-be-broken}]
+                          :error-element [components/error-content {:error :the-content-you-opened-may-be-broken}]
                           :ghost-element #'common/item-lister-ghost-element
                           :list-element  #'service-list
                           :placeholder   :no-services-selected
@@ -109,9 +111,9 @@
         item-last?    @(r/subscribe [:item-lister/item-last? lister-id item-dex])
         product-count @(r/subscribe [:packages.viewer/get-product-count id])
         product-count  {:content (:value quantity-unit) :replacements [product-count]}]
-       [common/list-item-structure {:cells [[common/list-item-thumbnail    {:thumbnail (:media/uri thumbnail)}]
+       [common/list-item-structure {:cells [[    {:thumbnail (:media/uri thumbnail)}]
                                             [common/list-item-primary-cell {:label name :timestamp timestamp :stretch? true :description product-count :placeholder :unnamed-product}]
-                                            [common/list-item-marker       {:icon :drag_handle :style {:cursor :grab}}]]
+                                            [components/list-item-marker       {:icon :drag_handle :style {:cursor :grab}}]]
                                     :separator (if-not item-last? :bottom)}]))
 
 (defn- product-item
@@ -141,8 +143,9 @@
                            :on-click  on-click}]))
 
 (defn- product-list
-  [lister-id items]
-  [common/item-list lister-id {:item-element #'product-item :items items}])
+  [lister-id]
+  (let [items @(r/subscribe [:item-lister/get-downloaded-items lister-id])]
+       [common/item-list lister-id {:item-element #'product-item :items items}]))
 
 (defn- product-lister
   []
@@ -151,7 +154,7 @@
        [item-lister/body :products.lister
                          {:default-order-by :modified-at/descending
                           :items-path    [:products :lister/downloaded-items]
-                          :error-element [common/error-content {:error :the-content-you-opened-may-be-broken}]
+                          :error-element [components/error-content {:error :the-content-you-opened-may-be-broken}]
                           :ghost-element #'common/item-lister-ghost-element
                           :list-element  #'product-list
                           :placeholder   :no-products-selected
@@ -387,20 +390,20 @@
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :packages.viewer])
         package-name     @(r/subscribe [:x.db/get-item [:packages :viewer/viewed-item :name]])]
-       [common/surface-breadcrumbs :packages.viewer/view
-                                   {:crumbs [{:label :app-home    :route "/@app-home"}
-                                             {:label :packages    :route "/@app-home/packages"}
-                                             {:label package-name :placeholder :unnamed-package}]
-                                    :disabled? viewer-disabled?}]))
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs [{:label :app-home    :route "/@app-home"}
+                                                 {:label :packages    :route "/@app-home/packages"}
+                                                 {:label package-name :placeholder :unnamed-package}]
+                                        :disabled? viewer-disabled?}]))
 
 (defn- label
   []
   (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :packages.viewer])
         package-name     @(r/subscribe [:x.db/get-item [:packages :viewer/viewed-item :name]])]
-       [common/surface-label :packages.viewer/view
-                             {:disabled?   viewer-disabled?
-                              :label       package-name
-                              :placeholder :unnamed-package}]))
+       [components/surface-label ::label
+                                 {:disabled?   viewer-disabled?
+                                  :label       package-name
+                                  :placeholder :unnamed-package}]))
 
 (defn- header
   []
@@ -424,7 +427,7 @@
   []
   [item-viewer/body :packages.viewer
                     {:auto-title?   true
-                     :error-element [common/error-content {:error :the-item-you-opened-may-be-broken}]
+                     :error-element [components/error-content {:error :the-item-you-opened-may-be-broken}]
                      :ghost-element #'common/item-viewer-ghost-element
                      :item-element  #'view-structure
                      :item-path     [:packages :viewer/viewed-item]
