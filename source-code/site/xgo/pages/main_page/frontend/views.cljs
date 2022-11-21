@@ -9,25 +9,19 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(r/reg-fx
- :scroll-on-init
- (fn [path-params]
-  (when (not (empty? path-params))
-    (let [element (.getElementById js/document "xgo-categories")]
-      (.scrollIntoView element
-        (clj->js {:block    "start"
-                  :inline   "center"}))))))
+
 
 (r/reg-event-fx
  :init
  (fn [{:keys [db]} [_]]
-   {:scroll-on-init (router/get-current-route-path-params db)}))
-
+   (if-not (empty? (router/get-current-route-path-params db))
+      {:scroll/scroll-into ["xgo-categories"]}
+      {})))
+  
 (defn view
   []
   (reagent/lifecycles 
-   {:component-did-mount (fn []
-                          (r/dispatch [:init]))
+   {:component-did-mount (fn [] (r/dispatch [:init]))
     :reagent-render 
     (fn [] 
       [:div#xgo

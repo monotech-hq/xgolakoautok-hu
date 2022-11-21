@@ -4,6 +4,7 @@
                      [site.xgo.transfer]))
   #?(:cljs (:require [site.xgo.pages.api]
                      [site.xgo.utils.url]
+                     [site.xgo.utils.scroll]
                      [site.xgo.wrapper.views :as wrapper])))
 
 #?(:cljs (def wrapper wrapper/view))
