@@ -36,9 +36,13 @@
 (defn- type-images [images]
   [:div {:id "xgo-type--images"}
     [site.components/slider 
-      (map (fn [{:media/keys [id uri]}]
-              [:img {:src uri}])
-           images)]])
+       (map (fn [a] [:div {:key a :style {:height "500px" :display "flex" :align-items "center" :justify-content "center"}} 
+                     [:h2 a]
+                     "imagine an image here"]) 
+           (range 10))]]) 
+      ;; (map (fn [{:media/keys [id uri]}]
+      ;;         [:img {:src uri}])
+      ;;      images)]])
 
 (defn- type-table [id]
   [:div {:class "mt-scheme-table--container"}
@@ -59,8 +63,9 @@
 (defn- vehicle-type [{:keys [id images] :as data}]
   [:div {:key id
          :id  "xgo-type"}
-    [type-images images]
-    [type-table id]
+    [:div {:id "xgo-type--layout"} 
+      [type-images images]
+      [type-table id]]
     [type-back-button]])
 
 (defn- types [{:keys [types-data selected-type] :as view-props}]
