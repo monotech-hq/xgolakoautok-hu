@@ -51,19 +51,15 @@
   [:div {:class "xgo-type--files"}])
 
 (defn- type-back-button []
-  [:button {:id       "xgo-type--back-button"
-            :on-click #(let [element (.getElementById js/document "xgo-categories")]
-                         (.scrollIntoView element
-                           (clj->js {:behavior "smooth"
-                                     :block    "start"
-                                     :inline   "center"})))}
-        "Vissza"])    
+  [:div {:id "xgo-type--back-button-container"}
+   [:button {:id       "xgo-type--back-button"
+             :on-click #(r/dispatch [:types.view/back!])}
+        "Vissza"]])    
 
 (defn- vehicle-type [{:keys [id images] :as data}]
   [:div {:key id
          :id  "xgo-type"}
     [type-images images]
-    [:p (str data)]
     [type-table id]
     [type-back-button]])
 
