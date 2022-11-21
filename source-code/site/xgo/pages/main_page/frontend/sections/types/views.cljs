@@ -10,12 +10,12 @@
   [:div {:id "xgo-type--model-name"}
     name])
 
-(defn- type-name [[id {:type/keys [name]}]]
+(defn- type-name [[id {:keys [name]}]]
   [:div {:key   id 
          :class "xgo-type--name"}
     (str name)]) 
 
-(defn- type-name-button [[id {:type/keys [name]}]]
+(defn- type-name-button [[id {:keys [name]}]]
   [:button {:key           id 
             :class         "xgo-type--name-button xgo-type--name"
             :data-selected @(r/subscribe [:types/selected? id])
@@ -58,7 +58,7 @@
                                      :inline   "center"})))}
         "Vissza"])    
 
-(defn- vehicle-type [{:type/keys [id images] :as data}]
+(defn- vehicle-type [{:keys [id images] :as data}]
   [:div {:key id
          :id  "xgo-type"}
     [type-images images]

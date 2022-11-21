@@ -25,7 +25,7 @@
    [:img {:class "xgo-model-card--thumbnail"
           :src   uri}])
 
-(defn- model [[id {:model/keys [name thumbnail] :as model-data}]]
+(defn- model [[id {:keys [name thumbnail] :as model-data}]]
  [:button {:key      id
            :on-click #(r/dispatch [:models/select! name])}
    [:div {:class "xgo-model-card"}

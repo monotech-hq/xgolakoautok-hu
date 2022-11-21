@@ -7,7 +7,7 @@
 ;; -----------------------------------------------------------------------------
 ;; -----------------------------------------------------------------------------
 
-(defn- category-button [[id {:category/keys [name] :as category}]]
+(defn- category-button [[id {:keys [name] :as category}]]
   [:button {:key           id
             :class         "xgo-category--button"
             :on-click      #(r/dispatch [:categories/select! name])

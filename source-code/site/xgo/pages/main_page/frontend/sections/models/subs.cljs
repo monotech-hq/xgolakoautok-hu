@@ -36,7 +36,7 @@
   (fn [[models filters-model] [_]]
     (->> models
         (filter (fn [[_ v]]
-                   (= filters-model (normalize/clean-text (:model/name v) "-+"))))
+                   (= filters-model (normalize/clean-text (:name v) "-+"))))
         first 
         val)))
 
@@ -44,12 +44,12 @@
   :models.selected/name
   :<- [:models/selected]
   (fn [model [_]]
-    (:model/name model)))
+    (:name model)))
 
 (r/reg-sub
   :models.selected/types
   :<- [:models/selected]
-  (fn [{:model/keys [types]} [_]]
+  (fn [{:keys [types]} [_]]
     (mapv :type/id types)))
 
 

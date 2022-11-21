@@ -22,14 +22,14 @@
   :categories.selected/description
   (fn [db [_]]
     (let [category-name (get-in db [:filters :category] "dynamic")]
-      (get-in db [:site :categories category-name :category/description]))))
+      (get-in db [:site :categories category-name :description]))))
 
 (r/reg-sub
   :categories.selected/models
   :<- [:categories/all]
   :<- [:filters/category]
   (fn [[categories filters-category] [_]]
-    (->> (get-in categories [filters-category :category/models])
+    (->> (get-in categories [filters-category :models])
          (mapv :model/id))))
 
 (r/reg-sub 
