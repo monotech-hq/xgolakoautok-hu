@@ -16,7 +16,10 @@
               [site.components.frontend.scroll-icon.views        :as scroll-icon.views]
               [site.components.frontend.scroll-sensor.views      :as scroll-sensor.views]
               [site.components.frontend.scroll-to-top.views      :as scroll-to-top.views]
-              [site.components.frontend.slider.views             :as slider.views]))
+              [site.components.frontend.slider.views             :as slider.views]
+              
+              [site.components.frontend.stepper.api              :as stepper]
+              [site.components.frontend.tabs.views              :as tabs]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -56,3 +59,9 @@
 
 ; site.components.frontend.slider.views
 (def slider slider.views/component)
+
+; site.components.frontend.stepper.api
+(def stepper stepper/component)
+
+; site.components.frontend.tabs.views
+(def tabs tabs/component)
