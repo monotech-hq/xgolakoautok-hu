@@ -1,6 +1,7 @@
 
 (ns site.xgo.pages.main-page.frontend.sections.types.views
   (:require [re-frame.api                 :as r]
+            [reagent.api                  :as reagent]
             [site.components.frontend.api :as site.components]))
 
 ;; -----------------------------------------------------------------------------
@@ -18,8 +19,8 @@
 (defn- type-name-button [[id {:keys [name]}]]
   [:button {:key           id 
             :class         "xgo-type--name-button xgo-type--name"
-            :data-selected @(r/subscribe [:types/selected? id])
-            :on-click      #(r/dispatch [:types/select! id])}
+            :data-selected @(r/subscribe [:types/selected? name])
+            :on-click      #(r/dispatch [:types/select! name])}
     name])
 
 (defn- type-name-button-group [types-data]
@@ -45,7 +46,7 @@
       ;;      images)]])
 
 (defn- type-table [id]
-  [:div {:class "mt-scheme-table--container"}
+  [:div {:class "mt-scheme-table--container" :style {:min-height "550px"}}
     [:h2.mt-scheme-table--header "Műszaki adatok"]
     [site.components/scheme-table {:placeholder :no-visible-data
                                    :scheme-id   :vehicle-types.technical-data
@@ -60,17 +61,27 @@
              :on-click #(r/dispatch [:types.view/back!])}
         "Vissza"]])    
 
-(defn- vehicle-type [{:keys [id images] :as data}]
-  [:div {:key id
-         :id  "xgo-type"}
-    [:div {:id "xgo-type--layout"} 
-      [type-images images]
-      [type-table id]]
-    [type-back-button]])
+(defn- get-price-quote-button [selected-type]
+  [:div {:id "xgo-type--price-quote-button"}
+    [:button {:on-click #(r/dispatch [:type.view/get-price-qoute! (:id selected-type)])}
+      "Árajánlat kérése"]])
+
+(defn- vehicle-type [{:keys [name] :as data}]
+  (reagent/lifecycles 
+   {:component-did-mount (fn [] (r/dispatch [:types/select! name]))
+    :reagent-render 
+    (fn [{:keys [id images] :as data}]
+      [:div {:key id
+             :id  "xgo-type"}
+        [:div {:id "xgo-type--layout"} 
+          [type-images images]
+          [type-table id]]
+        [type-back-button]])}))
 
 (defn- types [{:keys [types-data selected-type] :as view-props}]
   [:div {:id "xgo-type--container"}
     [header view-props]
+    [get-price-quote-button selected-type]
     [vehicle-type selected-type]])
 
 ;; -----------------------------------------------------------------------------
@@ -81,4 +92,4 @@
                     :selected-type @(r/subscribe [:types/selected])
                     :model-data    @(r/subscribe [:models.selected/name])}]
     [:section {:id "xgo-types--container"}
-      [types view-props]]))
+            [types view-props]]))
