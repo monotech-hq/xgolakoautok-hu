@@ -91,17 +91,17 @@
 
 /***** Scroll-icon *****/
 
-#si-scroll-icon {
+#mt-scroll-icon {
   display: flex;
   justify-content: center;
   padding-bottom: 35px;
   transition: transform 0.5s;
   width: 100% }
 
-#si-scroll-icon[data-visible="false"] {
+#mt-scroll-icon[data-visible="false"] {
   transform: translateY(100%) }
 
-#si-scroll-icon--body {
+#mt-scroll-icon--body {
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -112,8 +112,8 @@
   height: 35px;
   width: 20px }
 
-#si-scroll-icon--body::before {
-  animation-name: si-scroll-icon;
+#mt-scroll-icon--body::before {
+  animation-name: mt-scroll-icon;
   animation-duration: 2s;
   animation-iteration-count: infinite;
   background-color: var( --icon-color );
@@ -122,7 +122,7 @@
   height: 5px;
   width: 5px }
 
-#si-scroll-icon--body::after {
+#mt-scroll-icon--body::after {
   border-bottom: 2px solid var( --icon-color );
   border-left: 2px solid var( --icon-color );
   bottom: -15px;
@@ -133,7 +133,7 @@
   transform-origin: center;
   width: 10px }
 
-@keyframes si-scroll-icon {
+@keyframes mt-scroll-icon {
   0%   { opacity: 0;
          transform: translate(0, 3px) }
   40%  { opacity: 1 }
