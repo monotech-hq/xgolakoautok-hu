@@ -18,9 +18,9 @@
               :disabled      (not valid?)
               :on-click      #(r/dispatch [:stepper/select! index])}
        [:span {:style {:font-size "24px" :height "24px" :width "24px"}} index]
-       (if (string? step-id)
-         (str step-id)
-         (x.components/content step-id))]))
+       [:span (if (string? step-id)
+                (str step-id)
+                (x.components/content step-id))]]))
 
 (defn- step-labels [current-step steps]
   [:<> (map-indexed 
