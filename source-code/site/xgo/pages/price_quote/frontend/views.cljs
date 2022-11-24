@@ -21,8 +21,8 @@
                                      :placeholder "model"
                                      :route       (str "/" category "/" model)}
                                     {:label       type-name
-                                     :placeholder "type"}
-                                    ;;  :route       (str "/" category "/" model "/" type)}
+                                     :placeholder "type"
+                                     :route       (str "/" category "/" model "/" type)}
                                     {:label       "Árajánlat"}]}]))
 
 (defn- parts []
@@ -85,7 +85,7 @@
     [components/stepper {:finish-step-label "Igénylés"}
      "Tartozékok" {:content [step-1] :valid? true}
      "Adatok"     {:content [clients-data] :valid? (not (empty? @(r/subscribe [:step.one/valid?])))}
-     "Finish"     {:content  [overview]
+     "Áttekintés" {:content  [overview]
                    :valid?   true
                    :on-click (fn [] (.alert js/window "Congrats u finished!🐼"))}]])
   
