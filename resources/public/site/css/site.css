@@ -379,7 +379,29 @@
     border-radius: unset;
   }
 }
+
 /***** Types *****/
+/******************************************************************************/
+
+/******************************************************************************/
+/***** Price quote *****/
+
+#mt-price-quote {
+  margin: 50px;
+}
+
+#mt-price-quote--title {
+  margin-bottom: 30px;
+}
+
+.mt-price-quote--box {
+  background-color: var(--fill-color);
+  border-radius: var(--border-radius-m);
+  border: 1px solid var(--border-color-highlight);
+  padding: 25px;
+}
+
+/***** Price quote *****/
 /******************************************************************************/
 
 /******************************************************************************/
