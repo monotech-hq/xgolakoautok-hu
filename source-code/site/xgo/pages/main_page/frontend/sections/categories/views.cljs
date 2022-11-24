@@ -15,8 +15,8 @@
      name])
 
 (defn- categories [{:keys [categories]}]
-  [:div {:id "xgo-categories"}
-    (doall (map category-button categories))])
+  [:div {:id "xgo-categories" :data-scrollable-x "true"}
+      (doall (map category-button categories))])
 
 (defn- category-description [{:keys [description]}]
   [:div {:id "xgo-categories--description"}

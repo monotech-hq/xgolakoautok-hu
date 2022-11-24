@@ -19,6 +19,13 @@
 ;; ----- Categories -----
 
 (r/reg-sub
+  :categories/selected
+  :<- [:categories/all]
+  :<- [:filters/category]
+  (fn [[categories filters-category] [_]]
+    (get categories filters-category)))
+                             
+(r/reg-sub
   :categories.selected/description
   (fn [db [_]]
     (let [category-name (get-in db [:filters :category] "dynamic")]
