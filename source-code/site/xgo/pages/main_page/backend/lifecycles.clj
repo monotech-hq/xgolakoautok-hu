@@ -15,4 +15,8 @@
                                  [:x.router/add-route! :main-page.model/route
                                                    {:client-event   [:main-page/load-page!]
                                                     :js-build       :site
-                                                    :route-template "/:category/:model"}]]}})
+                                                    :route-template "/:category/:model"}]
+                                 [:x.router/add-route! :main-page.type/route
+                                                   {:client-event   [:main-page/load-page!]
+                                                    :js-build       :site
+                                                    :route-template "/:category/:model/:type"}]]}})
