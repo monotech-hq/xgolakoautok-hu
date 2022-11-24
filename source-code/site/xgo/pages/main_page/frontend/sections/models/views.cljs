@@ -33,7 +33,6 @@
      [model-name       name]
      [model-thumbnail  thumbnail]]])
   
-
 (defn- models [{:keys [models-data]}]
   [:div {:id "xgo-models"}
     (if (empty? models-data)
