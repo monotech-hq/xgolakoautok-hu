@@ -1,7 +1,7 @@
 
 (ns site.components.frontend.stepper.views 
   (:require [re-frame.api     :as r]
-            [reagent.api      :as reagent]
+            [plugins.reagent.api      :as reagent]
             [elements.api     :as x.elements]
             [x.components.api :as x.components]))
  
