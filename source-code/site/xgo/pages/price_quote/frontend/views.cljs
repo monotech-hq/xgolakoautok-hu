@@ -1,7 +1,7 @@
 
 (ns site.xgo.pages.price-quote.frontend.views
     (:require [re-frame.api                 :as r]
-              [reagent.api                  :as reagent]
+              [plugins.reagent.api                  :as reagent]
               [site.components.frontend.api :as components]
               [elements.api                 :as elements]))
 

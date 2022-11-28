@@ -1,7 +1,7 @@
 
 (ns site.components.frontend.tabs.views
   (:require
-    [reagent.api :as reagent]
+    [plugins.reagent.api :as reagent]
     [re-frame.api :as r]))
 
 ;; -----------------------------------------------------------------------------

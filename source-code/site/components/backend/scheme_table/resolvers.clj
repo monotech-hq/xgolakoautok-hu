@@ -1,6 +1,6 @@
 
 (ns site.components.backend.scheme-table.resolvers
-    (:require [app.common.backend.api                :as common]
+    (:require [site.common.backend.api               :as common]
               [com.wsscode.pathom3.connect.operation :refer [defresolver]]
               [mongo-db.api                          :as mongo-db]
               [pathom.api                            :as pathom]))
@@ -19,7 +19,7 @@
   (let [scheme-id  (pathom/env->param env :scheme-id)
         projection (common/get-document-projection :scheme)]
        {:pathom/target-path  [:components :scheme-table/scheme-forms scheme-id]
-        :pathom/target-value (mongo-db/get-document-by-query "schemes" {:scheme/scheme-id scheme-id} projection)}))
+        :pathom/target-value (mongo-db/get-document-by-query "schemes" {:scheme/scheme-id scheme-id} {:projection projection})}))
 
 (defresolver get-scheme-form
              ; @param (map) env

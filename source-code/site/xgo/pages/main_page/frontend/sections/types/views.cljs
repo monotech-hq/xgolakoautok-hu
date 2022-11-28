@@ -1,7 +1,7 @@
 
 (ns site.xgo.pages.main-page.frontend.sections.types.views
   (:require [re-frame.api                 :as r]
-            [reagent.api                  :as reagent]
+            [plugins.reagent.api                  :as reagent]
             [site.components.frontend.api :as site.components]))
 
 ;; -----------------------------------------------------------------------------

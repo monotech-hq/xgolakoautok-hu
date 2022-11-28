@@ -1,7 +1,7 @@
 
 (ns site.xgo.pages.main-page.frontend.views
     (:require [re-frame.api                                    :as r]
-              [reagent.api                                     :as reagent]
+              [plugins.reagent.api                                     :as reagent]
               [site.components.frontend.api                    :as components]
               [site.xgo.pages.main-page.frontend.sections.api  :as sections]
               [x.router.api                                    :as router]))
@@ -10,14 +10,13 @@
 ;; ----------------------------------------------------------------------------
 
 
-
 (r/reg-event-fx
  :init
  (fn [{:keys [db]} [_]]
    (if-not (empty? (router/get-current-route-path-params db))
       {:scroll/scroll-into ["xgo-categories"]}
       {})))
-  
+
 (defn view
   []
   (reagent/lifecycles 
