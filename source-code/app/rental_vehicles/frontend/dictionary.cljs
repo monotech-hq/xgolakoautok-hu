@@ -8,9 +8,9 @@
 (def BOOK {:search-in-rental-vehicles
            {:en "Search in rental vehicles"
             :hu "Keresés a járművek között"}
-           :vehicle-name-placeholder
+           :rental-vehicle-name-placeholder
            {:en "Vehicle name"
             :hu "Jármű neve"}
-           :unnamed-vehicle
+           :unnamed-rental-vehicle
            {:en "Unnamed vehicle"
             :hu "Névtelen jármű"}})

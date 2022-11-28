@@ -1,90 +1,97 @@
 
 (ns app.storage.frontend.media-preview.views
     (:require [app.storage.frontend.media-preview.prototypes :as media-preview.prototypes]
-              [candy.api                                     :refer [return]]
+              [app.common.frontend.api                       :as common]
+              [app.components.frontend.api                   :as components]
               [elements.api                                  :as elements]
               [io.api                                        :as io]
+              [math.api                                      :as math]
               [random.api                                    :as random]
-              [vector.api                                    :as vector]
-
-              ; TEMP
-              [plugins.dnd-kit.api :as dnd-kit]
-              [re-frame.api :as r]))
+              [re-frame.api                                  :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- media-preview-static-body
+(defn- media-preview-data
   ; @param (keyword) preview-id
   ; @param (map) preview-props
   ;  {:disabled? (boolean)(opt)
-  ;   :thumbnail (map)
-  ; @param (namespaced map) media-link
-  [preview-id {:keys [disabled?] {:keys [height width]} :thumbnail} {:media/keys [uri]}]
-  [elements/thumbnail {:border-radius :s
-                       :disabled?     disabled?
-                       :height        height
-                       :width         width
-                       :uri           uri}])
+  ;   :item-link (namespaced map)
+  ;    {:media/id (string)}}
+  [_ {{:media/keys [id]} :item-link :keys [disabled?]}]
+  (let [media-alias       @(r/subscribe [:x.db/get-item [:storage :media-preview/downloaded-items id :alias]])
+        media-size        @(r/subscribe [:x.db/get-item [:storage :media-preview/downloaded-items id :size]])
+        media-uploaded-at @(r/subscribe [:x.db/get-item [:storage :media-preview/downloaded-items id :added-at]])
+        timestamp         @(r/subscribe [:x.activities/get-actual-timestamp media-uploaded-at])
+        media-size        {:content :n-kb :replacements [(-> media-size io/B->kB math/round)]}]
+       [components/data-table {:disabled? disabled?
+                               :rows [[{:content :filename} {:content media-alias :color :muted :selectable? true :placeholder "n/a"}]
+                                      [{:content :filesize} {:content media-size  :color :muted :selectable? true :placeholder "n/a"}]
+                                      [{:content :uploaded} {:content timestamp   :color :muted :selectable? true :placeholder "n/a"}]]}]))
 
-(defn- media-preview-sortable-body
-  ; @param (keyword) preview-id
-  ; @param (map) preview-props
-  ; @param (integer) item-dex
-  ; @param (namespaced map) media-link
-  ; @param (map) drag-props
-  ;  {:handle-attributes (map)}
-  [preview-id preview-props item-dex media-link {:keys [handle-attributes item-attributes]}]
-  [:div (-> handle-attributes (merge item-attributes)
-                              (update :style merge {:cursor :grab}))
-        [media-preview-static-body preview-id preview-props media-link]])
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
-(defn- media-preview-static-list
-  ; @param (keyword) preview-id
-  ; @param (map) preview-props
-  ;  {:items (namespaced maps in vector)}
-  [preview-id {:keys [items] :as preview-props}]
-  (letfn [(f [preview-list media-link] (conj preview-list [media-preview-static-body preview-id preview-props media-link]))]
-         (reduce f [:div {:style {:display "flex" :flex-wrap "wrap" :grid-gap "24px"}}] items)))
-
-(defn- media-preview-sortable-list
-  ; @param (keyword) preview-id
-  ; @param (map) preview-props
-  ;  {:items (namespaced maps in vector)
-  ;   :value-path (vector)}
-  [preview-id {:keys [items value-path] :as preview-props}]
-  [:div {:style {:display "flex" :flex-wrap "wrap" :grid-gap "24px"}}
-        [dnd-kit/body preview-id
-                      {:common-props     preview-props
-                       :items            items
-                       :item-id-f        :media/id
-                       :item-element     #'media-preview-sortable-body
-                       :on-order-changed (fn [_ _ %] (r/dispatch-sync [:x.db/set-item! value-path %]))}]])
-
-(defn- media-preview-list
-  ; @param (keyword) preview-id
-  ; @param (map) preview-props
-  ;  {:sortable? (boolean)(opt)}
-  [preview-id {:keys [sortable?] :as preview-props}]
-  (if sortable? [media-preview-sortable-list preview-id preview-props]
-                [media-preview-static-list   preview-id preview-props]))
-
-(defn- media-preview-label
+(defn- media-preview-image-thumbnail
   ; @param (keyword) preview-id
   ; @param (map) preview-props
   ;  {:disabled? (boolean)(opt)
-  ;   :info-text (metamorphic-content)(opt)
-  ;   :label (metamorphic-content)(opt)}
-  [_ {:keys [disabled? info-text label]}]
-  (if label [elements/label {:content     label
-                             :disabled?   disabled?
-                             :info-text   info-text
-                             :line-height :block}]))
+  ;   :item-link (namespaced map)
+  ;    {:media/id (string)
+  ;     :media/uri}}
+  [_ {{:media/keys [id uri]} :item-link :keys [disabled?]}]
+  ; XXX#0059 (source-code/app/clients/frontend/preview/views.cljs)
+  ; XXX#6690 (source-code/app/storage/media_browser/views.cljs)
+  (let [thumbnail @(r/subscribe [:x.db/get-item [:storage :media-preview/downloaded-items id :thumbnail]])]
+       [elements/thumbnail {:border-radius :s
+                            :disabled? disabled?
+                            :uri       uri
+                            :height    :3xl
+                            :width     :5xl}]))
 
-(defn- media-preview-placeholder-thumbnail
+(defn- media-preview-file-thumbnail
+  ; @param (keyword) preview-id
+  ; @param (map) preview-props
+  ;  {:disabled? (boolean)(opt)
+  ;   :item-link (namespaced map)
+  ;    {:media/id (string)}}
+  [_ {{:media/keys [id]} :item-link :keys [disabled?]}]
+  ; XXX#0059 (source-code/app/clients/frontend/preview/views.cljs)
+  ; XXX#6690 (source-code/app/storage/media_browser/views.cljs)
+  (let [alias @(r/subscribe [:x.db/get-item [:storage :media-preview/downloaded-items id :alias]])
+        icon (cond (io/filename->audio? alias) :audio_file
+                   (io/filename->text?  alias) :insert_drive_file
+                   (io/filename->video? alias) :video_file
+                   :else :insert_drive_file)]
+       [elements/thumbnail {:border-radius :s
+                            :disabled?   disabled?
+                            :icon        icon
+                            :icon-family :material-icons-outlined
+                            :height      :3xl
+                            :width       :5xl}]))
+
+(defn- media-preview-thumbnail
+  ; @param (keyword) preview-id
+  ; @param (map) preview-props
+  ;  {:disabled? (boolean)(opt)
+  ;   :item-link (namespaced map)
+  ;    {:media/id (string)}}
+  [preview-id {{:media/keys [id]} :item-link :keys [disabled?] :as preview-props}]
+  ; XXX#6690 (source-code/app/storage/media_browser/views.cljs)
+  (let [alias @(r/subscribe [:x.db/get-item [:storage :media-preview/downloaded-items id :alias]])]
+       (if (io/filename->image? alias)
+           [media-preview-image-thumbnail preview-id preview-props]
+           [media-preview-file-thumbnail  preview-id preview-props])))
+
+(defn- media-preview-element
+  ; @param (keyword) preview-id
+  ; @param (map) preview-props
+  [preview-id preview-props]
+  [:div {:style {:display "flex" :flex-wrap "wrap" :grid-gap "12px" :align-items "flex-start"}}
+        [media-preview-thumbnail preview-id preview-props]
+        [media-preview-data      preview-id preview-props]])
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn- media-preview-empty-thumbnail
   ; @param (keyword) preview-id
   ; @param (map) preview-props
   ;  {:disabled? (boolean)(opt)
@@ -95,40 +102,18 @@
                        :height        (:height thumbnail)
                        :width         (:width  thumbnail)}])
 
-(defn- media-preview-placeholder-label
-  ; @param (keyword) preview-id
-  ; @param (map) preview-props
-  ;  {:disabled? (boolean)(opt)
-  ;   :placeholder (metamorphic-content)}
-  [preview-id {:keys [disabled? placeholder]}]
-  [elements/label {:color               :muted
-                   :content             placeholder
-                   :disabled?           disabled?
-                   :font-size           :xs
-                   :horizontal-position :left
-                   :line-height         :block}])
-
-(defn- media-preview-placeholder
-  ; @param (keyword) preview-id
-  ; @param (map) preview-props
-  ;  {:disabled? (boolean)(opt)
-  ;   :placeholder (metamorphic-content)(opt)}
-  [preview-id {:keys [disabled? placeholder] :as preview-props}]
-  (cond (=     placeholder :empty-thumbnail) [media-preview-placeholder-thumbnail preview-id preview-props]
-        (some? placeholder)                  [media-preview-placeholder-label     preview-id preview-props]))
-
 (defn- media-preview
   ; @param (keyword) preview-id
   ; @param (map) preview-props
-  ;  {:indent (map)(opt)
-  ;   :items (namespaced maps in vector)(opt)}
-  [preview-id {:keys [indent items] :as preview-props}]
-  [elements/blank preview-id
-                  {:content [:<> [media-preview-label preview-id preview-props]
-                                 (if (vector/nonempty? items)
-                                     [media-preview-list        preview-id preview-props]
-                                     [media-preview-placeholder preview-id preview-props])]
-                   :indent  indent}])
+  ;  {:item-link (namespaced map)(opt)
+  ;    {:media/id (string)}
+  ;   :placeholder (metamorphic-content)(opt)}
+  [preview-id {:keys [placeholder] :as preview-props}]
+  ; XXX#9010
+  (if (= placeholder :empty-thumbnail)
+      [common/item-preview preview-id (assoc preview-props :preview-element #'media-preview-element
+                                                           :placeholder     #'media-preview-empty-thumbnail)]
+      [common/item-preview preview-id (assoc preview-props :preview-element #'media-preview-element)]))
 
 (defn element
   ; @param (keyword)(opt) preview-id
@@ -137,35 +122,21 @@
   ;    Default: false
   ;   :indent (map)(opt)
   ;   :info-text (metamorphic-content)(opt)
-  ;   :items (namespaced maps in vector)(opt)
-  ;    [{:id (string)
-  ;      :uri (string)}
-  ;     {...}]
+  ;   :item-link (namespaced maps in vector)(opt)
+  ;    {:media/id (string)
+  ;     :media/uri (string)}
   ;   :label (metamorphic-content)(opt)
-  ;   :max-count (integer)(opt)
-  ;    Default: 8
   ;   :placeholder (metamorphic-content)(opt)
-  ;    :empty-thumbnail
-  ;   :sortable? (boolean)(opt)
-  ;    Default: false
-  ;   :thumbnail (map)(opt)
-  ;    {:height (keyword)(opt)
-  ;      :xxs, :xs, :s, :m, :l, :xl, :xxl, :3xl, :4xl, :5xl
-  ;      Default: :5xl
-  ;     :width (keyword)(opt)
-  ;      :xxs, :xs, :s, :m, :l, :xl, :xxl, :3xl, :4xl, :5xl
-  ;      Default: :5xl}
-  ;   :value-path (vector)(opt)
-  ;    W/ {:sortable? true}}
+  ;    :empty-thumbnail}
   ;
   ; @usage
   ;  [media-preview {...}]
   ;
   ; @usage
-  ;  [media-preview :my-preview {...}]
+  ;  [media-preview :my-media-preview {...}]
   ([preview-props]
    [element (random/generate-keyword) preview-props])
 
   ([preview-id preview-props]
-   (let [preview-props (media-preview.prototypes/preview-props-prototype preview-props)]
+   (let [preview-props (media-preview.prototypes/preview-props-prototype preview-id preview-props)]
         [media-preview preview-id preview-props])))

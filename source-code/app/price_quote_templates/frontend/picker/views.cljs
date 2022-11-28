@@ -1,80 +1,77 @@
 
 (ns app.price-quote-templates.frontend.picker.views
-    (:require [app.price-quote-templates.frontend.picker.prototypes :as picker.prototypes]
+    (:require [app.common.frontend.api                              :as common]
+              [app.components.frontend.api                          :as components]
+              [app.price-quote-templates.frontend.picker.prototypes :as picker.prototypes]
               [app.price-quote-templates.frontend.preview.views     :as preview.views]
               [elements.api                                         :as elements]
-              [random.api                                           :as random]))
+              [random.api                                           :as random]
+              [re-frame.api                                         :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- template-picker-previews
+(defn- template-list-item
   ; @param (keyword) picker-id
   ; @param (map) picker-props
-  [picker-id picker-props]
-  ; BUG#0889 (app.products.frontend.picker.views)
-  (let [preview-props (picker.prototypes/preview-props-prototype picker-id picker-props)]
-      ;[preview.views/element ::template-picker-previews preview-props]
+  ;  {:sortable? (boolean)(opt)}
+  ; @param (integer) item-dex
+  ; @param (namespaced map) template-link
+  ;  {:template/id (string)}
+  ; @param (map)(opt) drag-props
+  ;  {:handle-attributes (map)
+  ;   :item-attributes (map)}
+  ([picker-id picker-props item-dex template-link]
+   [template-list-item picker-id picker-props item-dex template-link {}])
+
+  ([picker-id picker-props item-dex template-link drag-props]))
+   ; TODO
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn- template-item
+  ; @param (keyword) picker-id
+  ; @param (map) picker-props
+  ; @param (namespaced map) template-link
+  [picker-id picker-props template-link]
+  (let [preview-props (picker.prototypes/preview-props-prototype picker-id picker-props template-link)]
        [preview.views/element picker-id preview-props]))
 
-(defn- template-picker-button
-  ; @param (keyword) picker-id
-  ; @param (map) picker-props
-  ;  {:disabled? (boolean)(opt)
-  ;   :multi-select? (boolean)(opt)}
-  [picker-id {:keys [disabled? multi-select?] :as picker-props}]
-  (let [on-click [:price-quote-templates.selector/load-selector! :price-quote-templates.selector picker-props]]
-       [:div {:style {:display :flex}}
-             [elements/button {:color     :muted
-                               :disabled? disabled?
-                               :font-size :xs
-                               :label     (if multi-select? :select-price-quote-templates! :select-price-quote-template!)
-                               :on-click  on-click}]]))
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 
-(defn- template-picker-label
+(defn- template-list-header
   ; @param (keyword) picker-id
   ; @param (map) picker-props
-  ;  {:autosave? (boolean)(opt)
-  ;    Default: false
-  ;   :disabled? (boolean)(opt)
-  ;    Default: false
-  ;   :info-text (metamorphic-content)(opt)
-  ;   :label (metamorphic-content)(opt)
-  ;   :required? (boolean)(opt)}
-  [_ {:keys [disabled? info-text label required?]}]
-  (if label [elements/label {:content     label
-                             :disabled?   disabled?
-                             :info-text   info-text
-                             :line-height :block
-                             :required?   required?}]))
+  ;  {:sortable? (boolean)(opt)}
+  [_ {:keys [sortable?]}])
+  ; TODO
 
-(defn- template-picker-body
-  ; @param (keyword) picker-id
-  ; @param (map) picker-props
-  [picker-id picker-props]
-  [:<> [template-picker-label    picker-id picker-props]
-       [template-picker-button   picker-id picker-props]
-       [template-picker-previews picker-id picker-props]])
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 
 (defn- template-picker
   ; @param (keyword) picker-id
   ; @param (map) picker-props
-  ;  {}
-  [picker-id {:keys [indent] :as picker-props}]
-  [elements/blank picker-id
-                  {:content [template-picker-body picker-id picker-props]
-                   :indent  indent}])
+  [picker-id picker-props]
+  [common/item-picker picker-id (assoc picker-props :item-element      #'template-item
+                                                    :list-item-element #'template-list-item
+                                                    :item-list-header  #'template-list-header)])
 
 (defn element
   ; @param (keyword)(opt) picker-id
   ; @param (map) picker-props
-  ;  {:disabled? (boolean)(opt)
+  ;  {:autosave? (boolean)(opt)
+  ;    Default: false
+  ;   :disabled? (boolean)(opt)
   ;    Default: false
   ;   :indent (map)(opt)
   ;   :info-text (metamorphic-content)(opt)
   ;   :label (metamorphic-content)(opt)
   ;   :max-count (integer)(opt)
   ;    Default: 8
+  ;    W/ {:multi-select? true}
   ;   :multi-select? (boolean)(opt)
   ;    Default: false
   ;   :on-change (metamorphic-event)(opt)
@@ -86,13 +83,15 @@
   ;    Default: false
   ;   :sortable? (boolean)(opt)
   ;    Default: false
+  ;    W/ {:multi-select? true}
+  ;   :toggle-label (metamorphic-content)(opt)
   ;   :value-path (vector)}
   ;
   ; @usage
   ;  [template-picker {...}]
   ;
   ; @usage
-  ;  [template-picker :my-picker {...}]
+  ;  [template-picker :my-template-picker {...}]
   ([picker-props]
    [element (random/generate-keyword) picker-props])
 

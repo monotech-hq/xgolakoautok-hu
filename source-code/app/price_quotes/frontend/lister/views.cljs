@@ -3,7 +3,6 @@
     (:require [app.common.frontend.api     :as common]
               [app.components.frontend.api :as components]
               [elements.api                :as elements]
-              [engines.item-lister.api     :as item-lister]
               [layouts.surface-a.api       :as surface-a]
               [re-frame.api                :as r]))
 
@@ -12,121 +11,80 @@
 
 (defn- footer
   []
-  (if-let [first-data-received? @(r/subscribe [:item-lister/first-data-received? :price-quotes.lister])]
-          [common/item-lister-download-info :price-quotes.lister {}]))
+  [common/item-lister-footer :price-quotes.lister {}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- price-quote-item-structure
-  [lister-id item-dex {:keys [modified-at name thumbnail]}]
-  (let [timestamp       @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
-        item-last?      @(r/subscribe [:item-lister/item-last? lister-id item-dex])
-        price-quote-name {:content :price-quote-n :replacements [name]}]
-       [common/list-item-structure {:cells [[ {:icon :request_quote :icon-family :material-icons-outlined}]
-                                            [common/list-item-label     {:content price-quote-name :stretch? true :placeholder :unnamed-price-quote}]
-                                            [common/list-item-detail    {:content timestamp :width "160px"}]
-                                            [components/list-item-marker    {:icon :navigate_next}]]
-                                    :separator (if-not item-last? :bottom)}]))
-
-(defn- price-quote-item
-  [lister-id item-dex {:keys [id] :as price-quote-item}]
-  [elements/toggle {:content     [price-quote-item-structure lister-id item-dex price-quote-item]
-                    :hover-color :highlight
-                    :on-click    [:x.router/go-to! (str "/@app-home/price-quotes/"id)]}])
+(defn- quote-list-item
+  ; @param (keyword) lister-id
+  ; @param (map) body-props
+  ; @param (integer) item-dex
+  ; @param (map) quote-item
+  [_ _ item-dex {:keys [id modified-at name]}]
+  (let [timestamp @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+        quote-name  {:content :price-quote-n :replacements [name]}]
+       [components/item-list-row {:cells [[components/list-item-thumbnail {:icon :request_quote :icon-family :material-icons-outlined}]
+                                          [components/list-item-cell      {:rows [{:content quote-name :placeholder :unnamed-price-quote}]}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content timestamp :font-size :xs :color :muted}] :width 100}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-button    {:label :open! :width 100 :on-click [:x.router/go-to! (str "/@app-home/price-quotes/"id)]}]
+                                          [components/list-item-gap       {:width 12}]]
+                                  :border (if (not= item-dex 0) :top)}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- price-quote-list
+(defn- quote-list-header
   []
-  (let [items @(r/subscribe [:item-lister/get-downloaded-items :price-quotes.lister])]
-       [common/item-list :price-quote.lister {:item-element #'price-quote-item :items items}]))
+  (let [current-order-by @(r/subscribe [:item-lister/get-current-order-by :price-quotes.lister])]
+       [components/item-list-header ::quote-list-header
+                                    {:cells [{:width 84}
+                                             {:label :name :order-by-key :name
+                                              :on-click [:item-lister/order-items! :price-quotes.lister :name]}
+                                             {:width 12}
+                                             {:label :modified :width 100 :order-by-key :modified-at
+                                              :on-click [:item-lister/order-items! :price-quotes.lister :modified-at]}
+                                             {:width 12}
+                                             {:width 100}
+                                             {:width 12}]
+                                     :border :bottom
+                                     :order-by current-order-by}]))
 
-(defn- price-quote-lister-body
+(defn- quote-lister
   []
-  [item-lister/body :price-quotes.lister
-                    {:default-order-by :modified-at/descending
-                     :items-path       [:price-quotes :lister/downloaded-items]
-                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    [common/item-lister-ghost-element]
-                     :list-element     [price-quote-list]}])
-
-(defn- price-quote-lister-header
-  []
-  [common/item-lister-header :price-quotes.lister
-                             {:cells [[common/item-lister-header-spacer :price-quotes.lister {:width "108px"}]
-                                      [common/item-lister-header-cell   :price-quotes.lister {:label :name          :order-by-key :name :stretch? true}]
-                                      [common/item-lister-header-cell   :price-quotes.lister {:label :last-modified :order-by-key :modified-at :width "160px"}]
-                                      [common/item-lister-header-spacer :price-quotes.lister {:width "36px"}]]}])
+  [common/item-lister-body :price-quotes.lister
+                           {:list-item-element #'quote-list-item
+                            :item-list-header  #'quote-list-header
+                            :items-path        [:price-quotes :lister/downloaded-items]}])
 
 (defn- body
   []
-  [common/item-lister-wrapper :price-quotes.lister
-                              {:body   #'price-quote-lister-body
-                               :header #'price-quote-lister-header}])
+  [components/surface-box ::body
+                          {:content [:<> [quote-lister]
+                                         [elements/horizontal-separator {:height :xxs}]]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn create-item-button
-  []
-  (let [lister-disabled?      @(r/subscribe [:item-lister/lister-disabled? :price-quotes.lister])
-        create-price-quote-uri (str "/@app-home/price-quotes/create")]
-       [common/item-lister-create-item-button :price-quotes.lister
-                                              {:disabled?       lister-disabled?
-                                               :create-item-uri create-price-quote-uri}]))
-
-(defn- search-field
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :price-quotes.lister])]
-       [common/item-lister-search-field :price-quotes.lister
-                                        {:disabled?   lister-disabled?
-                                         :placeholder :search-in-price-quotes
-                                         :search-keys [:name]}]))
-
-(defn- search-description
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :price-quotes.lister])]
-       [common/item-lister-search-description :price-quotes.lister
-                                              {:disabled? lister-disabled?}]))
-
-(defn- breadcrumbs
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :price-quotes.lister])]
-       [components/surface-breadcrumbs ::breadcrumbs
-                                       {:crumbs [{:label :app-home :route "/@app-home"}
-                                                 {:label :price-quotes}]
-                                        :disabled? lister-disabled?}]))
-
-(defn- label
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :price-quotes.lister])]
-       [components/surface-label ::label
-                                 {:disabled? lister-disabled?
-                                  :label     :price-quotes}]))
 
 (defn- header
   []
-  (if-let [first-data-received? @(r/subscribe [:item-lister/first-data-received? :price-quotes.lister])]
-          [:<> [:div {:style {:display "flex" :justify-content "space-between" :flex-wrap "wrap" :grid-row-gap "24px"}}
-                     [:div [label]
-                           [breadcrumbs]]
-                     [:div [create-item-button]]]
-               [search-field]
-               [search-description]]
-          [common/item-lister-ghost-header :price-quotes.lister {}]))
+  [common/item-lister-header :price-quotes.lister
+                             {:crumbs    [{:label :app-home :route "/@app-home"}
+                                          {:label :price-quotes}]
+                              :on-create [:x.router/go-to! "/@app-home/price-quotes/create"]
+                              :on-search [:item-lister/search-items! :price-quotes.lister {:search-keys [:name]}]
+                              :search-placeholder :search-in-price-quotes
+                              :label              :price-quotes}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn- view-structure
-  []
-  [:<> [header]
-       [body]
-       [footer]])
 
 (defn view
+  ; @param (keyword) surface-id
   [surface-id]
   [surface-a/layout surface-id
-                    {:content #'view-structure}])
+                    {:content [:<> [header]
+                                   [body]
+                                   [footer]]}])

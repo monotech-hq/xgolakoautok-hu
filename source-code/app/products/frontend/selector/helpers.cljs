@@ -9,7 +9,7 @@
   ;  {:product/count (integer)}
   ;
   ; @example
-  ;  (selector.helpers/import-count-f {:product/count 3 :product/id "my-product"})
+  ;  (import-count-f {:product/count 3 :product/id "my-product"})
   ;  =>
   ;  3
   ;
@@ -22,7 +22,7 @@
   ;  {:product/id (string)}
   ;
   ; @example
-  ;  (selector.helpers/import-id-f {:product/count 3 :product/id "my-product"})
+  ;  (import-id-f {:product/count 3 :product/id "my-product"})
   ;  =>
   ;  "my-product"
   ;
@@ -39,7 +39,7 @@
   ; @param (integer) product-count
   ;
   ; @example
-  ;  (selector.helpers/export-item-f "my-product" {...} 1)
+  ;  (export-item-f "my-product" {...} 1)
   ;  =>
   ;  {:product/id "my-product" :product/count 1}
   ;

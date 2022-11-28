@@ -3,7 +3,6 @@
     (:require [app.common.frontend.api     :as common]
               [app.components.frontend.api :as components]
               [elements.api                :as elements]
-              [engines.item-lister.api     :as item-lister]
               [layouts.surface-a.api       :as surface-a]
               [re-frame.api                :as r]))
 
@@ -12,118 +11,86 @@
 
 (defn- footer
   []
-  (if-let [first-data-received? @(r/subscribe [:item-lister/first-data-received? :price-quote-inquiries.lister])]
-          [common/item-lister-download-info :price-quote-inquiries.lister {}]))
+  [common/item-lister-footer :price-quote-inquiries.lister {}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- inquiry-item-structure
-  [lister-id item-dex {:keys [modified-at name issuer-logo]}]
-  (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
-        item-last? @(r/subscribe [:item-lister/item-last? lister-id item-dex])]
-       [common/list-item-structure {:cells [[ {:thumbnail (:media/uri issuer-logo)}]
-                                            [common/list-item-label     {:content name :stretch? true :placeholder :unnamed-price-quote-inquiry}]
-                                            [common/list-item-detail    {:content timestamp :width "160px"}]
-                                            [components/list-item-marker    {:icon :navigate_next}]]
-                                    :separator (if-not item-last? :bottom)}]))
-
-(defn- inquiry-item
-  [lister-id item-dex {:keys [id] :as price-quote-inquiry-item}]
-  [elements/toggle {:content     [inquiry-item-structure lister-id item-dex inquiry-item]
-                    :hover-color :highlight
-                    :on-click    [:x.router/go-to! (str "/@app-home/price-quote-inquiries/"id)]}])
+(defn- inquiry-list-item
+  ; @param (keyword) lister-id
+  ; @param (map) body-props
+  ; @param (integer) item-dex
+  ; @param (map) inquiry-item
+  [_ _ item-dex {:keys [added-at id issuer-logo]}]
+  ; XXX#7703
+  ; Az árajánlat-igénylések a többi adattól eltérően nem módosíthatók, így a megjelenítésükkor
+  ; a módosítás ideje helyett a létrehozás idejét szükséges megjeleníteni!
+  (let [timestamp @(r/subscribe [:x.activities/get-actual-timestamp added-at])]
+       [components/item-list-row {:cells [[components/list-item-gap       {:width 12}]
+                                          [components/list-item-thumbnail {:thumbnail (:media/uri issuer-logo)}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content name :placeholder :unnamed-price-quote-inquiry}]}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content timestamp :font-size :xs :color :muted}] :width 100}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-button    {:label :open! :width 100 :on-click [:x.router/go-to! (str "/@app-home/price-quote-inquiries/"id)]}]
+                                          [components/list-item-gap       {:width 12}]]
+                                  :border (if (not= item-dex 0) :top)}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- inquiry-list
+(defn- inquiry-list-header
   []
-  (let [items @(r/subscribe [:item-lister/get-downloaded-items :price-quote-inquiries.lister])]
-       [common/item-list :price-quote-inquiries.lister {:item-element #'inquiry-item :items items}]))
+  ; XXX#7703
+  (let [current-order-by @(r/subscribe [:item-lister/get-current-order-by :price-quote-inquiries.lister])]
+       [components/item-list-header ::inquiry-list-header
+                                    {:cells [{:width 12}
+                                             {:width 84}
+                                             {:width 12}
+                                             {:label :name :order-by-key :name
+                                              :on-click [:item-lister/order-items! :price-quote-inquiries.lister :name]}
+                                             {:width 12}
+                                             {:label :created :width 100 :order-by-key :added-at
+                                              :on-click [:item-lister/order-items! :price-quote-inquiries.lister :added-at]}
+                                             {:width 12}
+                                             {:width 100}
+                                             {:width 12}]
+                                     :border :bottom
+                                     :order-by current-order-by}]))
 
-(defn- inquiry-lister-body
+(defn- inquiry-lister
   []
-  [item-lister/body :price-quote-inquiries.lister
-                    {:default-order-by :modified-at/descending
-                     :items-path       [:price-quote-inquiries :lister/downloaded-items]
-                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    [common/item-lister-ghost-element]
-                     :list-element     [inquiry-list]}])
-
-(defn- inquiry-lister-header
-  []
-  [common/item-lister-header :price-quote-inquiries.lister
-                             {:cells [[common/item-lister-header-spacer :price-quote-inquiries.lister {:width "108px"}]
-                                      [common/item-lister-header-cell   :price-quote-inquiries.lister {:label :name          :order-by-key :name :stretch? true}]
-                                      [common/item-lister-header-cell   :price-quote-inquiries.lister {:label :last-modified :order-by-key :modified-at :width "160px"}]
-                                      [common/item-lister-header-spacer :price-quote-inquiries.lister {:width "36px"}]]}])
+  [common/item-lister-body :price-quote-inquiries.lister
+                           {:list-item-element #'inquiry-list-item
+                            :item-list-header  #'inquiry-list-header
+                            :items-path        [:price-quote-inquiries :lister/downloaded-items]}])
 
 (defn- body
   []
-  [common/item-lister-wrapper :price-quote-inquiries.lister
-                              {:body   #'inquiry-lister-body
-                               :header #'inquiry-lister-header}])
+  [components/surface-box ::body
+                          {:content [:<> [inquiry-lister]
+                                         [elements/horizontal-separator {:height :xxs}]]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn create-item-button
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :price-quote-inquiries.lister])
-        create-price-quote-inquiry-uri (str "/@app-home/price-quote-inquiries/create")]
-       [common/item-lister-create-item-button :price-quote-inquiries.lister
-                                              {:disabled?       lister-disabled?
-                                               :create-item-uri create-price-quote-inquiry-uri}]))
-
-(defn- search-field
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :price-quote-inquiries.lister])]
-       [common/item-lister-search-field :price-quote-inquiries.lister
-                                        {:disabled?   lister-disabled?
-                                         :placeholder :search-in-price-quote-inquiries
-                                         :search-keys [:name]}]))
-
-(defn- search-description
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :price-quote-inquiries.lister])]
-       [common/item-lister-search-description :price-quote-inquiries.lister
-                                              {:disabled? lister-disabled?}]))
-
-(defn- breadcrumbs
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :price-quote-inquiries.lister])]
-       [components/surface-breadcrumbs ::breadcrumbs
-                                       {:crumbs [{:label :app-home :route "/@app-home"}
-                                                 {:label :price-quote-inquiries}]
-                                        :disabled? lister-disabled?}]))
-
-(defn- label
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :price-quote-inquiries.lister])]
-       [components/surface-label ::label
-                                 {:disabled? lister-disabled?
-                                  :label     :price-quote-inquiries}]))
 
 (defn- header
   []
-  (if-let [first-data-received? @(r/subscribe [:item-lister/first-data-received? :price-quote-inquiries.lister])]
-          [:<> [label]
-               [breadcrumbs]
-               [search-field]
-               [search-description]]
-          [common/item-lister-ghost-header :price-quote-inquiries.lister {}]))
+  [common/item-lister-header :price-quote-inquiries.lister
+                             {:crumbs    [{:label :app-home :route "/@app-home"}
+                                          {:label :price-quote-inquiries}]
+                              :on-search [:item-lister/search-items! :price-quote-inquiries.lister {:search-keys [:name]}]
+                              :search-placeholder :search-in-price-quote-inquiries
+                              :label              :price-quote-inquiries}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn- view-structure
-  []
-  [:<> [header]
-       [body]
-       [footer]])
 
 (defn view
+  ; @param (keyword) surface-id
   [surface-id]
   [surface-a/layout surface-id
-                    {:content #'view-structure}])
+                    {:content [:<> [header]
+                                   [body]
+                                   [footer]]}])

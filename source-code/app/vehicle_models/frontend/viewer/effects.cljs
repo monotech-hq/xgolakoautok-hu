@@ -11,5 +11,8 @@
   (fn [_ [_ view-id]]
       {:dispatch-n [[:x.gestures/init-view-handler! :vehicle-models.viewer
                                                     {:default-view-id (or view-id :overview)}]
-                    [:x.ui/render-surface! :vehicle-models.viewer/view
-                                           {:content #'viewer.views/view}]]}))
+                    [:vehicle-models.viewer/render-viewer!]]}))
+
+(r/reg-event-fx :vehicle-models.viewer/render-viewer!
+  [:x.ui/render-surface! :vehicle-models.viewer/view
+                         {:content #'viewer.views/view}])

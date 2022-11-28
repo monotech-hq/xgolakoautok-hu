@@ -16,6 +16,8 @@
 ;; ----------------------------------------------------------------------------
 
 (defn file-selector
+  ; @param (keyword) uploader-id
+  ; @param (map) uploader-props
   [uploader-id uploader-props]
   [:input#storage--file-selector {:multiple 1 :type "file"
                                   :accept     (file-uploader.helpers/uploader-props->allowed-extensions-list uploader-props)
@@ -25,6 +27,7 @@
 ;; ----------------------------------------------------------------------------
 
 (defn abort-progress-button
+  ; @param (keyword) uploader-id
   [uploader-id]
   (let [request-id         (file-uploader.helpers/request-id uploader-id)
         files-uploaded?   @(r/subscribe [:x.sync/request-successed? request-id])
@@ -36,6 +39,7 @@
                                       :preset   :close}])))
 
 (defn progress-diagram
+  ; @param (keyword) uploader-id
   [uploader-id]
   ; Az upload-progress-diagram komponens önálló feliratkozással rendelkezik, hogy a feltöltési folyamat
   ; sokszoros változása ne kényszerítse a többi komponenst újra renderelődésre!
@@ -49,6 +53,7 @@
                                           {:color :highlight :value (- 100 uploader-progress)}]}]))
 
 (defn progress-label
+  ; @param (keyword) uploader-id
   [uploader-id]
   (let [request-id         (file-uploader.helpers/request-id uploader-id)
         files-uploaded?   @(r/subscribe [:x.sync/request-successed? request-id])
@@ -64,31 +69,35 @@
                         :line-height :block}]))
 
 (defn progress-state
+  ; @param (keyword) uploader-id
   [uploader-id]
   (let [request-id     (file-uploader.helpers/request-id uploader-id)
         request-sent? @(r/subscribe [:x.sync/request-sent? request-id])]
-       (if request-sent? [:<> [elements/row {:content [:<> [progress-label        uploader-id]
-                                                           [abort-progress-button uploader-id]]
-                                             :horizontal-align :space-between
-                                             :indent {:top :xs}}]
-                              [:div {:style {:width "100%"}}
-                                    [progress-diagram uploader-id]]])))
+       (if request-sent? [:div {:style {:width "100%"}}
+                               [elements/row {:content [:<> [progress-label        uploader-id]
+                                                            [abort-progress-button uploader-id]]
+                                              :horizontal-align :space-between
+                                              :indent {:top :xs}}]
+                               [progress-diagram uploader-id]])))
 
 (defn progress-list
+  ; @param (keyword) dialog-id
   [dialog-id]
   (let [uploader-ids @(r/subscribe [:storage.file-uploader/get-uploader-ids])]
-       (reduce #(conj %1 ^{:key %2} [progress-state %2])
-                [:<>] uploader-ids)))
+       (letfn [(f [%1 %2] (conj %1 ^{:key %2} [progress-state %2]))]
+              (reduce f [:<>] uploader-ids))))
 
 (defn progress-notification-body
+  ; @param (keyword) dialog-id
   [dialog-id]
   [:<> [progress-list dialog-id]
-       [elements/horizontal-separator {:size :s}]])
+       [elements/horizontal-separator {:height :s}]])
 
 ;; -- Header components -------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn cancel-upload-button
+  ; @param (keyword) uploader-id
   [uploader-id]
   [elements/button ::cancel-upload-button
                    {:font-size   :xs
@@ -99,6 +108,7 @@
                     :preset      :cancel}])
 
 (defn upload-files-button
+  ; @param (keyword) uploader-id
   [uploader-id]
   (let [all-files-cancelled?     @(r/subscribe [:storage.file-uploader/all-files-cancelled?     uploader-id])
         max-upload-size-reached? @(r/subscribe [:storage.file-uploader/max-upload-size-reached? uploader-id])
@@ -113,16 +123,17 @@
                          :preset      :upload}]))
 
 (defn available-capacity-label
+  ; @param (keyword) uploader-id
   [uploader-id]
   ; XXX#0506
-  ; - Az available-capacity-label felirat elements/text elem használatával van megjelenítve,
-  ;   így kis méretű képernyőkön a szöveg képes megtörni (az elements/label elemben nem törik meg a szöveg).
+  ; Az available-capacity-label felirat elements/text elem használatával van megjelenítve,
+  ; így kis méretű képernyőkön a szöveg képes megtörni (az elements/label elemben nem törik meg a szöveg).
   ;
-  ; - A {:horizontal-align :center} beállítás használatával kis méretű képernyőkön a szöveg a középre
-  ;   igazítva törik meg.
+  ; A {:horizontal-align :center} beállítás használatával kis méretű képernyőkön a szöveg a középre
+  ; igazítva törik meg.
   ;
-  ; - Az {:indent {:vertical :xs}} beállítás használatával kis méretű képernyőkön a szöveg nem
-  ;   ér hozzá a képernyő széléhez.
+  ; Az {:indent {:vertical :xs}} beállítás használatával kis méretű képernyőkön a szöveg nem
+  ; ér hozzá a képernyő széléhez.
   (let [capacity-limit-exceeded? @(r/subscribe [:storage.file-uploader/capacity-limit-exceeded? uploader-id])
         free-capacity            @(r/subscribe [:storage.capacity-handler/get-free-capacity])
         free-capacity             (-> free-capacity io/B->MB format/decimals)]
@@ -135,6 +146,7 @@
                        :indent           {:vertical :xs}}]))
 
 (defn uploading-size-label
+  ; @param (keyword) uploader-id
   [uploader-id]
   ; XXX#0506
   (let [files-size               @(r/subscribe [:storage.file-uploader/get-files-size           uploader-id])
@@ -151,19 +163,22 @@
                        :indent           {:vertical :xs}}]))
 
 (defn file-upload-summary
+  ; @param (keyword) uploader-id
   [uploader-id]
   [elements/column {:content [:<> [available-capacity-label uploader-id]
                                   [uploading-size-label     uploader-id]
-                                  [elements/horizontal-separator {:size :xs}]]
+                                  [elements/horizontal-separator {:height :xs}]]
                     :horizontal-align :center}])
 
 (defn header-buttons
+  ; @param (keyword) uploader-id
   [uploader-id]
   [elements/horizontal-polarity ::file-uploader-action-buttons
                                 {:start-content [cancel-upload-button uploader-id]
                                  :end-content   [upload-files-button  uploader-id]}])
 
 (defn header
+  ; @param (keyword) uploader-id
   [uploader-id]
   [:<> [header-buttons      uploader-id]
        [file-upload-summary uploader-id]])
@@ -172,6 +187,8 @@
 ;; ----------------------------------------------------------------------------
 
 (defn file-item-structure
+  ; @param (keyword) uploader-id
+  ; @param (integer) file-dex
   [uploader-id file-dex]
   (let [file-cancelled? @(r/subscribe [:storage.file-uploader/get-file-prop uploader-id file-dex :cancelled?])
         filename        @(r/subscribe [:storage.file-uploader/get-file-prop uploader-id file-dex :filename])
@@ -179,9 +196,11 @@
         object-url      @(r/subscribe [:storage.file-uploader/get-file-prop uploader-id file-dex :object-url])
         filesize         (-> filesize io/B->MB format/decimals (str " MB"))]
        [:div {:style {:align-items "center" :border-bottom "1px solid #f0f0f0" :display "flex"}}
+             ; XXX#6690 (source-code/app/storage/media_browser/views.cljs)
+             ; A fájlfeltöltő a storage modul többi almoduljától eltérően nem jelenít meg különböző ikonokat
+             ; és előnézeti képeket az audio, text, video, stb. fájltípusoknak!
              (if (io/filename->image? filename)
-                 [elements/thumbnail {:border-radius :s :height :s :indent {:horizontal :xxs :vertical :xs}
-                                      :uri object-url :width :l}]
+                 [elements/thumbnail {:border-radius :s :height :s :indent {:horizontal :xxs :vertical :xs} :uri object-url :width :l}]
                  [elements/icon {:icon :insert_drive_file :indent {:horizontal :m :vertical :xl}}])
              [:div {:style {:flex-grow 1}}
                    [elements/label {:content filename                :style {:color "#333"} :indent {:right :xs}}]
@@ -190,6 +209,8 @@
                                  [elements/icon {:icon :highlight_off          :indent {:right :xs} :size :s}])]))
 
 (defn file-item
+  ; @param (keyword) uploader-id
+  ; @param (integer) file-dex
   [uploader-id file-dex]
   (let [file-cancelled? @(r/subscribe [:storage.file-uploader/get-file-prop uploader-id file-dex :cancelled?])]
        [elements/toggle {:content     [file-item-structure uploader-id file-dex]
@@ -198,6 +219,7 @@
                          :style       (if file-cancelled? {:opacity ".5"})}]))
 
 (defn body
+  ; @param (keyword) uploader-id
   [uploader-id]
   (let [file-count @(r/subscribe [:storage.file-uploader/get-selected-file-count uploader-id])]
        (letfn [(f [file-list file-dex]
@@ -209,6 +231,7 @@
 ;; ----------------------------------------------------------------------------
 
 (defn view
+  ; @param (keyword) uploader-id
   [uploader-id]
   [popup-a/layout :storage.file-uploader/view
                   {:body      [body uploader-id]

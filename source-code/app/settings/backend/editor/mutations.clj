@@ -4,7 +4,7 @@
               [com.wsscode.pathom3.connect.operation :as pathom.co :refer [defmutation]]
               [mongo-db.api                          :as mongo-db]
               [pathom.api                            :as pathom]
-              [x.user.api                         :as x.user]))
+              [x.user.api                            :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -17,7 +17,7 @@
   ;
   ; @return (namespaced map)
   [{:keys [request]} {:keys [item]}]
-  ; XXX#9100 (app.settings.backend.editor.mutations)
+  ; XXX#9100 (source-code/app/settings/backend/editor/mutations.clj)
   ; A felhasználói beállítások mentésekor a felhasználó azonosítójának forrása,
   ; NEM a paraméterként a szerver számára küldött beállításokat tartalmazó dokumentum,
   ; HANEM a request térkép session értékéből kiolvasott azonosító!

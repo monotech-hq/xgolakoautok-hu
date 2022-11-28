@@ -14,7 +14,8 @@
               [pathom.api                                   :as pathom]
               [time.api                                     :as time]
               [vector.api                                   :as vector]
-              [x.media.api                                  :as x.media]))
+              [x.media.api                                  :as x.media]
+              [x.user.api                                   :as x.user]))
 
 ;; -- Remove media-item links -------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -99,19 +100,21 @@
 
 (defn delete-item-temporary-f
   ; @param (map) env
+  ;  {:request (map)}
   ; @param (map) mutation-props
   ;  {:item-id (string)
   ;   :parent-id (string)}
   ;
   ; @return (string)
-  [env {:keys [item-id parent-id] :as mutation-props}]
-  (when-let [media-item (core.side-effects/get-item env item-id)]
-            (letfn [(f [] (delete-item-f env mutation-props))]
-                   (time/set-timeout! f media-browser.config/PERMANENT-DELETE-AFTER))
-            (core.side-effects/update-path-directories! env           media-item -)
-            (core.side-effects/detach-item!             env parent-id media-item)
-            (clean-collections! item-id)
-            (return             item-id)))
+  [{:keys [request] :as env} {:keys [item-id parent-id] :as mutation-props}]
+  (if (x.user/request->authenticated? request)
+      (when-let [media-item (core.side-effects/get-item env item-id)]
+                (letfn [(f [] (delete-item-f env mutation-props))]
+                       (time/set-timeout! f media-browser.config/PERMANENT-DELETE-TIMEOUT))
+                (core.side-effects/update-path-directories! env           media-item -)
+                (core.side-effects/detach-item!             env parent-id media-item)
+                (clean-collections! item-id)
+                (return             item-id))))
 
 (defn delete-items-temporary-f
   ; @param (map) env
@@ -121,6 +124,8 @@
   ;
   ; @return (strings in vector)
   [env {:keys [item-ids parent-id]}]
+  ; A delete-items-temporary-f függvény nem vizsgálja a felhasználói jogosultságokat,
+  ; mivel az általa alkalmazott delete-item-temporary-f függvény ezt megteszi!
   (letfn [(f [result item-id]
              (conj result (delete-item-temporary-f env {:item-id item-id :parent-id parent-id})))]
          (reduce f [] item-ids)))
@@ -152,16 +157,18 @@
 
 (defn undo-delete-item-f
   ; @param (map) env
+  ;  {:request (map)}
   ; @param (map) mutation-props
   ;  {:items (namespaced map)
   ;   :parent-id (string)}
   ;
   ; @return (namespaced map)
-  [env {:keys [item parent-id] :as mutation-props}]
-  (when-let [media-item (core.side-effects/get-item env (:media/id item))]
-            (core.side-effects/update-path-directories! env           media-item +)
-            (core.side-effects/attach-item!             env parent-id media-item)
-            (return media-item)))
+  [{:keys [request] :as env} {:keys [item parent-id] :as mutation-props}]
+  (if (x.user/request->authenticated? request)
+      (when-let [media-item (core.side-effects/get-item env (:media/id item))]
+                (core.side-effects/update-path-directories! env           media-item +)
+                (core.side-effects/attach-item!             env parent-id media-item)
+                (return media-item))))
 
 (defn undo-delete-items-f
   ; @param (map) env
@@ -171,6 +178,8 @@
   ;
   ; @return (namespaced maps in vector)
   [env {:keys [items parent-id]}]
+  ; Az undo-delete-items-f függvény nem vizsgálja a felhasználói jogosultságokat,
+  ; mivel az általa alkalmazott undo-delete-f függvény ezt megteszi!
   (letfn [(f [result item]
              (conj result (undo-delete-item-f env {:item item :parent-id parent-id})))]
          (reduce f [] items)))
@@ -299,15 +308,18 @@
 
 (defn duplicate-item-f
   ; @param (map) env
+  ;  {:request (map)}
   ; @param (map) mutation-props
   ;  {:item-id (string)
   ;   :parent-id (string)}
   ;
   ; @return (namespaced map)
-  [env {:keys [item-id parent-id]}]
-  (if-let [{:media/keys [mime-type]} (core.side-effects/get-item env item-id)]
-          (case mime-type "storage/directory" (duplicate-directory-f env {:item-id item-id :parent-id parent-id :destination-id parent-id})
-                                              (duplicate-file-f      env {:item-id item-id :parent-id parent-id :destination-id parent-id}))))
+  [{:keys [request] :as env} {:keys [item-id parent-id]}]
+  (if (x.user/request->authenticated? request)
+      (if-let [{:media/keys [mime-type]} (core.side-effects/get-item env item-id)]
+              (let [mutation-props {:item-id item-id :parent-id parent-id :destination-id parent-id}]
+                   (case mime-type "storage/directory" (duplicate-directory-f env mutation-props)
+                                                       (duplicate-file-f      env mutation-props))))))
 
 (defn duplicate-items-f
   ; @param (map) env
@@ -320,6 +332,9 @@
   ; A duplicate-items-f függvény végigiterál az item-ids vektor elemeiként átadott azonosítókon
   ; és alkalmazza rajtuk a duplicate-item-f függvényt, majd az egyes visszatérési értékeket
   ; a visszatérési érték vektorban felsorolja.
+  ;
+  ; A duplicate-items-f függvény nem vizsgálja a felhasználói jogosultságokat,
+  ; mivel az általa alkalmazott duplicate-item-f függvény ezt megteszi!
   (letfn [(f [result item-id]
              (conj result (duplicate-item-f env {:item-id item-id :parent-id parent-id})))]
          (reduce f [] item-ids)))
@@ -358,7 +373,9 @@
   ;
   ; @return (namespaced map)
   [{:keys [request]} {:keys [item]}]
-  (mongo-db/save-document! "storage" item {:prepare-f #(common/updated-document-prototype request %)}))
+  (if (x.user/request->authenticated? request)
+      (let [prepare-f #(common/updated-document-prototype request %)]
+           (mongo-db/save-document! "storage" item {:prepare-f prepare-f}))))
 
 (defmutation update-item!
              ; @param (map) env

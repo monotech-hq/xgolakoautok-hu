@@ -4,22 +4,25 @@
               [app.vehicle-types.backend.handler.helpers :as handler.helpers]
               [com.wsscode.pathom3.connect.operation     :refer [defresolver]]
               [mongo-db.api                              :as mongo-db]
-              [pathom.api                                :as pathom]))
+              [pathom.api                                :as pathom]
+              [x.user.api                                :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn get-model-name-f
   ; @param (map) env
+  ;  {:request (map)}
   ; @param (map) resolver-props
   ;
   ; @return (namespaced map)
   ;  {:pathom/target-path (vector)
   ;   :pathom/target-value (string)}
-  [env _]
+  [{:keys [request] :as env} _]
   ; XXX#7602
-  {:pathom/target-path  [:vehicle-types :handler/model-item :name]
-   :pathom/target-value (handler.helpers/get-model-name env)})
+  (if (x.user/request->authenticated? request)
+      {:pathom/target-path  [:vehicle-types :handler/model-item :name]
+       :pathom/target-value (handler.helpers/get-model-name env)}))
 
 (defresolver get-model-name
              ; @param (map) env

@@ -12,6 +12,10 @@
 (r/reg-event-fx :storage.media-browser/load-browser!
   [:storage.media-browser/render-browser!])
 
+(r/reg-event-fx :storage.media-browser/render-browser!
+  [:x.ui/render-surface! :storage.media-browser/view
+                         {:content #'media-browser.views/view}])
+
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
@@ -85,7 +89,7 @@
 (r/reg-event-fx :storage.media-browser/download-file!
   (fn [{:keys [db]} [_ {:keys [alias filename]}]]
       {:dispatch-n [[:x.ui/remove-popup! :storage.media-menu/view]
-                    [:tools/save-file! {:filename alias :uri (x.media/filename->media-storage-uri filename)}]]}))
+                    [:file-saver/save-file! {:filename alias :uri (x.media/filename->media-storage-uri filename)}]]}))
 
 (r/reg-event-fx :storage.media-browser/copy-file-link!
   (fn [{:keys [db]} [_ {:keys [filename]}]]
@@ -93,10 +97,3 @@
             file-link (r x.router/use-app-domain db file-uri)]
            {:dispatch-n [[:x.ui/remove-popup! :storage.media-menu/view]
                          [:clipboard/copy-text! file-link]]})))
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
-(r/reg-event-fx :storage.media-browser/render-browser!
-  [:x.ui/render-surface! :storage.media-browser/view
-                         {:content #'media-browser.views/view}])

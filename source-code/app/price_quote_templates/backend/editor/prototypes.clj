@@ -6,26 +6,26 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn added-price-quote-template-item-prototype
-  ; @param (namespaced map) price-quote-template-item
+(defn added-document-prototype
+  ; @param (namespaced map) document
   ;
   ; @return (namespaced map)
   ;  {:template/default-currency (string)
   ;   :template/language (keyword)}
-  [price-quote-template-item]
-  ; XXX#5050 (source-code/app/price-quote-templates/frontend/README.md)
+  [document]
+  ; XXX#5050 (source-code/app/price_quote_templates/frontend/README.md)
   (merge {:template/default-currency handler.config/DEFAULT-DEFAULT-CURRENCY
           :template/language         handler.config/DEFAULT-LANGUAGE}
-         (param price-quote-template-item)))
+         (param document)))
 
-(defn updated-price-quote-template-item-prototype
-  ; @param (namespaced map) price-quote-template-item
+(defn updated-document-prototype
+  ; @param (namespaced map) document
   ;
   ; @return (namespaced map)
   ;  {:template/default-currency (string)
   ;   :template/language (keyword)}
-  [price-quote-template-item]
-  ; XXX#5050 (source-code/app/price-quote-templates/frontend/README.md)
+  [document]
+  ; XXX#5050 (source-code/app/price_quote_templates/frontend/README.md)
   (merge {:template/default-currency handler.config/DEFAULT-DEFAULT-CURRENCY
           :template/language         handler.config/DEFAULT-LANGUAGE}
-         (param price-quote-template-item)))
+         (param document)))

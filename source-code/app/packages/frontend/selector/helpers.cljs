@@ -9,7 +9,7 @@
   ;  {:package/count (integer)}
   ;
   ; @example
-  ;  (selector.helpers/import-count-f {:package/count 3 :package/id "my-package"})
+  ;  (import-count-f {:package/count 3 :package/id "my-package"})
   ;  =>
   ;  3
   ;
@@ -22,7 +22,7 @@
   ;  {:package/id (string)}
   ;
   ; @example
-  ;  (selector.helpers/import-id-f {:package/count 3 :package/id "my-package"})
+  ;  (import-id-f {:package/count 3 :package/id "my-package"})
   ;  =>
   ;  "my-package"
   ;
@@ -39,7 +39,7 @@
   ; @param (integer) package-count
   ;
   ; @example
-  ;  (selector.helpers/export-item-f "my-package" {...} 1)
+  ;  (export-item-f "my-package" {...} 1)
   ;  =>
   ;  {:package/id "my-package" :package/count 1}
   ;

@@ -19,100 +19,82 @@
 
 (defn- footer
   []
-  (if-let [first-data-received? @(r/subscribe [:item-browser/first-data-received? :storage.media-browser])]
-          [common/item-lister-download-info :storage.media-browser {}]))
+  [common/item-browser-footer :storage.media-browser {}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- directory-info
-  []
-  (let [size  @(r/subscribe [:x.db/get-item [:storage :media-browser/browsed-item :size]])
-        items @(r/subscribe [:x.db/get-item [:storage :media-browser/browsed-item :items]])
-        directory-info (str (-> size io/B->MB format/decimals (str " MB\u00A0\u00A0\u00A0|\u00A0\u00A0\u00A0"))
-                            (x.components/content {:content :n-items :replacements [(count items)]}))]
-       [components/surface-description ::directory-info
-                                       {:content          directory-info
-                                        :indent           {:top :m :right :xs}
-                                        :horizontal-align :right}]))
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
-(defn directory-item-structure
-  [browser-id item-dex {:keys [alias size id items modified-at]}]
+(defn- directory-list-item
+  ; @param (keyword) browser-id
+  ; @param (map) body-props
+  ; @param (integer) item-dex
+  ; @param (map) media-item
+  [_ _ item-dex {:keys [alias size id items modified-at] :as media-item}]
   (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
-        item-last? @(r/subscribe [:item-browser/item-last? browser-id item-dex])
         item-count  (x.components/content {:content :n-items :replacements [(count items)]})
         size        (-> size io/B->MB format/decimals (str " MB"))
         icon-family (if (empty? items) :material-icons-outlined :material-icons-filled)]
-       [common/list-item-structure {:cells [[ {:icon :folder :icon-family icon-family}]
-                                            [common/list-item-label     {:content alias :stretch? true}]
-                                            [common/list-item-details   {:contents [size item-count] :width "160px"}]
-                                            [common/list-item-detail    {:content timestamp :width "160px"}]
-                                            [components/list-item-marker    {:icon :navigate_next}]]
-                                    :separator (if-not item-last? :bottom)}]))
+       [components/item-list-row {:cells [[components/list-item-gap       {:width 12}]
+                                          [components/list-item-thumbnail {:icon :folder :icon-family icon-family}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content alias :placeholder :unnamed-directory}]}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content size :font-size :xs :color :muted}] :width 100}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content timestamp :font-size :xs :color :muted}] :width 100}]
+                                          [components/list-item-gap       {:width 6}]
+                                          [components/list-item-button    {:label :open! :width 100 :on-click [:item-browser/browse-item! :storage.media-browser id]}]
+                                          [components/list-item-gap       {:width 6}]
+                                          [components/list-item-button    {:icon :more_horiz :width 40 :on-click [:storage.media-menu/render-directory-menu! media-item]}]
+                                          [components/list-item-gap       {:width 6}]]
+                                  :border (if (not= item-dex 0) :top)}]))
 
-(defn directory-item
-  [browser-id item-dex {:keys [id] :as directory-item}]
-  [elements/toggle {:content        [directory-item-structure browser-id item-dex directory-item]
-                    :hover-color    :highlight
-                    :on-click       [:item-browser/browse-item! :storage.media-browser id]
-                    :on-right-click [:storage.media-menu/render-directory-menu! directory-item]}])
+(defn- file-list-item
+  ; @param (keyword) browser-id
+  ; @param (map) body-props
+  ; @param (integer) item-dex
+  ; @param (map) media-item
+  [_ _ item-dex {:keys [alias id modified-at filename size] :as media-item}]
+  (let [timestamp @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+        size       (-> size io/B->MB format/decimals (str " MB"))]
+       [components/item-list-row {:cells [[components/list-item-gap    {:width 12}]
+                                          ; XXX#6690 (source-code/app/storage/media_browser/views.cljs)
+                                          (cond (io/filename->audio? alias)
+                                                [components/list-item-thumbnail {:icon :audio_file :icon-family :material-icons-outlined}]
+                                                (io/filename->image? alias)
+                                                [components/list-item-thumbnail {:thumbnail (x.media/filename->media-thumbnail-uri filename)}]
+                                                (io/filename->text?  alias)
+                                                [components/list-item-thumbnail {:icon :insert_drive_file :icon-family :material-icons-outlined}]
+                                                (io/filename->video? alias)
+                                                [components/list-item-thumbnail {:icon :video_file :icon-family :material-icons-outlined}]
+                                                :else
+                                                [components/list-item-thumbnail {:icon :insert_drive_file :icon-family :material-icons-outlined}])
+                                          [components/list-item-gap    {:width 12}]
+                                          [components/list-item-cell   {:rows [{:content alias :placeholder :unnamed-file}]}]
+                                          [components/list-item-gap    {:width 12}]
+                                          [components/list-item-cell   {:rows [{:content size :font-size :xs :color :muted}] :width 100}]
+                                          [components/list-item-gap    {:width 12}]
+                                          [components/list-item-cell   {:rows [{:content timestamp :font-size :xs :color :muted}] :width 100}]
+                                          [components/list-item-gap    {:width 6}]
+                                          [components/list-item-cell   {:width 100}]
+                                          [components/list-item-gap    {:width 6}]
+                                          [components/list-item-button {:icon :more_horiz :width 40 :on-click [:storage.media-menu/render-file-menu! media-item]}]
+                                          [components/list-item-gap    {:width 6}]]
+                                  :border (if (not= item-dex 0) :top)}]))
 
-(defn file-item-structure
-  [browser-id item-dex {:keys [alias id modified-at filename size] :as file-item}]
-  (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
-        item-last? @(r/subscribe [:item-browser/item-last? browser-id item-dex])
-        size        (-> size io/B->MB format/decimals (str " MB"))]
-       [common/list-item-structure {:cells [[ (if (io/filename->image? alias)
-                                                                            {:thumbnail (x.media/filename->media-thumbnail-uri filename)}
-                                                                            {:icon :insert_drive_file :icon-family :material-icons-outlined})]
-                                            [common/list-item-label  {:content alias     :stretch? true}]
-                                            [common/list-item-detail {:content size      :width "160px"}]
-                                            [common/list-item-detail {:content timestamp :width "160px"}]
-                                            [components/list-item-marker {:icon :more_vert}]]
-                                    :separator (if-not item-last? :bottom)}]))
-
-(defn file-item
-  [browser-id item-dex file-item]
-  [elements/toggle {:content        [file-item-structure browser-id item-dex file-item]
-                    :hover-color    :highlight
-                    :on-click       [:storage.media-menu/render-file-menu! file-item]
-                    :on-right-click [:storage.media-menu/render-file-menu! file-item]}])
-
-(defn media-item
-  [browser-id item-dex {:keys [mime-type] :as media-item}]
-  (case mime-type "storage/directory" [directory-item browser-id item-dex media-item]
-                                      [file-item      browser-id item-dex media-item]))
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
-(defn- media-list
-  []
-  (let [items @(r/subscribe [:item-browser/get-downloaded-items :storage.media-browser])]
-       [common/item-list :storage.media-browser {:item-element #'media-item :items items}]))
-
-(defn media-browser-body
-  []
-  [item-browser/body :storage.media-browser
-                     {:auto-title?      true
-                      :default-item-id   core.config/ROOT-DIRECTORY-ID
-                      :default-order-by :modified-at/descending
-                      :item-path        [:storage :media-browser/browsed-item]
-                      :items-path       [:storage :media-browser/downloaded-items]
-                      :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
-                      :ghost-element    [common/item-lister-ghost-element]
-                      :list-element     [media-list]
-                      :items-key        :items
-                      :label-key        :alias
-                      :path-key         :path}])
+(defn- media-list-item
+  ; @param (keyword) browser-id
+  ; @param (map) body-props
+  ; @param (integer) item-dex
+  ; @param (map) media-item
+  [browser-id body-props item-dex {:keys [mime-type] :as media-item}]
+  (case mime-type "storage/directory" [directory-list-item browser-id body-props item-dex media-item]
+                                      [file-list-item      browser-id body-props item-dex media-item]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn upload-files-button
+(defn- upload-files-button
   []
   (let [browser-disabled? @(r/subscribe [:item-browser/browser-disabled? :storage.media-browser])]
        [elements/button ::upload-files-button
@@ -125,7 +107,7 @@
                          :label         :upload-file!
                          :on-click      [:storage.media-browser/upload-files!]}]))
 
-(defn create-folder-button
+(defn- create-folder-button
   []
   (let [browser-disabled? @(r/subscribe [:item-browser/browser-disabled? :storage.media-browser])]
        [elements/button ::create-folder-button
@@ -139,7 +121,7 @@
                          :icon-family   :material-icons-outlined
                          :label         :create-directory!}]))
 
-(defn go-home-icon-button
+(defn- go-home-icon-button
   []
   (let [browser-disabled? @(r/subscribe [:item-browser/browser-disabled? :storage.media-browser])
         at-home?          @(r/subscribe [:item-browser/at-home?          :storage.media-browser])
@@ -152,7 +134,7 @@
                               :on-click      [:item-browser/go-home! :storage.media-browser]
                               :preset        :home}]))
 
-(defn go-up-icon-button
+(defn- go-up-icon-button
   []
   (let [browser-disabled? @(r/subscribe [:item-browser/browser-disabled? :storage.media-browser])
         at-home?          @(r/subscribe [:item-browser/at-home?          :storage.media-browser])]
@@ -164,8 +146,7 @@
                               :on-click      [:item-browser/go-up! :storage.media-browser]
                               :preset        :back}]))
 
-
-(defn control-bar
+(defn- control-bar
   []
   [elements/horizontal-polarity ::control-bar
                                 {:start-content [:<> [go-up-icon-button]
@@ -173,82 +154,71 @@
                                  :end-content   [:<> [create-folder-button]
                                                      [upload-files-button]]}])
 
-(defn media-browser-header
+(defn- media-list-header
   []
-  [common/item-lister-header :storage.media-browser
-                             {:cells [[common/item-lister-header-spacer :storage.media-browser {:width "108px"}]
-                                      [common/item-lister-header-cell   :storage.media-browser {:label :name          :order-by-key :name :stretch? true}]
-                                      [common/item-lister-header-cell   :storage.media-browser {:label :size          :order-by-key :size        :width "160px"}]
-                                      [common/item-lister-header-cell   :storage.media-browser {:label :last-modified :order-by-key :modified-at :width "160px"}]
-                                      [common/item-lister-header-spacer :storage.media-browser {:width "36px"}]]
-                              :control-bar [control-bar]}])
+  (let [current-order-by @(r/subscribe [:item-browser/get-current-order-by :storage.media-browser])]
+       [components/item-list-header ::vehicle-list-header
+                                    {:cells [{:width 12}
+                                             {:width 84}
+                                             {:width 12}
+                                             {:label :name :order-by-key :name
+                                              :on-click [:item-browser/order-items! :rental-vehicles.media-browser :name]}
+                                             {:width 12}
+                                             {:label :size :width 100 :order-by-key :size
+                                              :on-click [:item-browser/order-items! :rental-vehicles.media-browser :size]}
+                                             {:width 12}
+                                             {:label :modified :width 100 :order-by-key :modified-at
+                                              :on-click [:item-browser/order-items! :rental-vehicles.media-browser :modified-at]}
+                                             {:width 6}
+                                             {:width 100}
+                                             {:width 6}
+                                             {:width 40}
+                                             {:width 6}]
+                                     :border :bottom
+                                     :order-by current-order-by}]))
 
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
+(defn- media-browser
+  []
+  [common/item-browser-body :storage.media-browser
+                            {:default-item-id   core.config/ROOT-DIRECTORY-ID
+                             :item-path         [:storage :media-browser/browsed-item]
+                             :items-path        [:storage :media-browser/downloaded-items]
+                             :item-list-header  #'media-list-header
+                             :list-item-element #'media-list-item
+                             :items-key         :items
+                             :label-key         :alias
+                             :path-key          :path}])
 
 (defn- body
   []
-  [common/item-lister-wrapper :storage.media-browser
-                              {:body   #'media-browser-body
-                               :header #'media-browser-header}])
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
-(defn- search-field
-  []
-  (let [browser-disabled? @(r/subscribe [:item-browser/browser-disabled? :storage.media-browser])]
-       [common/item-browser-search-field :storage.media-browser
-                                         {:disabled?   browser-disabled?
-                                          :placeholder :search-in-the-directory
-                                          :search-keys [:alias]}]))
-
-(defn- search-description
-  []
-  (let [lister-disabled? @(r/subscribe [:item-browser/browser-disabled? :storage.media-browser])]
-       [common/item-browser-search-description :storage.media-browser
-                                               {:disabled? lister-disabled?}]))
-
-(defn- breadcrumbs
-  []
-  (let [browser-disabled? @(r/subscribe [:item-browser/browser-disabled? :storage.media-browser])]
-       [components/surface-breadcrumbs ::breadcrumbs
-                                        {:crumbs [{:label :app-home :route "/@app-home"}
-                                                  {:label :storage}]
-                                         :disabled? browser-disabled?}]))
-
-(defn- label
-  []
-  (let [browser-disabled? @(r/subscribe [:item-browser/browser-disabled? :storage.media-browser])
-        directory-alias @(r/subscribe [:item-browser/get-current-item-label :storage.media-browser])]
-       [components/surface-label ::label
-                                 {:disabled? browser-disabled?
-                                  :label     directory-alias}]))
+  [components/surface-box ::body
+                          {:content [:<> [control-bar]
+                                         [media-browser]
+                                         [elements/horizontal-separator {:height :xxs}]]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn- header
   []
-  (if-let [first-data-received? @(r/subscribe [:item-browser/first-data-received? :storage.media-browser])]
-          [:<> [label]
-               [breadcrumbs]
-               [search-field]
-               [:div {:style {:display :flex :justify-content :space-between}}
-                     [search-description]
-                     [directory-info]]]
-          [common/item-lister-ghost-header :parts.part-lister {}]))
+  (let [size  @(r/subscribe [:x.db/get-item [:storage :media-browser/browsed-item :size]])
+        items @(r/subscribe [:x.db/get-item [:storage :media-browser/browsed-item :items]])
+        directory-info (str (-> size io/B->MB format/decimals (str " MB\u00A0\u00A0\u00A0|\u00A0\u00A0\u00A0"))
+                            (x.components/content {:content :n-items :replacements [(count items)]}))]
+       [common/item-browser-header :storage.media-browser
+                                   {:crumbs    [{:label :app-home :route "/@app-home"}
+                                                {:label :storage}]
+                                    :item-info directory-info
+                                    :on-search [:item-browser/search-items! :storage.media-browser {:search-keys [:alias]}]
+                                    :search-placeholder :search-in-the-directory}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn- view-structure
-  []
-  [:<> [header]
-       [body]
-       [footer]])
 
 (defn view
+  ; @param (keyword) surface-id
   [surface-id]
   [surface-a/layout surface-id
-                    {:content #'view-structure}])
+                    {:content [:<> [header]
+                                   [body]
+                                   [footer]]}])

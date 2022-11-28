@@ -5,9 +5,16 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn vehicle-item-prototype
-  ; @param (namespaced map) item
+(defn added-document-prototype
+  ; @param (namespaced map) document
   ;
   ; @return (namespaced map)
-  [{:vehicle/keys [name ] :as item}]
-  (merge item {:vehicle/link-name (handler.helpers/vehicle-link-name name)}))
+  [{:vehicle/keys [name ] :as document}]
+  (merge document {:vehicle/link-name (handler.helpers/vehicle-link-name name)}))
+
+(defn updated-document-prototype
+  ; @param (namespaced map) document
+  ;
+  ; @return (namespaced map)
+  [document]
+  (added-document-prototype))

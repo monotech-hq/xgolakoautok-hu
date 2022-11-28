@@ -49,12 +49,12 @@
 (defn body
   [_]
   [:<> ; This website uses cookies
-       [elements/horizontal-separator {:size :s}]
+       [elements/horizontal-separator {:height :s}]
        [elements/text {:content :this-website-uses-cookies :font-size :xs :layout :row :font-weight :bold}]
        ; Legal links
-       [elements/horizontal-separator {:size :xxs}]
+       [elements/horizontal-separator {:height :xxs}]
        [privacy-policy-button]
-       [elements/horizontal-separator {:size :s}]
+       [elements/horizontal-separator {:height :s}]
        [terms-of-service-button]
        ; Cookie settings
        [elements/horizontal-line {:color :highlight :layout :row}]
@@ -85,7 +85,7 @@
                          :on-check   [:x.environment/cookie-settings-changed]
                          :on-uncheck [:x.environment/cookie-settings-changed]}]
        ; Remove stored cookies
-       [elements/horizontal-separator {:size :s}]
+       [elements/horizontal-separator {:height :s}]
        [elements/button {:label :remove-stored-cookies! :preset :secondary-button :layout :row
                          :on-click [:settings.remove-stored-cookies/render-dialog!]}]
-       [elements/horizontal-separator {:size :s}]])
+       [elements/horizontal-separator {:height :s}]])

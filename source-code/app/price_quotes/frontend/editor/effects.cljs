@@ -19,5 +19,8 @@
   {:fx          [:price-quotes.handler/reset-pdf-download!]
    :dispatch-n [[:x.gestures/init-view-handler! :price-quotes.editor
                                                 {:default-view-id :template}]
-                [:x.ui/render-surface! :price-quotes.editor/view
-                                       {:content #'editor.views/view}]]})
+                [:price-quotes.editor/render-editor!]]})
+
+(r/reg-event-fx :price-quotes.editor/render-editor!
+  [:x.ui/render-surface! :price-quotes.editor/view
+                         {:content #'editor.views/view}])

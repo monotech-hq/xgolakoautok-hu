@@ -32,12 +32,14 @@
   ;                                          :destination-id "my-directory"}]
   [r/event-vector<-id]
   (fn [{:keys [db]} [_ uploader-id uploader-props]]
-      ; - Az egyes fájlfeltöltési folyamatok a fájlfeltöltő ablak bezáródása után még a fájl(ok)
-      ;   méretétől függően NEM azonnal fejeződnek be.
-      ; - Az uploader-id egyedi azonosító alkalmazása lehetővé teszi, hogy az egy időben történő
-      ;   különböző fájlfeltöltések kezelhetők legyenek.
-      ; - A request-id azonosító feltöltési folyamatonként eltérő kell legyen, ehhez szükséges,
-      ;   hogy az uploader-id azonosító is ... eltérő legyen!
+      ; Az egyes fájlfeltöltési folyamatok a fájlfeltöltő ablak bezáródása után még a fájl(ok)
+      ; méretétől függően NEM azonnal fejeződnek be.
+      ;
+      ; Az uploader-id egyedi azonosító alkalmazása lehetővé teszi, hogy az egy időben történő
+      ; különböző fájlfeltöltések kezelhetők legyenek.
+      ;
+      ; A request-id azonosító feltöltési folyamatonként eltérő kell legyen, ehhez szükséges,
+      ; hogy az uploader-id azonosító is ... eltérő legyen!
       {:db (r file-uploader.events/store-uploader-props! db uploader-id uploader-props)
        :fx [:storage.file-uploader/open-file-selector! uploader-id uploader-props]}))
 
@@ -75,11 +77,12 @@
 
 (r/reg-event-fx :storage.file-uploader/progress-successed
   (fn [{:keys [db]} [_ uploader-id]]
-      ; - XXX#5087
-      ;   Az egyes feltöltési folyamatok befejezése/megszakadása után késleltetve zárja le az adott
-      ;   feltöltőt, így a felhasználónak van ideje észlelni a visszajelzést.
-      ; - Ha a sikeres fájlfeltöltés után még a célmappa az aktuálisan böngészett elem,
-      ;   akkor újratölti a listaelemeket.
+      ; XXX#5087
+      ; Az egyes feltöltési folyamatok befejezése/megszakadása után késleltetve zárja le az adott
+      ; feltöltőt, így a felhasználónak van ideje észlelni a visszajelzést.
+      ;
+      ; Ha a sikeres fájlfeltöltés után még a célmappa az aktuálisan böngészett elem,
+      ; akkor újratölti a listaelemeket.
       (let [browser-id     (get-in db [:storage :file-uploader/meta-items uploader-id :browser-id])
             destination-id (get-in db [:storage :file-uploader/meta-items uploader-id :destination-id])]
            {:dispatch-later [{:ms 8000 :dispatch [:storage.file-uploader/end-uploader! uploader-id]}]
@@ -93,11 +96,12 @@
 
 (r/reg-event-fx :storage.file-uploader/end-uploader!
   (fn [{:keys [db]} [_ uploader-id]]
-      ; - A feltöltő lezárása után késleltetve törli ki annak adatait, hogy a még
-      ;   látszódó folyamatjelző számára elérhetők maradjanak az adatok.
-      ; - Ha a felöltő lezárásakor nincs aktív feltöltési folyamat, akkor bezárja a folyamatjelzőt.
-      ;   (Az utolsó feltöltési folyamat befejeződése és az utolsó feltöltő lezárása
-      ;    közötti időben is indítható új feltöltési folyamat!)
+      ; A feltöltő lezárása után késleltetve törli ki annak adatait, hogy a még
+      ; látszódó folyamatjelző számára elérhetők maradjanak az adatok.
+      ;
+      ; Ha a felöltő lezárásakor nincs aktív feltöltési folyamat, akkor bezárja a folyamatjelzőt.
+      ; (Az utolsó feltöltési folyamat befejeződése és az utolsó feltöltő lezárása
+      ;  közötti időben is indítható új feltöltési folyamat!)
       {:dispatch-later [{:ms 500 :dispatch [:storage.file-uploader/clean-uploader! uploader-id]}]
        :dispatch-if [(not (r file-uploader.subs/file-upload-in-progress? db))
                      [:x.ui/remove-bubble! :storage.file-uploader/progress-notification]]}))

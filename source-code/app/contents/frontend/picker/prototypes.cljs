@@ -10,36 +10,35 @@
   ; @param (keyword) picker-id
   ; @param (map) picker-props
   ;  {:disabled? (boolean)(opt)
-  ;   :multi-select? (boolean)(opt)
-  ;   :placeholder (metamorphic-content)(opt)
-  ;   :sortable? (boolean)(opt)
-  ;   :value-path (vector)}
+  ;   :placeholder (metamorphic-content)(opt)}
+  ; @param (namespaced map) content-link
   ;
   ; @return (map)
-  ;  {:color (keyword or string)
-  ;   :disabled? (boolean)
-  ;   :items (namespaced maps in vector)
-  ;   :indent (map)
-  ;   :placeholder (metamorphic-content)
-  ;   :sortable? (boolean)
-  ;   :value-path (vector)}
-  [_ {:keys [disabled? multi-select? placeholder sortable? value-path]}]
-  ; XXX#6071 (app.products.frontend.picker.prototypes)
-  (let [picked-contents @(r/subscribe [:x.db/get-item value-path])]
-       {:color       :muted
-        :disabled?   disabled?
-        :indent      {:top :m}
-        :items       (cond multi-select? picked-contents picked-contents [picked-contents])
-        :placeholder placeholder
-        :sortable?   sortable?
-        :value-path  value-path}))
+  ;  {:disabled? (boolean)
+  ;   :item-link (namespaced map)
+  ;   :placeholder (metamorphic-content)}
+  [_ {:keys [color disabled? placeholder]} content-link]
+  {:color       color
+   :disabled?   disabled?
+   :item-link   content-link
+   :placeholder placeholder})
 
 (defn picker-props-prototype
   ; @param (keyword) picker-id
   ; @param (map) picker-props
+  ;  {:multi-select? (boolean)(opt)}
   ;
   ; @return (map)
-  ;  {}
-  [_ picker-props]
-  (merge {}
-         (param picker-props)))
+  ;  {:export-filter-f (function)
+  ;   :import-id-f (function)
+  ;   :on-select (metamorphic-event)
+  ;   :toggle-label (metamorphic-content)
+  ;   :transfer-id (keyword)}
+  [_ {:keys [multi-select?] :as picker-props}]
+  (merge {:toggle-label    (if multi-select? :select-contents! :select-content!)}
+         (param picker-props)
+         {:export-filter-f (fn [content-id] {:content/id content-id})
+          :import-id-f     :content/id
+          :items-path      [:contents :picker/downloaded-items]
+          :on-select       [:contents.selector/load-selector! :contents.selector picker-props]
+          :transfer-id     :contents.lister}))

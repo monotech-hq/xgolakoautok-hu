@@ -1,86 +1,35 @@
 
 (ns app.common.frontend.item-editor.views
-    (:require [app.common.frontend.surface.views :as surface.views]
-              [app.components.frontend.api       :as components]
-              [elements.api                      :as elements]
-              [re-frame.api                      :as r]
-              [vector.api                        :as vector]))
+    (:require [app.common.frontend.item-editor.prototypes :as item-editor.prototypes]
+              [app.components.frontend.api                :as components]
+              [elements.api                               :as elements]
+              [engines.item-editor.api                    :as item-editor]
+              [re-frame.api                               :as r]
+              [vector.api                                 :as vector]))
 
-;; -- Color-picker component --------------------------------------------------
+;; -- Footer components -------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn item-editor-color-picker-label
+(defn item-editor-footer
   ; @param (keyword) editor-id
-  ; @param (map) picker-props
-  ;  {:disabled? (boolean)(opt)
-  ;   :label (metamorphic-content)(opt)}
+  ; @param (map) footer-props
   ;
   ; @usage
-  ;  [item-editor-color-picker-label :my-editor {...}]
-  [_ {:keys [disabled? label]}]
-  (if label [elements/label {:content     :color
-                             :disabled?   disabled?
-                             :line-height :block}]))
+  ;  [item-editor-footer :my-editor {...}]
+  [editor-id _]
+  (if-let [data-received? @(r/subscribe [:item-editor/data-received? editor-id])]
+          (let [item-path @(r/subscribe [:item-editor/get-body-prop editor-id :item-path])]
+               [components/item-info ::footer {:item-path item-path}])))
 
-(defn item-editor-color-picker-button
-  ; @param (keyword) editor-id
-  ; @param (map) picker-props
-  ;  {:disabled? (boolean)(opt)
-  ;   :value-path (vector)}
-  ;
-  ; @usage
-  ;  [item-editor-color-picker-button :my-editor {...}]
-  [editor-id {:keys [disabled? value-path]}]
-  [elements/button {:color            :muted
-                    :disabled?        disabled?
-                    :font-size        :xs
-                    :horizontal-align :left
-                    :label            :choose-color!
-                    :on-click         [:elements.color-selector/render-selector! editor-id {:value-path value-path}]}])
-
-(defn item-editor-color-picker-value
-  ; @param (keyword) editor-id
-  ; @param (map) picker-props
-  ;  {:disabled? (boolean)(opt)
-  ;   :value-path (vector)}
-  ;
-  ; @usage
-  ;  [item-editor-color-picker-value :my-editor {...}]
-  [_ {:keys [disabled? value-path]}]
-  (let [picked-colors @(r/subscribe [:x.db/get-item value-path])]
-       [elements/color-stamp {:colors    picked-colors
-                              :disabled? disabled?
-                              :size      :xxl}]))
-
-(defn item-editor-color-picker
-  ; @param (keyword) editor-id
-  ; @param (map) picker-props
-  ;  {:disabled? (boolean)(opt)
-  ;   :indent (map)(opt)
-  ;   :label (metamorphic-content)(opt)
-  ;   :value-path (vector)}
-  ;
-  ; @usage
-  ;  [item-editor-color-picker :my-editor {...}]
-  [editor-id {:keys [indent] :as picker-props}]
-  [elements/blank {:indent indent
-                   :content [:<> [item-editor-color-picker-label editor-id picker-props]
-                                 [:div {:style {:display :flex}}
-                                       [item-editor-color-picker-button editor-id picker-props]]
-                                 [item-editor-color-picker-value editor-id picker-props]]}])
-
-;; -- Menu-bar components -----------------------------------------------------
+;; -- Header components -------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn item-editor-menu-item-props
+(defn- menu-item-props
   ; @param (keyword) editor-id
-  ; @param (map) bar-props
+  ; @param (map) header-props
   ; @param (map) item-props
   ;  {:change-keys (keywords in vector)(opt)
   ;   :label (metamorphic-content)}
-  ;
-  ; @usage
-  ;  [item-editor-menu-item-props :my-editor {...} {...}]
   ;
   ; @return (map)
   ;  {:active? (boolean)
@@ -90,86 +39,142 @@
   ;   :on-click (metamorphic-event)}
   [editor-id _ {:keys [change-keys disabled? label]}]
   (let [current-view @(r/subscribe [:x.gestures/get-current-view-id editor-id])
-        changed? (if change-keys @(r/subscribe [:item-editor/form-changed? editor-id change-keys]))]
+        form-changed? (if change-keys @(r/subscribe [:item-editor/form-changed? editor-id change-keys]))]
        {:active?     (= label current-view)
         :disabled?   disabled?
-        :badge-color (if changed? :primary)
+        :badge-color (if form-changed? :primary)
         :label       label
         :on-click    [:x.gestures/change-view! editor-id label]}))
 
-(defn item-editor-menu-bar
-  ; A komponens használatához ne felejts el inicializálni egy gestures/view-handler
-  ; kezelőt, az editor-id azonosítóval!
-  ;
+(defn- menu-bar
   ; @param (keyword) editor-id
-  ; @param (map) bar-props
-  ;  {:disabled? (boolean)(opt)
-  ;   :menu-items (maps in vector)
+  ; @param (map) header-props
+  ;  {:menu-items (maps in vector)
   ;    [{:change-keys (keywords in vector)(opt)
   ;      :disabled? (boolean)(opt)
   ;       Default: false
   ;      :label (metamorphic-content)}]}
-  ;
-  ; @usage
-  ;  [item-editor-menu-bar :my-editor {...}]
-  [editor-id {:keys [disabled? menu-items] :as bar-props}]
-  (letfn [(f [menu-items menu-item] (conj menu-items (item-editor-menu-item-props editor-id bar-props menu-item)))]
-         [:<> [elements/menu-bar ::item-editor-menu-bar {:disabled?  disabled?
-                                                         :menu-items (reduce f [] menu-items)}]]))
-              ;[elements/horizontal-line {:color :highlight :indent {:vertical :s}}]]))
+  [editor-id {:keys [menu-items] :as header-props}]
+  (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? editor-id])]
+       (letfn [(f [menu-items menu-item] (conj menu-items (menu-item-props editor-id header-props menu-item)))]
+              [elements/menu-bar ::item-editor-menu-bar
+                                 {:disabled?  editor-disabled?
+                                  :menu-items (reduce f [] menu-items)}])))
 
-;; -- Ghost-view components ---------------------------------------------------
-;; ----------------------------------------------------------------------------
-
-(defn item-editor-ghost-element
+(defn- revert-item-button
   ; @param (keyword) editor-id
-  ; @param (map) element-props
-  ;
-  ; @usage
-  ;  [item-editor-ghost-element :my-editor {...}]
+  ; @param (map) header-props
   [editor-id _]
-  [surface.views/surface-box-layout-ghost-view editor-id {:breadcrumb-count 4}])
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
-(defn revert-item-button
-  ; @param (keyword) editor-id
-  ; @param (map) element-props
-  ;
-  ; @usage
-  ;  [revert-item-button :my-editor {...}]
-  [editor-id {:keys [disabled?]}]
-  (let [item-changed? @(r/subscribe [:item-editor/item-changed? editor-id])]
+  (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? editor-id])
+        item-changed?    @(r/subscribe [:item-editor/item-changed?    editor-id])]
        [components/surface-button ::revert-item-button
-                                  {:disabled?   (or disabled? (not item-changed?))
-                                   :hover-color :highlight
-                                   :icon        :settings_backup_restore
-                                   :label       :revert!
-                                   :on-click    [:item-editor/revert-item! editor-id]}]))
+                                  {:disabled? (or editor-disabled? (not item-changed?))
+                                   :on-click  [:item-editor/revert-item! editor-id]
+                                   :preset    :revert}]))
 
-(defn save-item-button
+(defn- save-item-button
   ; @param (keyword) editor-id
-  ; @param (map) element-props
-  ;
-  ; @usage
-  ;  [save-item-button :my-editor {...}]
-  [editor-id {:keys [disabled?]}]
-  [components/surface-button ::save-item-button
-                             {:background-color "#5a4aff"
-                              :color            "white"
-                              :disabled?        disabled?
-                              :icon             :save
-                              :label            :save!
-                              :on-click         [:item-editor/save-item! editor-id]}])
+  ; @param (map) header-props
+  [editor-id _]
+  (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? editor-id])]
+       [components/surface-button ::save-item-button
+                                  {:disabled? editor-disabled?
+                                   :on-click  [:item-editor/save-item! editor-id]
+                                   :preset    :save}]))
 
-(defn item-editor-controls
+(defn- controls
   ; @param (keyword) editor-id
-  ; @param (map) element-props
-  ;
-  ; @usage
-  ;  [item-editor-controls :my-editor {...}]
-  [editor-id element-props]
+  ; @param (map) header-props
+  [editor-id header-props]
   [:div {:style {:display "flex" :grid-column-gap "12px"}}
-        [:<> [revert-item-button editor-id element-props]
-             [save-item-button   editor-id element-props]]])
+        [:<> [revert-item-button editor-id header-props]
+             [save-item-button   editor-id header-props]]])
+
+(defn- breadcrumbs
+  ; @param (keyword) editor-id
+  ; @param (map) header-props
+  ;  {:crumbs (maps in vector)}
+  [editor-id {:keys [crumbs]}]
+  (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? editor-id])
+        new-item?        @(r/subscribe [:item-editor/new-item?        editor-id])]
+       [components/surface-breadcrumbs ::breadcrumbs
+                                       {:crumbs (if new-item? (-> crumbs (vector/remove-last-item)
+                                                                         (vector/conj-item {:label :add!}))
+                                                              (-> crumbs (vector/conj-item {:label :edit!})))
+                                        :disabled? editor-disabled?}]))
+
+(defn- label
+  ; @param (keyword) editor-id
+  ; @param (map) header-props
+  ;  {:label (metamorphic-content)(opt)
+  ;   :placeholder (metamorphic-content)(opt)}
+  [editor-id {:keys [label placeholder]}]
+  (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? editor-id])]
+       [components/surface-label ::label
+                                 {:disabled?   editor-disabled?
+                                  :label       label
+                                  :placeholder placeholder}]))
+
+(defn item-editor-header
+  ; @param (keyword) editor-id
+  ; @param (map) header-props
+  ;  {:crumbs (maps in vector)
+  ;    [{:label (metamorphic-content)(opt)
+  ;      :placeholder (metamorphic-content)(opt)
+  ;      :route (string)(opt)}]
+  ;   :label (metamorphic-content)(opt)
+  ;   :menu-items (maps in vector)(opt)
+  ;    [{:change-keys (keywords in vector)(opt)
+  ;      :disabled? (boolean)(opt)
+  ;      :label (metamorphic-content)}]
+  ;   :placeholder (metamorphic-content)(opt)
+  ;
+  ; @usage
+  ;  [item-editor-header :my-editor {...}]
+  [editor-id {:keys [crumbs menu-items] :as header-props}]
+  ; A menu-items használatához ne felejts el inicializálni egy gestures/view-handler
+  ; kezelőt, az editor-id azonosítóval!
+  (if-let [data-received? @(r/subscribe [:item-editor/data-received? editor-id])]
+          [:<> [:div {:style {:display "flex" :justify-content "space-between" :flex-wrap "wrap" :grid-row-gap "48px"}}
+                     [:div [label       editor-id header-props]
+                           [breadcrumbs editor-id header-props]]
+                     [:div [controls    editor-id header-props]]]
+               [elements/horizontal-separator {:height :xxl}]
+               (if menu-items [menu-bar editor-id header-props])]
+          [:<> [components/ghost-view {:layout :box-surface-header :breadcrumb-count (count crumbs)}]
+               [:div {:style {:width "100%" :height "96px"}}]]))
+
+;; -- Body components ---------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn- item-editor
+  ; @param (keyword) editor-id
+  ; @param (map) body-props
+  [editor-id body-props]
+  (let [body-props (assoc body-props :error-element [components/error-content {:error  :the-item-you-opened-may-be-broken}]
+                                     :ghost-element [components/ghost-view    {:layout :box-surface-body}])]
+       [item-editor/body editor-id body-props]))
+
+(defn item-editor-body
+  ; A komponens további paraméterezését az engines.item-editor/body komponens
+  ; dokumentácójában találod!
+  ;
+  ; @param (keyword) editor-id
+  ; @param (map) body-props
+  ;  {:auto-title? (boolean)(opt)
+  ;    Default: true
+  ;   :form-element (component or symbol)
+  ;   :label-key (keyword)(opt)
+  ;    Default: :name
+  ;   :suggestion-keys (keywords in vector)(opt)
+  ;    Default: [:name]}
+  ;
+  ; @usage
+  ;  [item-editor-body :my-editor {...}]
+  ;
+  ; @usage
+  ;  (defn my-form-element [] ...)
+  ;  [item-editor-body :my-editor {:form-element #'my-form-element}]
+  [editor-id body-props]
+  (let [body-props (item-editor.prototypes/body-props-prototype editor-id body-props)]
+       [item-editor editor-id body-props]))

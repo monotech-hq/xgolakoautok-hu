@@ -6,9 +6,11 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(r/reg-event-fx :rental-vehicles.viewer/load!
-  (fn [_ [_ view-id]]
-      {:dispatch-n [[:x.gestures/init-view-handler! :rental-vehicles.viewer
-                                                    {:default-view-id (or view-id :overview)}]
-                    [:x.ui/render-surface! :rental-vehicles.viewer/view
-                                           {:content #'viewer.views/view}]]}))
+(r/reg-event-fx :rental-vehicles.viewer/load-viewer!
+  {:dispatch-n [[:x.gestures/init-view-handler! :rental-vehicles.viewer
+                                                {:default-view-id :overview}]
+                [:rental-vehicles.viewer/render-viewer!]]})
+
+(r/reg-event-fx :rental-vehicles.viewer/render-viewer!
+  [:x.ui/render-surface! :rental-vehicles.viewer/view
+                         {:content #'viewer.views/view}])

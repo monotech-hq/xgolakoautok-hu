@@ -1,73 +1,96 @@
 
 (ns app.vehicle-models.frontend.picker.views
-    (:require [app.vehicle-models.frontend.picker.prototypes :as picker.prototypes]
+    (:require [app.common.frontend.api                       :as common]
+              [app.components.frontend.api                   :as components]
+              [app.vehicle-models.frontend.picker.prototypes :as picker.prototypes]
               [app.vehicle-models.frontend.preview.views     :as preview.views]
               [elements.api                                  :as elements]
               [random.api                                    :as random]
-              [reagent.api                                   :as reagent]))
+              [re-frame.api                                  :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- model-picker-previews
+(defn- model-list-item
   ; @param (keyword) picker-id
   ; @param (map) picker-props
-  [picker-id picker-props]
-  ; BUG#0889 (app.products.frontend.picker.views)
-  (let [preview-props (picker.prototypes/preview-props-prototype picker-id picker-props)]
-      ;[preview.views/element ::model-picker-previews preview-props]
+  ;  {:countable? (boolean)(opt)
+  ;   :sortable? (boolean)(opt)}
+  ; @param (integer) item-dex
+  ; @param (namespaced map) model-link
+  ;  {:model/count (integer)(opt)
+  ;   :model/id (string)}
+  ; @param (map)(opt) drag-props
+  ;  {:handle-attributes (map)
+  ;   :item-attributes (map)}
+  ([picker-id picker-props item-dex model-link]
+   [model-list-item picker-id picker-props item-dex model-link {}])
+
+  ([picker-id {:keys [countable? sortable?]} item-dex {:model/keys [count id]} {:keys [handle-attributes item-attributes]}]
+   (let [{:keys [item-number modified-at name quantity-unit thumbnail]} @(r/subscribe [:item-lister/get-item picker-id id])
+         timestamp   @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+         picked-count {:content :n-pieces :replacements [count]}]
+        [components/item-list-row {:drag-attributes item-attributes
+                                   :cells [(if sortable? [components/list-item-drag-handle {:drag-attributes handle-attributes}])
+                                           (if sortable? [components/list-item-gap         {:width 12}])
+                                           [components/list-item-thumbnail {:thumbnail (:media/uri thumbnail)}]
+                                           [components/list-item-gap       {:width 12}]
+                                           [components/list-item-cell      {:rows [{:content name :placeholder :unnamed-vehicle-model}]}]
+                                           [components/list-item-gap       {:width 12}]
+                                           (if countable? [components/list-item-cell {:rows [{:content picked-count :font-size :xs :color :muted}] :width 100}])
+                                           (if countable? [components/list-item-gap  {:width 12}])
+                                           [components/list-item-cell      {:rows [{:content timestamp :font-size :xs :color :muted}]  :width 100}]]
+                                   :border (if (not= item-dex 0) :top)}])))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn- model-item
+  ; @param (keyword) picker-id
+  ; @param (map) picker-props
+  ; @param (namespaced map) model-link
+  [picker-id picker-props model-link]
+  (let [preview-props (picker.prototypes/preview-props-prototype picker-id picker-props model-link)]
        [preview.views/element picker-id preview-props]))
 
-(defn- model-picker-button
-  ; @param (keyword) picker-id
-  ; @param (map) picker-props
-  ;  {:disabled? (boolean)(opt)
-  ;   :multi-select? (boolean)(opt)}
-  [picker-id {:keys [disabled? multi-select?] :as picker-props}]
-  (let [on-click [:vehicle-models.selector/load-selector! :vehicle-models.selector picker-props]]
-       [:div {:style {:display :flex}}
-             [elements/button {:color     :muted
-                               :disabled? disabled?
-                               :font-size :xs
-                               :label     (if multi-select? :select-vehicle-models! :select-vehicle-model!)
-                               :on-click  on-click}]]))
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 
-(defn- model-picker-label
+(defn- model-list-header
   ; @param (keyword) picker-id
   ; @param (map) picker-props
-  ;  {:disabled? (boolean)(opt)
-  ;    Default: false
-  ;   :info-text (metamorphic-content)(opt)
-  ;   :label (metamorphic-content)(opt)
-  ;   :required? (boolean)(opt)}
-  [_ {:keys [disabled? info-text label required?]}]
-  (if label [elements/label {:content     label
-                             :disabled?   disabled?
-                             :info-text   info-text
-                             :line-height :block
-                             :required?   required?}]))
+  ;  {:countable? (boolean)(opt)
+  ;   :sortable? (boolean)(opt)}
+  [_ {:keys [countable? sortable?]}]
+  [components/item-list-header ::model-list-header
+                               {:cells [(if sortable? {:width 24})
+                                        (if sortable? {:width 12})
+                                        {:width 84}
+                                        {:width 12}
+                                        {:label :name}
+                                        {:width 12}
+                                        (if countable? {:label :quantity :width 100})
+                                        (if countable? {:width 12})
+                                        {:label :modified :width 100}]
+                                :border :bottom}])
 
-(defn- model-picker-body
-  ; @param (keyword) picker-id
-  ; @param (map) picker-props
-  [picker-id picker-props]
-  [:<> [model-picker-label    picker-id picker-props]
-       [model-picker-button   picker-id picker-props]
-       [model-picker-previews picker-id picker-props]])
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 
 (defn- model-picker
   ; @param (keyword) picker-id
   ; @param (map) picker-props
-  ;  {}
-  [picker-id {:keys [indent] :as picker-props}]
-  [elements/blank picker-id
-                  {:content [model-picker-body picker-id picker-props]
-                   :indent  indent}])
+  [picker-id picker-props]
+  [common/item-picker picker-id (assoc picker-props :item-element      #'model-item
+                                                    :list-item-element #'model-list-item
+                                                    :item-list-header  #'model-list-header)])
 
 (defn element
   ; @param (keyword)(opt) picker-id
   ; @param (map) picker-props
   ;  {:autosave? (boolean)(opt)
+  ;    Default: false
+  ;   :countable? (boolean)(opt)
   ;    Default: false
   ;   :disabled? (boolean)(opt)
   ;    Default: false
@@ -76,6 +99,7 @@
   ;   :label (metamorphic-content)(opt)
   ;   :max-count (integer)(opt)
   ;    Default: 8
+  ;    W/ {:multi-select? true}
   ;   :multi-select? (boolean)(opt)
   ;    Default: false
   ;   :on-change (metamorphic-event)(opt)
@@ -87,13 +111,15 @@
   ;    Default: false
   ;   :sortable? (boolean)(opt)
   ;    Default: false
+  ;    W/ {:multi-select? true}
+  ;   :toggle-label (metamorphic-content)(opt)
   ;   :value-path (vector)}
   ;
   ; @usage
   ;  [model-picker {...}]
   ;
   ; @usage
-  ;  [model-picker :my-picker {...}]
+  ;  [model-picker :my-model-picker {...}]
   ([picker-props]
    [element (random/generate-keyword) picker-props])
 

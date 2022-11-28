@@ -65,6 +65,12 @@
   ; @param (map) dialog-props
   ;  {:content (metamorphic-content)
   ;   :label (metamorphic-content)(opt)}
+  ;
+  ; @usage
+  ;  [consent-dialog {...}]
+  ;
+  ; @usage
+  ;  [consent-dialog :my-consent-dialog {...}]
   ([dialog-props]
    [component (random/generate-keyword) dialog-props])
 

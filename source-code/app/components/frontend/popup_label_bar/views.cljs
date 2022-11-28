@@ -55,7 +55,10 @@
   ;     :on-click (metamorphic-even)}}
   ;
   ; @usage
-  ;  [popup-label-bar :my-popup {...}]
+  ;  [popup-label-bar {...}]
+  ;
+  ; @usage
+  ;  [popup-label-bar :my-popup-label-bar {...}]
   ([bar-props]
    [component (random/generate-keyword) bar-props])
 

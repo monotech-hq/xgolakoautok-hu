@@ -8,21 +8,21 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn added-price-quote-item-prototype
-  ; @param (namespaced map) price-quote-item
+(defn added-document-prototype
+  ; @param (namespaced map) document
   ;
   ; @return (namespaced map)
-  [price-quote-item]
+  [document]
   ; Az árajánlathoz a létrehozásakor szükséges hozzáadni ...
   ; ... az aktuális évben hanyadik árajánlat (index)
   ; ... a kiadás éve (issue-year)
   ; ... az árajánlat első verziószáma (version)
   ;
-  ; XXX#4077 (app.price-quotes.backend.handler.helpers)
-  ; XXX#5050 (source-code/app/price-quote-templates/frontend/README.md)
+  ; XXX#4077 (source-code/app/price_quotes/backend/handler/helpers.clj)
+  ; XXX#5050 (source-code/app/price_quote_templates/frontend/README.md)
   (let [annual-count (handler.helpers/get-annual-count)]
        (as-> {} % (merge % {:price-quote/validity-interval handler.config/DEFAULT-VALIDITY-INTERVAL})
-                  (merge % price-quote-item)
+                  (merge % document)
                   (merge % {:price-quote/index      (inc annual-count)
                             :price-quote/issue-year (time/get-year)
                             :price-quote/version    1})
@@ -31,12 +31,12 @@
                   ; kitöltött, % paraméterként átadott elemet kapja meg paraméterként!
                   (merge % {:price-quote/name       (handler.helpers/price-quote-name %)}))))
 
-(defn updated-price-quote-item-prototype
-  ; @param (namespaced map) price-quote-item
+(defn updated-document-prototype
+  ; @param (namespaced map) document
   ;
   ; @return (namespaced map)
-  [price-quote-item]
-  ; XXX#4077 (app.price-quotes.backend.handler.helpers)
+  [document]
+  ; XXX#4077 (source-code/app/price_quotes/backend/handler/helpers.clj)
   (merge {:price-quote/validity-interval handler.config/DEFAULT-VALIDITY-INTERVAL}
-         (param price-quote-item)
-         {:price-quote/name (handler.helpers/price-quote-name price-quote-item)}))
+         (param document)
+         {:price-quote/name (handler.helpers/price-quote-name document)}))

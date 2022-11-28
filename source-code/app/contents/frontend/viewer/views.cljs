@@ -3,10 +3,8 @@
     (:require [app.common.frontend.api               :as common]
               [app.components.frontend.api           :as components]
               [app.contents.frontend.handler.helpers :as handler.helpers]
+              [app.contents.frontend.viewer.boxes    :as viewer.boxes]
               [elements.api                          :as elements]
-              [engines.item-lister.api               :as item-lister]
-              [engines.item-viewer.api               :as item-viewer]
-              [forms.api                             :as forms]
               [layouts.surface-a.api                 :as surface-a]
               [re-frame.api                          :as r]))
 
@@ -15,146 +13,58 @@
 
 (defn- footer
   []
-  (if-let [data-received? @(r/subscribe [:item-viewer/data-received? :contents.viewer])]
-          [common/item-viewer-item-info :contents.viewer {}]))
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
-(defn- content-visibility
-  []
-  (let [viewer-disabled?   @(r/subscribe [:item-viewer/viewer-disabled? :contents.viewer])
-        content-visibility @(r/subscribe [:x.db/get-item [:contents :viewer/viewed-item :visibility]])
-        content-visibility  (case content-visibility :public :public-content :private :private-content)]
-       [common/data-element ::content-visibility
-                            {:disabled?   viewer-disabled?
-                             :indent      {:top :m :vertical :s}
-                             :label       :content-visibility
-                             :placeholder "-"
-                             :value       content-visibility}]))
-
-(defn- content-more-data-box
-  []
-  (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :contents.viewer])]
-       [common/surface-box ::content-more-data-box
-                           {:indent  {:top :m}
-                            :content [:<> [:div (forms/form-row-attributes)
-                                                [:div (forms/form-block-attributes {:ratio 100})
-                                                      [content-visibility]]]
-                                          [elements/horizontal-separator {:size :s}]]
-                            :disabled? viewer-disabled?
-                            :label     :more-data}]))
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
-(defn- content-body
-  []
-  (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :contents.viewer])
-        content-body     @(r/subscribe [:x.db/get-item [:contents :viewer/viewed-item :body]])
-        content-body      (handler.helpers/parse-content-body content-body)]
-       [common/data-element ::content-body
-                            {:disabled?   viewer-disabled?
-                             :indent      {:top :m :vertical :s}
-                             :placeholder "-"
-                             :value       content-body}]))
-
-(defn- content-content-box
-  []
-  (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :contents.viewer])]
-       [common/surface-box ::content-content-box
-                           {:content [:<> [:div (forms/form-row-attributes)
-                                                [:div (forms/form-block-attributes {:ratio 100})
-                                                      [content-body]]]
-                                          [elements/horizontal-separator {:size :s}]]
-                            :disabled? viewer-disabled?
-                            :label     :content}]))
+  [common/item-viewer-footer :contents.viewer {}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn- content-overview
   []
-  [:<> [content-content-box]
-       [content-more-data-box]])
+  [:<> [viewer.boxes/content-data-box]
+       [viewer.boxes/content-content-box]
+       [viewer.boxes/content-more-data-box]
+       (str (uri.api/to-subdomain "http://bsa.com/sffs"))])
+       ;;(str (re-matches #"^[a-z]{1,}\.([a-z]{1,})$" "a.ccc"))])
+       ;(str (re-matches #"nov(ember)?" "november"))])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- menu-bar
-  []
-  (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :contents.viewer])]
-       [common/item-viewer-menu-bar :contents.viewer
-                                    {:disabled?  viewer-disabled?
-                                     :menu-items [{:label :overview}]}]))
-
-(defn- body
+(defn- view-selector
   []
   (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :contents.viewer])]
        (case current-view-id :overview [content-overview])))
 
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
-(defn- controls
+(defn- body
   []
-  (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :contents.viewer])
-        content-id       @(r/subscribe [:x.router/get-current-route-path-param :item-id])
-        edit-item-uri     (str "/@app-home/contents/"content-id"/edit")]
-       [common/item-viewer-controls :contents.viewer
-                                    {:disabled?     viewer-disabled?
-                                     :edit-item-uri edit-item-uri}]))
-
-(defn- breadcrumbs
-  []
-  (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :contents.viewer])
-        content-name     @(r/subscribe [:x.db/get-item [:contents :viewer/viewed-item :name]])]
-       [components/surface-breadcrumbs ::breadcrumbs
-                                       {:crumbs [{:label :app-home   :route "/@app-home"}
-                                                 {:label :contents    :route "/@app-home/contents"}
-                                                 {:label content-name :placeholder :unnamed-content}]
-                                        :disabled? viewer-disabled?}]))
-
-(defn- label
-  []
-  (let [viewer-disabled? @(r/subscribe [:item-viewer/viewer-disabled? :contents.viewer])
-        content-name     @(r/subscribe [:x.db/get-item [:contents :viewer/viewed-item :name]])]
-       [components/surface-label ::label
-                                 {:disabled?   viewer-disabled?
-                                  :label       content-name
-                                  :placeholder :unnamed-content}]))
+  [common/item-viewer-body :contents.viewer
+                           {:item-element [view-selector]
+                            :item-path    [:contents :viewer/viewed-item]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn- header
   []
-  [:<> [:div {:style {:display "flex" :justify-content "space-between" :flex-wrap "wrap" :grid-row-gap "48px"}}
-             [:div [label]
-                   [breadcrumbs]]
-             [:div [controls]]]
-       [elements/horizontal-separator {:size :xxl}]
-       [menu-bar]])
+  (let [content-id   @(r/subscribe [:x.router/get-current-route-path-param :item-id])
+        content-name @(r/subscribe [:x.db/get-item [:contents :viewer/viewed-item :name]])
+        edit-route    (str "/@app-home/contents/"content-id"/edit")]
+       [common/item-viewer-header :contents.viewer
+                                  {:label       content-name
+                                   :placeholder :unnamed-content
+                                   :crumbs     [{:label :app-home :route "/@app-home"}
+                                                {:label :contents :route "/@app-home/contents"}
+                                                {:label content-name :placeholder :unnamed-content}]
+                                   :menu-items [{:label :overview}]
+                                   :on-edit    [:x.router/go-to! edit-route]}]))
 
-(defn- view-structure
-  []
-  [:<> [header]
-       [body]
-       [footer]])
-
-(defn- content-viewer
-  ; @param (keyword) surface-id
-  [_]
-  [item-viewer/body :contents.viewer
-                    {:auto-title?   true
-                     :error-element [components/error-content {:error :the-item-you-opened-may-be-broken}]
-                     :ghost-element #'common/item-viewer-ghost-element
-                     :item-element  #'view-structure
-                     :item-path     [:contents :viewer/viewed-item]
-                     :label-key     :name}])
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 
 (defn view
   ; @param (keyword) surface-id
   [surface-id]
   [surface-a/layout surface-id
-                    {:content #'content-viewer}])
+                    {:content [:<> [header]
+                                   [body]
+                                   [footer]]}])

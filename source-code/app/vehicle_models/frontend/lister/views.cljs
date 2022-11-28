@@ -3,7 +3,6 @@
     (:require [app.common.frontend.api     :as common]
               [app.components.frontend.api :as components]
               [elements.api                :as elements]
-              [engines.item-lister.api     :as item-lister]
               [layouts.surface-a.api       :as surface-a]
               [re-frame.api                :as r]))
 
@@ -12,121 +11,83 @@
 
 (defn- footer
   []
-  (if-let [first-data-received? @(r/subscribe [:item-lister/first-data-received? :vehicle-models.lister])]
-          [common/item-lister-download-info :vehicle-models.lister {}]))
+  [common/item-lister-footer :vehicle-models.lister {}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- model-item-structure
-  [lister-id item-dex {:keys [modified-at name thumbnail types]}]
-  (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
-        item-last? @(r/subscribe [:item-lister/item-last? lister-id item-dex])
-        type-count {:content :n-items :replacements [(count types)]}]
-       [common/list-item-structure {:cells [[    {:thumbnail (:media/uri thumbnail)}]
-                                            [common/list-item-primary-cell {:label name :stretch? true :placeholder :unnamed-vehicle-model :description type-count}]
-                                            [common/list-item-detail       {:content timestamp :width "160px"}]
-                                            [components/list-item-marker       {:icon :navigate_next}]]
-                                    :separator (if-not item-last? :bottom)}]))
-
-(defn- model-item
-  [lister-id item-dex {:keys [id] :as model-item}]
-  [elements/toggle {:content     [model-item-structure lister-id item-dex model-item]
-                    :hover-color :highlight
-                    :on-click    [:x.router/go-to! (str "/@app-home/vehicle-models/"id)]}])
+(defn- model-list-item
+  ; @param (keyword) lister-id
+  ; @param (map) body-props
+  ; @param (integer) item-dex
+  ; @param (map) model-item
+  [_ _ item-dex {:keys [id modified-at name thumbnail]}]
+  (let [timestamp @(r/subscribe [:x.activities/get-actual-timestamp modified-at])]
+       [components/item-list-row {:cells [[components/list-item-gap       {:width 12}]
+                                          [components/list-item-thumbnail {:thumbnail (:media/uri thumbnail)}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content name :placeholder :unnamed-vehicle-model}]}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content timestamp :font-size :xs :color :muted}] :width 100}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-button    {:label :open! :width 100 :on-click [:x.router/go-to! (str "/@app-home/vehicle-models/"id)]}]
+                                          [components/list-item-gap       {:width 12}]]
+                                  :border (if (not= item-dex 0) :top)}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- model-list
+(defn- model-list-header
   []
-  (let [items @(r/subscribe [:item-lister/get-downloaded-items :vehicle-models.lister])]
-       [common/item-list :vehicle-models.lister {:item-element #'model-item :items items}]))
+  (let [current-order-by @(r/subscribe [:item-lister/get-current-order-by :vehicle-models.lister])]
+       [components/item-list-header ::model-list-header
+                                    {:cells [{:width 12}
+                                             {:width 84}
+                                             {:width 12}
+                                             {:label :name :order-by-key :name
+                                              :on-click [:item-lister/order-items! :vehicle-models.lister :name]}
+                                             {:width 12}
+                                             {:label :modified :width 100 :order-by-key :modified-at
+                                              :on-click [:item-lister/order-items! :vehicle-models.lister :modified-at]}
+                                             {:width 12}
+                                             {:width 100}
+                                             {:width 12}]
+                                     :border :bottom
+                                     :order-by current-order-by}]))
 
-(defn- model-lister-body
+(defn- model-lister
   []
-  [item-lister/body :vehicle-models.lister
-                    {:default-order-by :modified-at/descending
-                     :items-path       [:vehicle-models :lister/downloaded-items]
-                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    [common/item-lister-ghost-element]
-                     :list-element     [model-list]}])
-
-(defn- model-lister-header
-  []
-  [common/item-lister-header :vehicle-models.lister
-                             {:cells [[common/item-lister-header-spacer :vehicle-models.lister {:width "108px"}]
-                                      [common/item-lister-header-cell   :vehicle-models.lister {:label :name          :order-by-key :name :stretch? true}]
-                                      [common/item-lister-header-cell   :vehicle-models.lister {:label :last-modified :order-by-key :modified-at :width "160px"}]
-                                      [common/item-lister-header-spacer :vehicle-models.lister {:width "36px"}]]}])
+  [common/item-lister-body :vehicle-models.lister
+                           {:list-item-element #'model-list-item
+                            :item-list-header  #'model-list-header
+                            :items-path        [:vehicle-models :lister/downloaded-items]}])
 
 (defn- body
   []
-  [common/item-lister-wrapper :vehicle-models.lister
-                              {:body   #'model-lister-body
-                               :header #'model-lister-header}])
+  [components/surface-box ::body
+                          {:content [:<> [model-lister]
+                                         [elements/horizontal-separator {:height :xxs}]]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn create-item-button
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :vehicle-models.lister])
-        create-model-uri (str "/@app-home/vehicle-models/create")]
-       [common/item-lister-create-item-button :vehicle-models.lister
-                                              {:disabled?       lister-disabled?
-                                               :create-item-uri create-model-uri}]))
-
-(defn- search-field
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :vehicle-models.lister])]
-       [common/item-lister-search-field :vehicle-models.lister
-                                        {:disabled?   lister-disabled?
-                                         :placeholder :search-in-vehicle-models
-                                         :search-keys [:name]}]))
-
-(defn- search-description
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :vehicle-models.lister])]
-       [common/item-lister-search-description :vehicle-models.lister
-                                              {:disabled? lister-disabled?}]))
-
-(defn- breadcrumbs
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :vehicle-models.lister])]
-       [components/surface-breadcrumbs ::breadcrumbs
-                                       {:crumbs [{:label :app-home :route "/@app-home"}
-                                                 {:label :vehicle-models}]
-                                        :disabled? lister-disabled?}]))
-
-(defn- label
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :vehicle-models.lister])]
-       [components/surface-label ::label
-                                 {:disabled? lister-disabled?
-                                  :label     :vehicle-models}]))
 
 (defn- header
   []
-  (if-let [first-data-received? @(r/subscribe [:item-lister/first-data-received? :vehicle-models.lister])]
-          [:<> [:div {:style {:display "flex" :justify-content "space-between" :flex-wrap "wrap" :grid-row-gap "24px"}}
-                     [:div [label]
-                           [breadcrumbs]]
-                     [:div [create-item-button]]]
-               [search-field]
-               [search-description]]
-          [common/item-lister-ghost-header :vehicle-models.lister {}]))
+  [common/item-lister-header :vehicle-models.lister
+                             {:crumbs    [{:label :app-home :route "/@app-home"}
+                                          {:label :vehicle-models}]
+                              :on-create [:x.router/go-to! "/@app-home/vehicle-models/create"]
+                              :on-search [:item-lister/search-items! :vehicle-models.lister {:search-keys [:name]}]
+                              :search-placeholder :search-in-vehicle-models
+                              :label              :vehicle-models}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn- view-structure
-  []
-  [:<> [header]
-       [body]
-       [footer]])
 
 (defn view
+  ; @param (keyword) surface-id
   [surface-id]
   [surface-a/layout surface-id
-                    {:content #'view-structure}])
+                    {:content [:<> [header]
+                                   [body]
+                                   [footer]]}])

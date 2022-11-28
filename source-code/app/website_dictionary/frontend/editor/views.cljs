@@ -14,13 +14,13 @@
 (defn- dictionary-box
   []
   (let [editor-disabled? @(r/subscribe [:file-editor/editor-disabled? :website-dictionary.editor])]
-       [common/surface-box ::dictionary-box
-                           {:content [:<> [:div (forms/form-row-attributes)
-                                                [:div (forms/form-block-attributes {:ratio 33})]
-                                                [:div (forms/form-block-attributes {:ratio 67})]]
-                                          [elements/horizontal-separator {:size :s}]]
-                            :disabled? editor-disabled?
-                            :label     :dictionary}]))
+       [components/surface-box ::dictionary-box
+                               {:content [:<> [:div (forms/form-row-attributes)
+                                                    [:div (forms/form-block-attributes {:ratio 33})]
+                                                    [:div (forms/form-block-attributes {:ratio 67})]]
+                                              [elements/horizontal-separator {:height :s}]]
+                                :disabled? editor-disabled?
+                                :label     :dictionary}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -32,70 +32,34 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- menu-bar
-  []
-  (let [editor-disabled? @(r/subscribe [:file-editor/editor-disabled? :website-dictionary.editor])]
-       [common/file-editor-menu-bar :website-dictionary.editor
-                                    {:menu-items [{:label :dictionary :change-keys []}]
-                                     :disabled? editor-disabled?}]))
-
-(defn- body
+(defn- view-selector
   []
   (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :website-dictionary.editor])]
        (case current-view-id :dictionary [dictionary])))
 
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
-(defn- controls
+(defn- body
   []
-  (let [editor-disabled? @(r/subscribe [:file-editor/editor-disabled? :website-dictionary.editor])]
-       [common/file-editor-controls :website-dictionary.editor
-                                    {:disabled? editor-disabled?}]))
-
-(defn- breadcrumbs
-  []
-  (let [editor-disabled? @(r/subscribe [:file-editor/editor-disabled? :website-dictionary.editor])]
-       [components/surface-breadcrumbs ::breadcrumbs
-                                       {:crumbs [{:label :app-home :route "/@app-home"}
-                                                 {:label :website-dictionary}]
-                                        :disabled? editor-disabled?}]))
-
-(defn- label
-  []
-  (let [editor-disabled? @(r/subscribe [:file-editor/editor-disabled? :website-dictionary.editor])]
-       [components/surface-label ::label
-                                 {:disabled? editor-disabled?
-                                  :label     :website-dictionary}]))
+  [common/file-editor-body :website-dictionary.editor
+                           {:content-path [:website-dictionary :editor/edited-item]
+                            :form-element [view-selector]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn- header
   []
-  [:<> [:div {:style {:display "flex" :justify-content "space-between" :flex-wrap "wrap" :grid-row-gap "48px"}}
-             [:div [label]
-                   [breadcrumbs]]
-             [:div [controls]]]
-       [elements/horizontal-separator {:size :xxl}]
-       [menu-bar]])
+  [common/file-editor-header :website-dictionary.editor
+                             {:label       :website-dictionary
+                              :crumbs      [{:label :app-home :route "/@app-home"}
+                                            {:label :website-dictionary}]
+                              :menu-items  [{:label :dictionary :change-keys []}]}])
 
-(defn- view-structure
-  []
-  [:<> [header]
-       [body]])
-
-(defn- website-dictionary-editor
-  ; @param (keyword) surface-id
-  [_]
-  [file-editor/body :website-dictionary.editor
-                    {:content-path  [:website-dictionary :editor/edited-item]
-                     :form-element  #'view-structure
-                     :error-element [components/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element #'common/file-editor-ghost-element}])
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 
 (defn view
   ; @param (keyword) surface-id
   [surface-id]
   [surface-a/layout surface-id
-                    {:content #'website-dictionary-editor}])
+                    {:content [:<> [header]
+                                   [body]]}])

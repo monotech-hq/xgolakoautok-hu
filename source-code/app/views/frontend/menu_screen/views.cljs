@@ -48,7 +48,7 @@
 
 (defn- language-selector
   []
-  [:<> ;[elements/horizontal-separator {:size :l}]
+  [:<> ;[elements/horizontal-separator {:height :l}]
        ; TEMP
        [elements/button {:disabled?   true
                          :hover-color :highlight
@@ -110,7 +110,7 @@
   [elements/button ::logout-button
                    {:hover-color :highlight
                     :indent      {:vertical :xs}
-                    :on-click    [:user/logout!]
+                    :on-click    [:x.user/logout!]
                     :preset      :logout}])
 
 (defn- main
@@ -160,7 +160,7 @@
 
 (defn- about-app
   []
-  [:<> [elements/horizontal-separator {:size :l}]
+  [:<> [elements/horizontal-separator {:height :l}]
        [app-description-label]
        [app-version-label]
        [copyright-information-label]
@@ -202,7 +202,7 @@
 
 (defn- more-options
   []
-  [:<> [elements/horizontal-separator {:size :l}]
+  [:<> [elements/horizontal-separator {:height :l}]
        [privacy-policy-button]
        [terms-of-service-button]
        [about-app-button]
@@ -256,7 +256,7 @@
   []
   [elements/column ::user-card
                    {:content [:<> [user-profile-picture]
-                                  [elements/horizontal-separator {:size :s}]
+                                  [elements/horizontal-separator {:height :s}]
                                   [user-name-label]
                                   [user-email-address-label]]
                     :indent {:bottom :m}
@@ -266,7 +266,7 @@
   []
   [:<> [user-card]
        [app-menu]
-       [elements/horizontal-separator {:size :s}]])
+       [elements/horizontal-separator {:height :s}]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

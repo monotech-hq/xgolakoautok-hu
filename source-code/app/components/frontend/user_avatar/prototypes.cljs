@@ -13,8 +13,10 @@
   ;
   ; @return (map)
   ;  {:colors (strings in vector)
-  ;   :initials (string)}
+  ;   :initials (string)
+  ;   :size (px)}
   [{:keys [first-name last-name] :as avatar-props}]
   (merge {:colors    ["var( --color-muted )"]
-          :initials @(r/subscribe [:x.locales/get-ordered-initials first-name last-name])}
+          :initials @(r/subscribe [:x.locales/get-ordered-initials first-name last-name])
+          :size 60}
          (param avatar-props)))

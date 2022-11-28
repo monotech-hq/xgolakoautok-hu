@@ -9,5 +9,8 @@
 (r/reg-event-fx :services.viewer/load-viewer!
   {:dispatch-n [[:x.gestures/init-view-handler! :services.viewer
                                                 {:default-view-id :overview}]
-                [:x.ui/render-surface! :services.viewer/view
-                                       {:content #'viewer.views/view}]]})
+                [:services.viewer/render-viewer!]]})
+
+(r/reg-event-fx :services.viewer/render-viewer!
+  [:x.ui/render-surface! :services.viewer/view
+                         {:content #'viewer.views/view}])

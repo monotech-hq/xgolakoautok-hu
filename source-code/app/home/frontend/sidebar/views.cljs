@@ -4,6 +4,7 @@
               [elements.api                     :as elements]
               [layouts.sidebar-a.api            :as sidebar-a]
               [re-frame.api                     :as r]
+              [string.api                       :as string]
               [vector.api                       :as vector]
               [x.components.api                 :as x.components]))
 
@@ -109,7 +110,7 @@
   (let [app-title @(r/subscribe [:x.core/get-app-config-item :app-title])]
        [elements/label ::label
                        {:color       "#bfbfbf"
-                        :content     (string.api/uppercase app-title)
+                        :content     (string/to-uppercase app-title)
                         :font-size   :xs
                         :font-weight :extra-bold
                         :line-height :block
@@ -126,7 +127,7 @@
              [:div {:style {:background-color "#00000021"}}
                    [label]]
              ;[elements/horizontal-line {:color "#88998e"}]
-             [elements/horizontal-separator {:size :xs}]
+             [elements/horizontal-separator {:height :xs}]
              [:div {:data-scrollable-y true :style {:flex-grow "1"}}
                    [app-home-button]
                    [menu-groups]]]))

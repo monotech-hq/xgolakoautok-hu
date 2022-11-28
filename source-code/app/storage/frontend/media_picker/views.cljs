@@ -1,74 +1,125 @@
 
 (ns app.storage.frontend.media-picker.views
-    (:require [app.storage.frontend.media-picker.prototypes :as media-picker.prototypes]
+    (:require [app.common.frontend.api                      :as common]
+              [app.components.frontend.api                  :as components]
+              [app.storage.frontend.media-picker.prototypes :as media-picker.prototypes]
               [app.storage.frontend.media-preview.views     :as media-preview.views]
               [elements.api                                 :as elements]
+              [format.api                                   :as format]
+              [io.api                                       :as io]
               [random.api                                   :as random]
-              [re-frame.api                                 :as r]))
+              [re-frame.api                                 :as r]
+              [x.media.api                                  :as x.media]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn media-picker-previews
+(defn- directory-list-item
   ; @param (keyword) picker-id
   ; @param (map) picker-props
-  [picker-id picker-props]
-  ; BUG#0889 (app.products.frontend.picker.views)
-  (let [preview-props (media-picker.prototypes/preview-props-prototype picker-id picker-props)]
-      ;[media-preview.views/element ::media-picker-previews preview-props]
+  ; @param (integer) item-dex
+  ; @param (namespaced map) media-link
+  ; @param (map) drag-props
+  [picker-id picker-props item-dex media-link drag-props])
+  ; TODO
+
+(defn- file-list-item
+  ; @param (keyword) picker-id
+  ; @param (map) picker-props
+  ;  {:sortable? (boolean)(opt)}
+  ; @param (integer) item-dex
+  ; @param (namespaced map) media-link
+  ;  {:media/id (string)}
+  ; @param (map) drag-props
+  ;  {:handle-attributes (map)
+  ;   :item-attributes (map)}
+  [picker-id {:keys [sortable?]} item-dex {:media/keys [count id]} {:keys [handle-attributes item-attributes]}]
+  (let [{:keys [alias filename modified-at size thumbnail]} @(r/subscribe [:item-lister/get-item picker-id id])
+        timestamp   @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+        size         (-> size io/B->MB format/decimals (str " MB"))]
+       [components/item-list-row {:drag-attributes item-attributes
+                                  :cells [(if sortable? [components/list-item-drag-handle {:drag-attributes handle-attributes}])
+                                          (if sortable? [components/list-item-gap         {:width 12}])
+                                          ; XXX#6690 (source-code/app/storage/media_browser/views.cljs)
+                                          (cond (io/filename->audio? alias)
+                                                [components/list-item-thumbnail {:icon :audio_file :icon-family :material-icons-outlined}]
+                                                (io/filename->image? alias)
+                                                [components/list-item-thumbnail {:thumbnail (x.media/filename->media-thumbnail-uri filename)}]
+                                                (io/filename->text?  alias)
+                                                [components/list-item-thumbnail {:icon :insert_drive_file :icon-family :material-icons-outlined}]
+                                                (io/filename->video? alias)
+                                                [components/list-item-thumbnail {:icon :video_file :icon-family :material-icons-outlined}]
+                                                :else
+                                                [components/list-item-thumbnail {:icon :insert_drive_file :icon-family :material-icons-outlined}])
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content alias :placeholder :unnamed-file}]}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content size :font-size :xs :color :muted}] :width 100}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content timestamp :font-size :xs :color :muted}] :width 100}]]
+                                  :border (if (not= item-dex 0) :top)}]))
+
+(defn- media-list-item
+  ; @param (keyword) picker-id
+  ; @param (map) picker-props
+  ; @param (integer) item-dex
+  ; @param (map) media-link
+  ; @param (map)(opt) drag-props
+  ([picker-id picker-props item-dex media-link]
+   [media-list-item picker-id picker-props item-dex media-link {}])
+
+  ([picker-id picker-props item-dex {:media/keys [id] :as media-link} drag-props]
+   (let [{:keys [mime-type]} @(r/subscribe [:item-lister/get-item picker-id id])]
+        (case mime-type "storage/directory" [directory-list-item picker-id picker-props item-dex media-link drag-props]
+                                            [file-list-item      picker-id picker-props item-dex media-link drag-props]))))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn- media-item
+  ; @param (keyword) picker-id
+  ; @param (map) picker-props
+  ; @param (namespaced map) media-link
+  [picker-id picker-props media-link]
+  (let [preview-props (media-picker.prototypes/preview-props-prototype picker-id picker-props media-link)]
        [media-preview.views/element picker-id preview-props]))
 
-(defn media-picker-button
-  ; @param (keyword) picker-id
-  ; @param (map) picker-props
-  ;  {:disabled? (boolean)(opt)
-  ;   :multi-select? (boolean)(opt)
-  ;   :toggle-label (metamorphic-content)(opt)}
-  [picker-id {:keys [disabled? multi-select? toggle-label] :as picker-props}]
-  (let [on-click [:storage.media-selector/load-selector! picker-id picker-props]]
-       [:div {:style {:display :flex}}
-             [elements/button {:color     :muted
-                               :disabled? disabled?
-                               :font-size :xs
-                               :label     (or toggle-label (if multi-select? :select-items! :select-item!))
-                               :on-click  on-click}]]))
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 
-(defn media-picker-label
+(defn- media-list-header
   ; @param (keyword) picker-id
   ; @param (map) picker-props
-  ;  {:disabled? (boolean)(opt)
-  ;   :info-text (metamorphic-content)(opt)
-  ;   :label (metamorphic-content)(opt)
-  ;   :required? (boolean)(opt)}
-  [_ {:keys [disabled? info-text label required?]}]
-  (if label [elements/label {:content     label
-                             :disabled?   disabled?
-                             :info-text   info-text
-                             :line-height :block
-                             :required?   required?}]))
+  ;  {:sortable? (boolean)(opt)}
+  [_ {:keys [sortable?]}]
+  [components/item-list-header ::media-list-header
+                               {:cells [(if sortable? {:width 24})
+                                        (if sortable? {:width 12})
+                                        {:width 84}
+                                        {:width 12}
+                                        {:label :name}
+                                        {:width 12}
+                                        {:label :size :width 100}
+                                        {:width 12}
+                                        {:label :modified :width 100}]
+                                :border :bottom}])
 
-(defn media-picker-body
-  ; @param (keyword) picker-id
-  ; @param (map) picker-props
-  [picker-id picker-props]
-  [:<> [media-picker-label    picker-id picker-props]
-       [media-picker-button   picker-id picker-props]
-       [media-picker-previews picker-id picker-props]])
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 
 (defn- media-picker
   ; @param (keyword) picker-id
   ; @param (map) picker-props
-  ;  {:indent (map)(opt)}
-  [picker-id {:keys [indent] :as picker-props}]
-  [elements/blank picker-id
-                  {:content [media-picker-body picker-id picker-props]
-                   :indent  indent}])
+  [picker-id picker-props]
+  [common/item-picker picker-id (assoc picker-props :item-element      #'media-item
+                                                    :list-item-element #'media-list-item
+                                                    :item-list-header  #'media-list-header)])
 
 (defn element
   ; @param (keyword)(opt) picker-id
   ; @param (map) picker-props
   ;  {:autosave? (boolean)(opt)
-  ;   Default: false
+  ;    Default: false
   ;   :disabled? (boolean)(opt)
   ;    Default: false
   ;   :extensions (strings in vector)(opt)
@@ -86,13 +137,6 @@
   ;    Default: false
   ;   :sortable? (boolean)(opt)
   ;    Default: false
-  ;   :thumbnail (map)(opt)
-  ;    {:height (keyword)(opt)
-  ;      :xxs, :xs, :s, :m, :l, :xl, :xxl, :3xl, :4xl, :5xl
-  ;      Default: :5xl
-  ;     :width (keyword)(opt)
-  ;      :xxs, :xs, :s, :m, :l, :xl, :xxl, :3xl, :4xl, :5xl
-  ;      Default: :5xl}
   ;   :toggle-label (metamorphic-content)(opt)
   ;   :value-path (vector)}
   ;
@@ -100,7 +144,7 @@
   ;  [media-picker {...}]
   ;
   ; @usage
-  ;  [media-picker :my-picker {...}]
+  ;  [media-picker :my-media-picker {...}]
   ([picker-props]
    [element (random/generate-keyword) picker-props])
 

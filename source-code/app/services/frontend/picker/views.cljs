@@ -1,6 +1,8 @@
 
 (ns app.services.frontend.picker.views
-    (:require [app.services.frontend.picker.prototypes :as picker.prototypes]
+    (:require [app.common.frontend.api                 :as common]
+              [app.components.frontend.api             :as components]
+              [app.services.frontend.picker.prototypes :as picker.prototypes]
               [app.services.frontend.preview.views     :as preview.views]
               [elements.api                            :as elements]
               [random.api                              :as random]
@@ -9,64 +11,90 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- service-picker-previews
+(defn- service-list-item
   ; @param (keyword) picker-id
   ; @param (map) picker-props
-  [picker-id picker-props]
-  ; BUG#0889 (app.products.frontend.picker.views)
-  (let [preview-props (picker.prototypes/preview-props-prototype picker-id picker-props)]
-      ;[preview.views/element ::service-picker-previews preview-props]
+  ;  {:countable? (boolean)(opt)
+  ;   :sortable? (boolean)(opt)}
+  ; @param (integer) item-dex
+  ; @param (namespaced map) service-link
+  ;  {:service/count (integer)(opt)
+  ;   :service/id (string)}
+  ; @param (map)(opt) drag-props
+  ;  {:handle-attributes (map)
+  ;   :item-attributes (map)}
+  ([picker-id picker-props item-dex service-link]
+   [service-list-item picker-id picker-props item-dex service-link {}])
+
+  ([picker-id {:keys [countable? sortable?]} item-dex {:service/keys [count id]} {:keys [handle-attributes item-attributes]}]
+   (let [{:keys [item-number modified-at name quantity-unit thumbnail]} @(r/subscribe [:item-lister/get-item picker-id id])
+         timestamp   @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+         picked-count {:content (:value quantity-unit) :replacements [count]}]
+        [components/item-list-row {:drag-attributes item-attributes
+                                   :cells [(if sortable? [components/list-item-drag-handle {:drag-attributes handle-attributes}])
+                                           (if sortable? [components/list-item-gap         {:width 12}])
+                                           [components/list-item-thumbnail {:thumbnail (:media/uri thumbnail)}]
+                                           [components/list-item-gap       {:width 12}]
+                                           [components/list-item-cell      {:rows [{:content name :placeholder :unnamed-service}]}]
+                                           [components/list-item-gap       {:width 12}]
+                                           (if countable? [components/list-item-cell {:rows [{:content picked-count :font-size :xs :color :muted}] :width 100}])
+                                           (if countable? [components/list-item-gap  {:width 12}])
+                                           [components/list-item-cell      {:rows [{:content item-number :font-size :xs :color :muted}] :width 100}]
+                                           [components/list-item-gap       {:width 12}]
+                                           [components/list-item-cell      {:rows [{:content timestamp :font-size :xs :color :muted}] :width 100}]]
+                                   :border (if (not= item-dex 0) :top)}])))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn- service-item
+  ; @param (keyword) picker-id
+  ; @param (map) picker-props
+  ; @param (namespaced map) service-link
+  [picker-id picker-props service-link]
+  (let [preview-props (picker.prototypes/preview-props-prototype picker-id picker-props service-link)]
        [preview.views/element picker-id preview-props]))
 
-(defn- service-picker-button
-  ; @param (keyword) picker-id
-  ; @param (map) picker-props
-  ;  {:disabled? (boolean)(opt)
-  ;   :multi-select? (boolean)(opt)}
-  [picker-id {:keys [disabled? multi-select?] :as picker-props}]
-  (let [on-click [:services.selector/load-selector! :services.selector picker-props]]
-       [:div {:style {:display :flex}}
-             [elements/button {:color     :muted
-                               :disabled? disabled?
-                               :font-size :xs
-                               :label     (if multi-select? :select-services! :select-service!)
-                               :on-click  on-click}]]))
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 
-(defn- service-picker-label
+(defn- service-list-header
   ; @param (keyword) picker-id
   ; @param (map) picker-props
-  ;  {:disabled? (boolean)(opt)
-  ;   :info-text (metamorphic-content)(opt)
-  ;   :label (metamorphic-content)(opt)
-  ;   :required? (boolean)(opt)}
-  [_ {:keys [disabled? info-text label required?]}]
-  (if label [elements/label {:content     label
-                             :disabled?   disabled?
-                             :info-text   info-text
-                             :line-height :block
-                             :required?   required?}]))
+  ;  {:countable? (boolean)(opt)
+  ;   :sortable? (boolean)(opt)}
+  [_ {:keys [countable? sortable?]}]
+  [components/item-list-header ::service-list-header
+                               {:cells [(if sortable? {:width 24})
+                                        (if sortable? {:width 12})
+                                        {:width 84}
+                                        {:width 12}
+                                        {:label :product-description-short}
+                                        {:width 12}
+                                        (if countable? {:label :quantity :width 100})
+                                        (if countable? {:width 12})
+                                        {:label :item-number :width 100}
+                                        {:width 12}
+                                        {:label :modified :width 100}]
+                                :border :bottom}])
 
-(defn- service-picker-body
-  ; @param (keyword) picker-id
-  ; @param (map) picker-props
-  [picker-id picker-props]
-  [:<> [service-picker-label    picker-id picker-props]
-       [service-picker-button   picker-id picker-props]
-       [service-picker-previews picker-id picker-props]])
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 
 (defn- service-picker
   ; @param (keyword) picker-id
   ; @param (map) picker-props
-  ;  {:indent (map)(opt)}
-  [picker-id {:keys [indent] :as picker-props}]
-  [elements/blank picker-id
-                  {:content [service-picker-body picker-id picker-props]
-                   :indent  indent}])
+  [picker-id picker-props]
+  [common/item-picker picker-id (assoc picker-props :item-element      #'service-item
+                                                    :list-item-element #'service-list-item
+                                                    :item-list-header  #'service-list-header)])
 
 (defn element
   ; @param (keyword)(opt) picker-id
   ; @param (map) picker-props
   ;  {:autosave? (boolean)(opt)
+  ;    Default: false
+  ;   :countable? (boolean)(opt)
   ;    Default: false
   ;   :disabled? (boolean)(opt)
   ;    Default: false
@@ -75,24 +103,27 @@
   ;   :label (metamorphic-content)(opt)
   ;   :max-count (integer)(opt)
   ;    Default: 8
+  ;    W/ {:multi-select? true}
   ;   :multi-select? (boolean)(opt)
   ;    Default: false
   ;   :on-change (metamorphic-event)(opt)
   ;    Az esemény utolsó paraméterként megkapja a kiválasztott elemet.
   ;   :on-save (metamorphic-event)(opt)
   ;    Az esemény utolsó paraméterként megkapja a kiválasztott elemet.
+  ;   :placeholder (metamorphic-content)(opt)
   ;   :required? (boolean)(opt)
   ;    Default: false
-  ;   :placeholder (metamorphic-content)(opt)
   ;   :sortable? (boolean)(opt)
   ;    Default: false
+  ;    W/ {:multi-select? true}
+  ;   :toggle-label (metamorphic-content)(opt)
   ;   :value-path (vector)}
   ;
   ; @usage
   ;  [service-picker {...}]
   ;
   ; @usage
-  ;  [service-picker :my-picker {...}]
+  ;  [service-picker :my-service-picker {...}]
   ([picker-props]
    [element (random/generate-keyword) picker-props])
 

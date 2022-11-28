@@ -1,7 +1,6 @@
 
 (ns app.contents.frontend.preview.prototypes
-    (:require [candy.api  :refer [param]]
-              [vector.api :as vector]))
+    (:require [candy.api :refer [param]]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -9,14 +8,20 @@
 (defn preview-props-prototype
   ; @param (keyword) preview-id
   ; @param (map) preview-props
-  ;  {:items (namespaced maps in vector)}
+  ;  {:item-link (namespaced map)(opt)
+  ;    {:content/id (string)}}
   ;
   ; @return (map)
   ;  {:font-size (keyword)
   ;   :font-weight (keyword)
-  ;   :items (namespaced maps in vector)}
-  [_ {:keys [items] :as preview-props}]
+  ;  :import-id-f (function)
+  ;   :item-id (string)
+  ;   :item-path (vector)
+  ;   :transfer-id (keyword)}
+  [_ {{:content/keys [id]} :item-link :as preview-props}]
   (merge {:font-size   :s
           :font-weight :normal}
          (param preview-props)
-         {:items (vector/remove-items-by items nil?)}))
+         {:import-id-f :content/id
+          :item-path   [:contents :preview/downloaded-items id]
+          :transfer-id :contents.preview}))

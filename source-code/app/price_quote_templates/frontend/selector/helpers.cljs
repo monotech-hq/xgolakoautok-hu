@@ -9,7 +9,7 @@
   ;  {:template/id (string)}
   ;
   ; @example
-  ;  (selector.helpers/import-id-f {:template/id "my-template"})
+  ;  (import-id-f {:template/id "my-template"})
   ;  =>
   ;  "my-template"
   ;
@@ -26,7 +26,7 @@
   ; @param (integer) template-count
   ;
   ; @example
-  ;  (selector.helpers/export-item-f "my-template" {...} 1)
+  ;  (export-item-f "my-template" {...} 1)
   ;  =>
   ;  {:template/id "my-template"}
   ;

@@ -7,4 +7,5 @@
 
 (defn my-media-picker
   []
-  [storage/media-picker :my-picker {:value-path [:my-item]}])
+  [storage/media-picker ::my-media-picker
+                        {:value-path [:my-item]}])

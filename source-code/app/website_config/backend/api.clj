@@ -3,6 +3,7 @@
     (:require [app.website-config.backend.editor.lifecycles]
               [app.website-config.backend.editor.mutations]
               [app.website-config.backend.editor.resolvers]
+              [app.website-config.backend.installer]
               [app.website-config.backend.handler.helpers :as handler.helpers]))
 
 ;; ----------------------------------------------------------------------------

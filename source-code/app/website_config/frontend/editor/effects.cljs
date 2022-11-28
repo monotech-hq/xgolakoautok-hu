@@ -8,6 +8,9 @@
 
 (r/reg-event-fx :website-config.editor/load-editor!
   {:dispatch-n [[:x.gestures/init-view-handler! :website-config.editor
-                                                {:default-view-id :basic-data}]
-                [:x.ui/render-surface! :website-config.editor/view
-                                       {:content #'editor.views/view}]]})
+                                                {:default-view-id :seo}]
+                [:website-config.editor/render-editor!]]})
+
+(r/reg-event-fx :website-config.editor/render-editor!
+  [:x.ui/render-surface! :website-config.editor/view
+                         {:content #'editor.views/view}])

@@ -3,7 +3,8 @@
     (:require [app.schemes.backend.field-editor.prototypes   :as field-editor.prototypes]
               [app.schemes.backend.field-editor.side-effects :as field-editor.side-effects]
               [com.wsscode.pathom3.connect.operation         :as pathom.co :refer [defmutation]]
-              [pathom.api                                    :as pathom]))
+              [pathom.api                                    :as pathom]
+              [x.user.api                                    :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -15,8 +16,9 @@
       ;  {:field-item (namespaced map)
       ;   :scheme-id (keyword)}
       [{:keys [request]} {:keys [field-item scheme-id]}]
-      (let [field-item (field-editor.prototypes/field-item-prototype field-item)]
-           (field-editor.side-effects/save-field! request scheme-id field-item)))
+      (if (x.user/request->authenticated? request)
+          (let [field-item (field-editor.prototypes/field-item-prototype field-item)]
+               (field-editor.side-effects/save-field! request scheme-id field-item))))
 
 (defmutation save-field!
              ; @param (map) env

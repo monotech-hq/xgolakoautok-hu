@@ -4,7 +4,8 @@
               [com.wsscode.pathom3.connect.operation :as pathom.co :refer [defmutation]]
               [mongo-db.api                          :as mongo-db]
               [pathom.api                            :as pathom]
-              [vector.api                            :as vector]))
+              [vector.api                            :as vector]
+              [x.user.api                            :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -16,16 +17,16 @@
   ;  {:item (namespaced map)}
   ;
   ; @return (namespaced map)
-  [{:keys [request]} {:keys [item]}]
-  (let [type-id (mongo-db/generate-id)]
-       ; Típus hivatkozásának hozzáadása a modell dokumentumához
-       (let [prepare-f #(common/updated-document-prototype request %)
-             model-id   (:type/model-id item)]
-            (letfn [(f [%] (update % :model/types vector/conj-item {:type/id type-id}))]
-                   (mongo-db/apply-document! "vehicle_models" model-id f {:prepare-f prepare-f})))
-       ; Típus dokumentumának mentése
-       (let [prepare-f #(common/added-document-prototype request %)]
-            (mongo-db/save-document! "vehicle_types" (assoc item :type/id type-id) {:prepare-f prepare-f}))))
+  [{:keys [request]} {{:type/keys [model-id]} :item :keys [item]}]
+  (if (x.user/request->authenticated? request)
+      (let [type-id (mongo-db/generate-id)]
+           ; Típus hivatkozásának hozzáadása a modell dokumentumához
+           (let [prepare-f #(common/updated-document-prototype request %)]
+                (letfn [(f [%] (update % :model/types vector/conj-item {:type/id type-id}))]
+                       (mongo-db/apply-document! "vehicle_models" model-id f {:prepare-f prepare-f})))
+           ; Típus dokumentumának mentése
+           (let [prepare-f #(common/added-document-prototype request %)]
+                (mongo-db/save-document! "vehicle_types" (assoc item :type/id type-id) {:prepare-f prepare-f})))))
 
 (defmutation add-item!
              ; @param (map) env
@@ -48,8 +49,9 @@
   ;
   ; @return (namespaced map)
   [{:keys [request]} {:keys [item]}]
-  (let [prepare-f #(common/updated-document-prototype request %)]
-       (mongo-db/save-document! "vehicle_types" item {:prepare-f prepare-f})))
+  (if (x.user/request->authenticated? request)
+      (let [prepare-f #(common/updated-document-prototype request %)]
+           (mongo-db/save-document! "vehicle_types" item {:prepare-f prepare-f}))))
 
 (defmutation save-item!
              ; @param (map) env

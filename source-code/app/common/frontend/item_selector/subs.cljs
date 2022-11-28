@@ -8,6 +8,17 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn item-selected?
+  ; @param (keyword) selector-id
+  ; @param (string) item-id
+  ;
+  ; @return (boolean)
+  [db [_ selector-id item-id]]
+  (r item-lister/item-selected? db selector-id item-id))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
 (defn get-item-count
   ; @param (keyword) selector-id
   ; @param (string) item-id
@@ -115,6 +126,10 @@
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
+
+; @usage
+;  [:item-selector/item-selected? :my-selector "my-item"]
+(r/reg-sub :item-selector/item-selected? item-selected?)
 
 ; @usage
 ;  [:item-selector/get-item-count :my-selector "my-item"]

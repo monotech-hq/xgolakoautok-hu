@@ -1,4 +1,4 @@
- 
+
 (ns app.storage.frontend.api
     (:require [app.storage.frontend.alias-editor.effects]
               [app.storage.frontend.capacity-handler.subs]
@@ -18,6 +18,7 @@
               [app.storage.frontend.media-viewer.events]
               [app.storage.frontend.media-viewer.subs]
               [tools.clipboard.api]
+              [tools.file-saver.api]
               [tools.temporary-component.api]
               [app.storage.frontend.media-picker.views  :as media-picker.views]
               [app.storage.frontend.media-preview.views :as media-preview.views]))

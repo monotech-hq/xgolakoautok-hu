@@ -3,7 +3,6 @@
     (:require [app.common.frontend.api     :as common]
               [app.components.frontend.api :as components]
               [elements.api                :as elements]
-              [engines.item-lister.api     :as item-lister]
               [layouts.popup-a.api         :as popup-a]
               [re-frame.api                :as r]))
 
@@ -11,7 +10,8 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- footer
-  []
+  ; @param (keyword) popup-id
+  [_]
   (let [selected-service-count @(r/subscribe [:item-lister/get-selected-item-count :services.selector])
         on-discard-selection [:item-lister/discard-selection! :services.selector]]
        [common/item-selector-footer :services.selector
@@ -21,45 +21,39 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- service-item-structure
-  [selector-id item-dex {:keys [id modified-at name quantity-unit]}]
-  (let [timestamp     @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
-        item-last?    @(r/subscribe [:item-lister/item-last? selector-id item-dex])
-        service-count @(r/subscribe [:item-selector/get-item-count selector-id id])
-        item-count     {:content (:value quantity-unit) :replacements [service-count]}]
-       [common/list-item-structure {:cells [[common/selector-item-counter  selector-id item-dex {:item-id id}]
-                                            [    {:icon :workspace_premium}]
-                                            [common/list-item-primary-cell {:label name :timestamp timestamp :stretch? true :placeholder :unnamed-service :description item-count}]
-                                            [common/selector-item-marker   selector-id item-dex {:item-id id}]]
-                                    :separator (if-not item-last? :bottom)}]))
-
-(defn- service-item
-  [selector-id item-dex {:keys [id] :as service-item}]
-  [elements/toggle {:content     [service-item-structure selector-id item-dex service-item]
-                    :hover-color :highlight
-                    :on-click    [:item-selector/item-clicked :services.selector id]}])
+(defn- service-list-item
+  ; @param (keyword) selector-id
+  ; @param (map) selector-props
+  ;  {:countable? (boolean)(opt)}
+  ; @param (integer) item-dex
+  ; @param (map) service-item
+  [selector-id {:keys [countable?]} item-dex {:keys [id item-number name quantity-unit thumbnail]}]
+  (let [service-count @(r/subscribe [:item-selector/get-item-count selector-id id])
+        service-count  {:content (:value quantity-unit) :replacements [service-count]}
+        item-number    {:content :item-number-n :replacements [(or item-number "n/a")]}]
+       [components/item-list-row {:cells [[components/list-item-gap       {:width 12}]
+                                          (if countable? [common/selector-item-counter selector-id item-dex {:item-id id}])
+                                          (if countable? [components/list-item-gap {:width 12}])
+                                          [components/list-item-thumbnail {:thumbnail (:media/uri thumbnail)}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content name :placeholder :unnamed-service}
+                                                                                  {:content item-number :font-size :xs :color :muted}
+                                                                                  (if countable? {:content service-count :font-size :xs :color :muted})]}]
+                                          [components/list-item-gap {:width 6}]
+                                          [common/selector-item-marker selector-id item-dex {:item-id id}]
+                                          [components/list-item-gap {:width 6}]]
+                                  :border (if (not= item-dex 0) :top)}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn- service-list
-  [selector-id]
-  (let [items @(r/subscribe [:item-lister/get-downloaded-items :services.selector])]
-       [common/item-list :services.selector {:item-element #'service-item :items items}]))
-
-(defn- service-lister
-  []
-  [item-lister/body :services.selector
-                    {:default-order-by :modified-at/descending
-                     :items-path       [:services :selector/downloaded-items]
-                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    [common/item-selector-ghost-element]
-                     :list-element     [service-list]}])
 
 (defn- body
-  []
-  [:<> [elements/horizontal-separator {:size :xs}]
-       [service-lister]])
+  ; @param (keyword) popup-id
+  [_]
+  [:<> [elements/horizontal-separator {:height :xs}]
+       [common/item-selector-body :services.selector
+                                  {:items-path        [:services :selector/downloaded-items]
+                                   :list-item-element #'service-list-item}]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -68,30 +62,28 @@
   []
   (let [selector-disabled? @(r/subscribe [:item-lister/lister-disabled? :services.selector])]
        [common/item-selector-control-bar :services.selector
-                                         {:disabled?        selector-disabled?
-                                          :order-by-options [:modified-at/ascending :modified-at/descending :name/ascending :name/descending]
+                                         {:disabled?                selector-disabled?
                                           :search-field-placeholder :search-in-services
-                                          :search-keys      [:item-number :name]}]))
+                                          :search-keys              [:item-number :name]}]))
 
 (defn- label-bar
   []
   (let [multi-select? @(r/subscribe [:item-lister/get-meta-item :services.selector :multi-select?])]
-       [components/popup-label-bar :services.selector/view
-                                   {:primary-button   {:label :save!   :on-click [:item-selector/save-selection! :services.selector]}
-                                    :secondary-button {:label :cancel! :on-click [:x.ui/remove-popup! :services.selector/view]}
-                                    :label            (if multi-select? :select-services! :select-service!)}]))
+       [common/item-selector-label-bar :services.selector
+                                       {:label    (if multi-select? :select-services! :select-service!)
+                                        :on-close [:x.ui/remove-popup! :services.selector/view]}]))
 
 (defn- header
-  []
+  ; @param (keyword) popup-id
+  [_]
   [:<> [label-bar]
-       (if-let [first-data-received? @(r/subscribe [:item-lister/first-data-received? :services.selector])]
-               [control-bar]
-               [elements/horizontal-separator {:size :xxl}])])
+       [control-bar]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn view
+  ; @param (keyword) popup-id
   [popup-id]
   [popup-a/layout popup-id
                   {:footer              #'footer

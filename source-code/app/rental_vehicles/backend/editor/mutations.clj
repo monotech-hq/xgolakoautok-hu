@@ -4,7 +4,8 @@
               [app.rental-vehicles.backend.editor.prototypes :as editor.prototypes]
               [com.wsscode.pathom3.connect.operation         :as pathom.co :refer [defmutation]]
               [mongo-db.api                                  :as mongo-db]
-              [pathom.api                                    :as pathom]))
+              [pathom.api                                    :as pathom]
+              [x.user.api                                    :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -17,9 +18,10 @@
   ;
   ; @return (namespaced map)
   [{:keys [request]} {:keys [item]}]
-  (let [prepare-f #(->> % (common/added-document-prototype request)
-                          (editor.prototypes/vehicle-item-prototype))]
-       (mongo-db/save-document! "rental_vehicles" item {:ordered? true :prepare-f prepare-f})))
+  (if (x.user/request->authenticated? request)
+      (let [prepare-f #(->> % (common/added-document-prototype request)
+                              (editor.prototypes/added-document-prototype))]
+           (mongo-db/save-document! "rental_vehicles" item {:ordered? true :prepare-f prepare-f}))))
 
 (defmutation add-item!
              ; @param (map) env
@@ -42,9 +44,10 @@
   ;
   ; @return (namespaced map)
   [{:keys [request]} {:keys [item]}]
-  (let [prepare-f #(->> % (common/updated-document-prototype request)
-                          (editor.prototypes/vehicle-item-prototype))]
-       (mongo-db/save-document! "rental_vehicles" item {:ordered? true :prepare-f prepare-f})))
+  (if (x.user/request->authenticated? request)
+      (let [prepare-f #(->> % (common/updated-document-prototype request)
+                              (editor.prototypes/updated-document-prototype))]
+           (mongo-db/save-document! "rental_vehicles" item {:ordered? true :prepare-f prepare-f}))))
 
 (defmutation save-item!
              ; @param (map) env

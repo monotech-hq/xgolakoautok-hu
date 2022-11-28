@@ -3,7 +3,6 @@
     (:require [app.common.frontend.api     :as common]
               [app.components.frontend.api :as components]
               [elements.api                :as elements]
-              [engines.item-lister.api     :as item-lister]
               [layouts.popup-a.api         :as popup-a]
               [re-frame.api                :as r]))
 
@@ -11,7 +10,8 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- footer
-  []
+  ; @param (keyword) popup-id
+  [_]
   (let [selected-template-count @(r/subscribe [:item-lister/get-selected-item-count :price-quote-templates.selector])
         on-discard-selection     [:item-lister/discard-selection! :price-quote-templates.selector]]
        [common/item-selector-footer :price-quote-templates.selector
@@ -21,42 +21,33 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- template-item-structure
-  [selector-id item-dex {:keys [id issuer-logo modified-at name] :as template-item}]
-  (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
-        item-last? @(r/subscribe [:item-lister/item-last? selector-id item-dex])]
-       [common/list-item-structure {:cells [[    {:thumbnail (:media/uri issuer-logo)}]
-                                            [common/list-item-primary-cell {:label name :timestamp timestamp :stretch? true :placeholder :unnamed-price-quote-template}]
-                                            [common/selector-item-marker   selector-id item-dex {:item-id id}]]
-                                    :separator (if-not item-last? :bottom)}]))
-
-(defn- template-item
-  [selector-id item-dex {:keys [id] :as template-item}]
-  [elements/toggle {:content     [template-item-structure selector-id item-dex template-item]
-                    :hover-color :highlight
-                    :on-click    [:item-selector/item-clicked :price-quote-templates.selector id]}])
+(defn- template-list-item
+  ; @param (keyword) selector-id
+  ; @param (map) selector-props
+  ; @param (integer) item-dex
+  ; @param (map) template-item
+  [selector-id _ item-dex {:keys [id issuer-logo modified-at name]}]
+  (let [timestamp @(r/subscribe [:x.activities/get-actual-timestamp modified-at])]
+       [components/item-list-row {:cells [[components/list-item-gap       {:width 12}]
+                                          [components/list-item-thumbnail {:thumbnail (:media/uri issuer-logo)}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content name :placeholder :unnamed-price-quote-template}
+                                                                                  {:content timestamp :font-size :xs :color :muted}]}]
+                                          [components/list-item-gap {:width 6}]
+                                          [common/selector-item-marker selector-id item-dex {:item-id id}]
+                                          [components/list-item-gap {:width 6}]]
+                                  :border (if (not= item-dex 0) :top)}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn- template-list
-  []
-  (let [items @(r/subscribe [:item-lister/get-downloaded-items :price-quote-templates.selector])]
-       [common/item-list :price-quote-templates.selector {:item-element #'template-item :items items}]))
-
-(defn- template-lister
-  []
-  [item-lister/body :price-quote-templates.selector
-                    {:default-order-by :modified-at/descending
-                     :items-path       [:price-quote-templates :selector/downloaded-items]
-                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    [common/item-selector-ghost-element]
-                     :list-element     [template-list]}])
 
 (defn- body
-  []
-  [:<> [elements/horizontal-separator {:size :xs}]
-       [template-lister]])
+  ; @param (keyword) popup-id
+  [_]
+  [:<> [elements/horizontal-separator {:height :xs}]
+       [common/item-selector-body :price-quote-templates.selector
+                                  {:items-path        [:price-quote-templates :selector/downloaded-items]
+                                   :list-item-element #'template-list-item}]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -65,31 +56,27 @@
   []
   (let [selector-disabled? @(r/subscribe [:item-lister/lister-disabled? :price-quote-templates.selector])]
        [common/item-selector-control-bar :price-quote-templates.selector
-                                         {:disabled?        selector-disabled?
-                                          :order-by-options [:modified-at/ascending :modified-at/descending :name/ascending :name/descending]
-                                          :search-field-placeholder :search-in-price-quote-templates
-                                          :search-keys      [:name]}]))
+                                         {:disabled?                selector-disabled?
+                                          :search-field-placeholder :search-in-price-quote-templates}]))
 
 (defn- label-bar
   []
-  [components/popup-label-bar :price-quote-templates.selector/view
-                              {:primary-button   {:label :save! :on-click [:item-selector/save-selection! :price-quote-templates.selector]}
-                               :secondary-button (if-let [autosaving? @(r/subscribe [:item-selector/autosaving? :price-quote-templates.selector])]
-                                                         {:label :abort!  :on-click [:item-selector/abort-autosave! :price-quote-templates.selector]}
-                                                         {:label :cancel! :on-click [:x.ui/remove-popup! :price-quote-templates.selector/view]})
-                               :label            :select-price-quote-template!}])
+  (let [multi-select? @(r/subscribe [:item-lister/get-meta-item :price-quote-templates.selector :multi-select?])]
+       [common/item-selector-label-bar :price-quote-templates.selector
+                                       {:label    (if multi-select? :select-price-quote-templates! :select-price-quote-template!)
+                                        :on-close [:x.ui/remove-popup! :price-quote-templates.selector/view]}]))
 
 (defn- header
-  []
+  ; @param (keyword) popup-id
+  [_]
   [:<> [label-bar]
-       (if-let [first-data-received? @(r/subscribe [:item-lister/first-data-received? :price-quote-templates.selector])]
-               [control-bar]
-               [elements/horizontal-separator {:size :xxl}])])
+       [control-bar]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn view
+  ; @param (keyword) popup-id
   [popup-id]
   [popup-a/layout popup-id
                   {:footer              #'footer

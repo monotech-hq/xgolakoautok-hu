@@ -15,6 +15,7 @@
 
 ; app.contents.frontend.handler.helpers
 (def parse-content-body handler.helpers/parse-content-body)
+(def nonblank?          handler.helpers/nonblank?)
 
 ; app.contents.frontend.picker.views
 (def content-picker picker.views/element)

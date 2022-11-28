@@ -11,18 +11,21 @@
 ;; ----------------------------------------------------------------------------
 
 (defn close-icon-button
+  ; @param (keyword) viewer-id
   [viewer-id]
   [:div {:style {:position :fixed :right 0 :top :0}}
         [elements/icon-button ::close-icon-button
-                              {:color    :invert
-                               :keypress {:key-code 27}
-                               :on-click [:x.ui/remove-popup! :storage.media-viewer/view]
-                               :preset   :close}]])
+                              {:color       :invert
+                               :keypress    {:key-code 27}
+                               :hover-color "#123"
+                               :on-click    [:x.ui/remove-popup! :storage.media-viewer/view]
+                               :preset      :close}]])
 
 ;; -- PDF-item components -----------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn pdf-item-pdf
+  ; @param (keyword) viewer-id
   [viewer-id]
   (let [% @(r/subscribe [:storage.media-viewer/get-current-item-props viewer-id])]
        [:iframe.storage--media-viewer--pdf {:src   (-> % :item-filename x.media/filename->media-storage-uri)
@@ -31,6 +34,7 @@
                                                     :width         (css/calc "100vw - 96px")}}]))
 
 (defn pdf-item
+  ; @param (keyword) viewer-id
   [viewer-id]
   [:div.storage--media-viewer--pdf-item [pdf-item-pdf viewer-id]])
 
@@ -38,12 +42,14 @@
 ;; ----------------------------------------------------------------------------
 
 (defn image-item-icon
+  ; @param (keyword) viewer-id
   [_]
   [:div.storage--media-viewer--icon {:style {:align-items "center" :display "flex" :justify-content "center"
                                              :height "100%" :left "0" :position "absolute" :top "0" :width "100%"}}
                                     [elements/icon {:icon :insert_drive_file :color :invert}]])
 
 (defn image-item-image
+  ; @param (keyword) viewer-id
   [viewer-id]
   (let [% @(r/subscribe [:storage.media-viewer/get-current-item-props viewer-id])]
        [:img.storage--media-viewer--image {:src   (-> % :item-filename x.media/filename->media-storage-uri)
@@ -52,6 +58,7 @@
                                                    :max-width     (css/calc "100vw - 96px")}}]))
 
 (defn image-item
+  ; @param (keyword) viewer-id
   [viewer-id]
   [:div.storage--media-viewer--image-item {:style {:height "100%" :width "100%"}}
                                          [image-item-icon  viewer-id]
@@ -61,6 +68,7 @@
 ;; ----------------------------------------------------------------------------
 
 (defn media-item
+  ; @param (keyword) viewer-id
   [viewer-id]
   (let [% @(r/subscribe [:storage.media-viewer/get-current-item-props viewer-id])]
        (case (-> % :item-filename io/filename->mime-type)
@@ -71,11 +79,13 @@
 ;; ----------------------------------------------------------------------------
 
 (defn view-structure
+  ; @param (keyword) viewer-id
   [viewer-id]
   [:<> [media-item        viewer-id]
        [close-icon-button viewer-id]])
 
 (defn view
+  ; @param (keyword) viewer-id
   [viewer-id]
   [popup-b/layout :storage.media-viewer/view
                   {:content [view-structure viewer-id]}])

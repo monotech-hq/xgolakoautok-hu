@@ -12,7 +12,7 @@
   (let [first-name  (get-in db [:clients :selector/downloaded-items item-dex :first-name])
         last-name   (get-in db [:clients :selector/downloaded-items item-dex :last-name])
         client-name (r x.locales/get-ordered-name db first-name last-name)]
-      ; XXX#6071
+      ; XXX#6071 (source-code/app/clients/frontend/viewer/subs.cljs)
       (string/trim client-name)))
 
 ;; ----------------------------------------------------------------------------

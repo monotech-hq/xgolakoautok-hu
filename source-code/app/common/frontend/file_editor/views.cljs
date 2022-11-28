@@ -1,23 +1,20 @@
 
 (ns app.common.frontend.file-editor.views
     (:require [app.common.frontend.item-editor.views :as item-editor.views]
-              [app.common.frontend.surface.views     :as surface.views]
               [app.components.frontend.api           :as components]
               [elements.api                          :as elements]
+              [engines.file-editor.api               :as file-editor]
               [re-frame.api                          :as r]))
 
-;; -- Menu-bar components -----------------------------------------------------
+;; -- Header components -------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn file-editor-menu-item-props
+(defn menu-item-props
   ; @param (keyword) editor-id
-  ; @param (map) bar-props
+  ; @param (map) header-props
   ; @param (map) item-props
   ;  {:change-keys (keywords in vector)(opt)
   ;   :label (metamorphic-content)}
-  ;
-  ; @usage
-  ;  [file-editor-menu-item-props :my-editor {...} {...}]
   ;
   ; @return (map)
   ;  {:active? (boolean)
@@ -32,77 +29,100 @@
         :label       label
         :on-click    [:x.gestures/change-view! editor-id label]}))
 
-(defn file-editor-menu-bar
-  ; A komponens használatához ne felejts el inicializálni egy gestures/view-handler
-  ; kezelőt, az editor-id azonosítóval!
-  ;
+(defn- menu-bar
   ; @param (keyword) editor-id
-  ; @param (map) bar-props
-  ;  {:disabled? (boolean)(opt)
-  ;   :menu-items (maps in vector)
-  ;    [{:change-keys (keywords in vector)(opt)
-  ;      :label (metamorphic-content)}]}
-  ;
-  ; @usage
-  ;  [file-editor-menu-bar :my-editor {...}]
-  [editor-id {:keys [disabled? menu-items] :as bar-props}]
-  (letfn [(f [menu-items menu-item] (conj menu-items (file-editor-menu-item-props editor-id bar-props menu-item)))]
-         [:<> [elements/menu-bar ::file-editor-menu-bar {:disabled?  disabled?
-                                                         :menu-items (reduce f [] menu-items)}]]))
-              ;[elements/horizontal-line {:color :highlight :indent {:vertical :s}}]]))
+  ; @param (map) header-props
+  ;  {:menu-items (maps in vector)}
+  [editor-id {:keys [menu-items] :as header-props}]
+  (let [editor-disabled? @(r/subscribe [:file-editor/editor-disabled? editor-id])]
+       (letfn [(f [menu-items menu-item] (conj menu-items (menu-item-props editor-id header-props menu-item)))]
+              [elements/menu-bar ::file-editor-menu-bar
+                                 {:disabled?  editor-disabled?
+                                  :menu-items (reduce f [] menu-items)}])))
 
-;; -- Ghost-view components ---------------------------------------------------
-;; ----------------------------------------------------------------------------
-
-(defn file-editor-ghost-element
+(defn- revert-content-button
   ; @param (keyword) editor-id
-  ; @param (map) element-props
-  ;
-  ; @usage
-  ;  [file-editor-ghost-element :my-editor {...}]
+  ; @param (map) header-props
   [editor-id _]
-  [surface.views/surface-box-layout-ghost-view editor-id {:breadcrumb-count 2}])
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
-(defn revert-content-button
-  ; @param (keyword) editor-id
-  ; @param (map) bar-props
-  ;
-  ; @usage
-  ;  [revert-content-button :my-editor {...}]
-  [editor-id {:keys [disabled?]}]
-  (let [content-changed? @(r/subscribe [:file-editor/content-changed? editor-id])]
+  (let [editor-disabled? @(r/subscribe [:file-editor/editor-disabled? editor-id])
+        content-changed? @(r/subscribe [:file-editor/content-changed? editor-id])]
        [components/surface-button ::revert-content-button
-                                  {:disabled?   (or disabled? (not content-changed?))
-                                   :hover-color :highlight
-                                   :icon        :settings_backup_restore
-                                   :label       :revert!
-                                   :on-click    [:file-editor/revert-content! editor-id]}]))
+                                  {:disabled? (or editor-disabled? (not content-changed?))
+                                   :on-click  [:file-editor/revert-content! editor-id]
+                                   :preset    :revert}]))
 
-(defn save-content-button
+(defn- save-content-button
   ; @param (keyword) editor-id
-  ; @param (map) bar-props
-  ;
-  ; @usage
-  ;  [save-content-button :my-editor {...}]
-  [editor-id {:keys [disabled?]}]
-  [components/surface-button ::save-content-button
-                             {:background-color "#5a4aff"
-                              :color            "white"
-                              :disabled?        disabled?
-                              :icon             :save
-                              :label            :save!
-                              :on-click         [:file-editor/save-content! editor-id]}])
+  ; @param (map) header-props
+  [editor-id _]
+  (let [editor-disabled? @(r/subscribe [:file-editor/editor-disabled? editor-id])]
+       [components/surface-button ::save-content-button
+                                  {:disabled? editor-disabled?
+                                   :on-click  [:file-editor/save-content! editor-id]
+                                   :preset    :save}]))
 
-(defn file-editor-controls
+(defn- controls
   ; @param (keyword) editor-id
-  ; @param (map) bar-props
-  ;
-  ; @usage
-  ;  [file-editor-controls :my-editor {...}]
-  [editor-id bar-props]
+  ; @param (map) header-props
+  [editor-id header-props]
   [:div {:style {:display "flex" :grid-column-gap "12px"}}
-        [:<> [revert-content-button editor-id bar-props]
-             [save-content-button   editor-id bar-props]]])
+        [:<> [revert-content-button editor-id header-props]
+             [save-content-button   editor-id header-props]]])
+
+(defn file-editor-header
+  ; @param (keyword) editor-id
+  ; @param (map) header-props
+  ;  {:crumbs (maps in vector)
+  ;    [{:label (metamorphic-content)(opt)
+  ;      :placeholder (metamorphic-content)(opt)
+  ;      :route (string)(opt)}]
+  ;   :label (metamorphic-content)(opt)
+  ;   :menu-items (maps in vector)(opt)
+  ;    [{:change-keys (keywords in vector)(opt)
+  ;      :disabled? (boolean)(opt)
+  ;      :label (metamorphic-content)}]
+  ;   :placeholder (metamorphic-content)(opt)
+  ;
+  ; @usage
+  ;  [file-editor-header :my-editor {...}]
+  [editor-id {:keys [crumbs menu-items] :as header-props}]
+  ; A menu-items használatához ne felejts el inicializálni egy gestures/view-handler
+  ; kezelőt, az editor-id azonosítóval!
+  (if-let [data-received? @(r/subscribe [:file-editor/data-received? editor-id])]
+          [:<> [:div {:style {:display "flex" :justify-content "space-between" :flex-wrap "wrap" :grid-row-gap "48px"}}
+                     [:div [item-editor.views/label       editor-id header-props]
+                           [item-editor.views/breadcrumbs editor-id header-props]]
+                     [:div [controls                      editor-id header-props]]]
+               [elements/horizontal-separator {:height :xxl}]
+               (if menu-items [menu-bar editor-id header-props])]
+          [:<> [components/ghost-view {:layout :box-surface-header :breadcrumb-count (count crumbs)}]
+               [:div {:style {:width "100%" :height "96px"}}]]))
+
+;; -- Body components ---------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn- file-editor
+  ; @param (keyword) editor-id
+  ; @param (map) body-props
+  [editor-id body-props]
+  (let [body-props (assoc body-props :error-element [components/error-content {:error  :the-item-you-opened-may-be-broken}]
+                                     :ghost-element [components/ghost-view    {:layout :box-surface-body}])]
+       [file-editor/body editor-id body-props]))
+
+(defn file-editor-body
+  ; A komponens további paraméterezését az engines.file-editor/body komponens
+  ; dokumentácójában találod!
+  ;
+  ; @param (keyword) editor-id
+  ; @param (map) body-props
+  ;  {:form-element (component or symbol)}
+  ;
+  ; @usage
+  ;  [file-editor-body :my-editor {...}]
+  ;
+  ; @usage
+  ;  (defn my-form-element [] ...)
+  ;  [file-editor-body :my-editor {:form-element #'my-form-element}]
+  [editor-id body-props]
+  (let [];body-props (item-editor.prototypes/body-props-prototype editor-id body-props)
+       [file-editor editor-id body-props]))

@@ -3,18 +3,21 @@
     (:require [app.website-config.backend.handler.config :as handler.config]
               [com.wsscode.pathom3.connect.operation     :refer [defresolver]]
               [io.api                                    :as io]
-              [pathom.api                                :as pathom]))
+              [pathom.api                                :as pathom]
+              [x.user.api                                :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn- get-content-f
   ; @param (map) env
+  ;  {:request (map)}
   ; @param (map) resolver-props
   ;
   ; @return (map)
-  [_ _]
-  (io/read-edn-file handler.config/WEBSITE-CONFIG-FILEPATH))
+  [{:keys [request]} _]
+  (if (x.user/request->authenticated? request)
+      (io/read-edn-file handler.config/WEBSITE-CONFIG-FILEPATH)))
 
 (defresolver get-content
              ; @param (map) env

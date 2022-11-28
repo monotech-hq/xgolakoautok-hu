@@ -9,7 +9,7 @@
   ;  {:type/id (string)}
   ;
   ; @example
-  ;  (selector.helpers/import-id-f {:type/id "my-type"})
+  ;  (import-id-f {:type/id "my-type"})
   ;  =>
   ;  "my-type"
   ;
@@ -26,7 +26,7 @@
   ; @param (integer) type-count
   ;
   ; @example
-  ;  (selector.helpers/export-item-f "my-type" {...} 1)
+  ;  (export-item-f "my-type" {...} 1)
   ;  =>
   ;  {:type/id "my-type"}
   ;

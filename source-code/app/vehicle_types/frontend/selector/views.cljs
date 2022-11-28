@@ -3,7 +3,6 @@
     (:require [app.common.frontend.api     :as common]
               [app.components.frontend.api :as components]
               [elements.api                :as elements]
-              [engines.item-lister.api     :as item-lister]
               [layouts.popup-a.api         :as popup-a]
               [re-frame.api                :as r]))
 
@@ -11,7 +10,8 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- footer
-  []
+  ; @param (keyword) popup-id
+  [_]
   (let [selected-type-count @(r/subscribe [:item-lister/get-selected-item-count :vehicle-types.selector])
         on-discard-selection [:item-lister/discard-selection! :vehicle-types.selector]]
        [common/item-selector-footer :vehicle-types.selector
@@ -21,44 +21,37 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- type-item-structure
-  [selector-id item-dex {:keys [id modified-at name thumbnail]}]
+(defn- type-list-item
+  ; @param (keyword) selector-id
+  ; @param (map) selector-props
+  ;  {:countable? (boolean)(opt)}
+  ; @param (integer) item-dex
+  ; @param (map) type-item
+  [selector-id {:keys [countable?]} item-dex {:keys [id modified-at name]}]
   (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
-        item-last? @(r/subscribe [:item-lister/item-last? selector-id item-dex])]
-       [common/list-item-structure {:cells [[    {:thumbnail (:media/uri thumbnail)}]
-                                            [common/list-item-primary-cell {:label name :timestamp timestamp :stretch? true :placeholder :unnamed-vehicle-type}]
-                                            [common/selector-item-marker   selector-id item-dex {:item-id id}]]
-                                    :separator (if-not item-last? :bottom)}]))
-
-(defn- type-item
-  [selector-id item-dex {:keys [id] :as type-item}]
-  [elements/toggle {:content     [type-item-structure selector-id item-dex type-item]
-                    :hover-color :highlight
-                    :on-click    [:item-selector/item-clicked :vehicle-types.selector id]}])
+        type-count @(r/subscribe [:item-selector/get-item-count selector-id id])
+        type-count  {:content :n-pieces :replacements [type-count]}]
+       [components/item-list-row {:cells [(if countable? [components/list-item-gap {:width 12}])
+                                          (if countable? [common/selector-item-counter selector-id item-dex {:item-id id}])
+                                          [components/list-item-thumbnail {:icon :text_snippet :icon-family :material-icons-outlined}]
+                                          [components/list-item-cell {:rows [{:content name :placeholder :unnamed-vehicle-type}
+                                                                             {:content timestamp :font-size :xs :color :muted}
+                                                                             (if countable? {:content type-count :font-size :xs :color :muted})]}]
+                                          [components/list-item-gap {:width 6}]
+                                          [common/selector-item-marker selector-id item-dex {:item-id id}]
+                                          [components/list-item-gap {:width 6}]]
+                                  :border (if (not= item-dex 0) :top)}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn- type-list
-  []
-  (let [items @(r/subscribe [:item-lister/get-downloaded-items :vehicle-types.selector])]
-       [common/item-list :vehicle-types.selector {:item-element #'type-item :items items}]))
-
-(defn- type-lister
-  []
-  (let [model-id @(r/subscribe [:item-lister/get-meta-item :vehicle-types.selector :model-id])]
-       [item-lister/body :vehicle-types.selector
-                         {:default-order-by :modified-at/descending
-                          :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
-                          :ghost-element    [common/item-selector-ghost-element]
-                          :list-element     [type-list]
-                          :items-path       [:vehicle-types :selector/downloaded-items]
-                          :prefilter        {:type/model-id model-id}}]))
 
 (defn- body
-  []
-  [:<> [elements/horizontal-separator {:size :xs}]
-       [type-lister]])
+  ; @param (keyword) popup-id
+  [_]
+  [:<> [elements/horizontal-separator {:height :xs}]
+       [common/item-selector-body :vehicle-types.selector
+                                  {:items-path        [:vehicle-types :selector/downloaded-items]
+                                   :list-item-element #'type-list-item}]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -67,32 +60,27 @@
   []
   (let [selector-disabled? @(r/subscribe [:item-lister/lister-disabled? :vehicle-types.selector])]
        [common/item-selector-control-bar :vehicle-types.selector
-                                         {:disabled?        selector-disabled?
-                                          :order-by-options [:modified-at/ascending :modified-at/descending :name/ascending :name/descending]
-                                          :search-field-placeholder :search-in-vehicle-types
-                                          :search-keys      [:name]}]))
+                                         {:disabled?                selector-disabled?
+                                          :search-field-placeholder :search-in-vehicle-types}]))
 
 (defn- label-bar
   []
   (let [multi-select? @(r/subscribe [:item-lister/get-meta-item :vehicle-types.selector :multi-select?])]
-       [components/popup-label-bar :vehicle-types.selector/view
-                                   {:primary-button   {:label :save! :on-click [:item-selector/save-selection! :vehicle-types.selector]}
-                                    :secondary-button (if-let [autosaving? @(r/subscribe [:item-selector/autosaving? :vehicle-types.selector])]
-                                                              {:label :abort!  :on-click [:item-selector/abort-autosave! :vehicle-types.selector]}
-                                                              {:label :cancel! :on-click [:x.ui/remove-popup! :vehicle-types.selector/view]})
-                                    :label            (if multi-select? :select-vehicle-types! :select-vehicle-type!)}]))
+       [common/item-selector-label-bar :vehicle-types.selector
+                                       {:label    (if multi-select? :select-vehicle-types! :select-vehicle-type!)
+                                        :on-close [:x.ui/remove-popup! :vehicle-types.selector/view]}]))
 
 (defn- header
-  []
+  ; @param (keyword) popup-id
+  [_]
   [:<> [label-bar]
-       (if-let [first-data-received? @(r/subscribe [:item-lister/first-data-received? :vehicle-types.selector])]
-               [control-bar]
-               [elements/horizontal-separator {:size :xxl}])])
+       [control-bar]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn view
+  ; @param (keyword) popup-id
   [popup-id]
   [popup-a/layout popup-id
                   {:footer              #'footer

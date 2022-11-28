@@ -3,19 +3,22 @@
     (:require [app.common.backend.api                :as common]
               [com.wsscode.pathom3.connect.operation :as pathom.co :refer [defmutation]]
               [mongo-db.api                          :as mongo-db]
-              [pathom.api                            :as pathom]))
+              [pathom.api                            :as pathom]
+              [x.user.api                            :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn delete-item-f
   ; @param (map) env
+  ;  {:request (map)}
   ; @param (map) mutation-props
   ;  {:item-id (string)}
   ;
   ; @return (namespaced map)
-  [_ {:keys [item-id]}]
-  (mongo-db/remove-document! "products" item-id))
+  [{:keys [request]} {:keys [item-id]}]
+  (if (x.user/request->authenticated? request)
+      (mongo-db/remove-document! "products" item-id)))
 
 (defmutation delete-item!
              ; @param (map) env
@@ -32,12 +35,14 @@
 
 (defn undo-delete-item-f
   ; @param (map) env
+  ;  {:request (map)}
   ; @param (map) mutation-props
   ;  {:item (namespaced map)}
   ;
   ; @return (namespaced map)
-  [_ {:keys [item]}]
-  (mongo-db/insert-document! "products" item))
+  [{:keys [request]} {:keys [item]}]
+  (if (x.user/request->authenticated? request)
+      (mongo-db/insert-document! "products" item)))
 
 (defmutation undo-delete-item!
              ; @param (map) env
@@ -60,8 +65,9 @@
   ;
   ; @return (namespaced map)
   [{:keys [request]} {:keys [item-id]}]
-  (let [prepare-f #(common/duplicated-document-prototype request %)]
-       (mongo-db/duplicate-document! "products" item-id {:prepare-f prepare-f})))
+  (if (x.user/request->authenticated? request)
+      (let [prepare-f #(common/duplicated-document-prototype request %)]
+           (mongo-db/duplicate-document! "products" item-id {:prepare-f prepare-f}))))
 
 (defmutation duplicate-item!
              ; @param (map) env

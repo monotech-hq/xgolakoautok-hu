@@ -14,7 +14,7 @@
          "submodules/io-api/source-code/cljs"
          "submodules/local-db-api/source-code/clj"
          "submodules/mongo-db-api/source-code/clj"
-         "submodules/monoset/deps"
+         "submodules/monoset/deps/clj"
          "submodules/monoset/source-code/clj"
          "submodules/monoset/source-code/cljc"
          "submodules/monoset/source-code/cljs"

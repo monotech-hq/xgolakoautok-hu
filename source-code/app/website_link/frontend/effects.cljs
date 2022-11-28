@@ -1,7 +1,7 @@
 
 (ns app.website-link.frontend.effects
-  (:require [re-frame.api   :as r :refer [r]]
-            [x.core.api :as x.core]))
+    (:require [re-frame.api :as r :refer [r]]
+              [x.core.api   :as x.core]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -11,7 +11,7 @@
                                          {:label :view-website!
                                           :menu-items [{:label :open!
                                                         :on-click [:website-link/open-website!]}
-                                                       {:label :open-in-new-page!
+                                                       {:label :open-link-in-new-page!
                                                         :on-click [:website-link/open-website-in-new-page!]}]}])
 
 (r/reg-event-fx :website-link/load-menu!

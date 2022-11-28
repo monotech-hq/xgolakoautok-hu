@@ -8,6 +8,7 @@
               [app.clients.frontend.lister.lifecycles]
               [app.clients.frontend.lister.subs]
               [app.clients.frontend.lister.views]
+              [app.clients.frontend.picker.subs]
               [app.clients.frontend.preview.subs]
               [app.clients.frontend.selector.effects]
               [app.clients.frontend.selector.subs]

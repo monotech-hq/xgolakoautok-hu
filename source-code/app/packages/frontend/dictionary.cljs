@@ -5,7 +5,7 @@
 ;; ----------------------------------------------------------------------------
 
 ; @constant (map)
-(def BOOK {:automatic-pricing-helper
+(def BOOK {:package-automatic-pricing-helper
            {:en "Adding products' and services' prices"
             :hu "A termékek és szolgáltatások árainak összeadása"}
            :package-count

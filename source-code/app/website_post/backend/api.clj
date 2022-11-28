@@ -3,4 +3,4 @@
     (:require [app.website-post.backend.editor.lifecycles]
               [app.website-post.backend.editor.mutations]
               [app.website-post.backend.editor.resolvers]
-              [app.website-post.backend.handler.mutations]))
+              [app.website-post.backend.installer]))

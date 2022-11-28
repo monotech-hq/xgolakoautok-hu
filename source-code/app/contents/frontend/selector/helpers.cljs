@@ -9,7 +9,7 @@
   ;  {:content/id (string)}
   ;
   ; @example
-  ;  (selector.helpers/import-id-f {:content/id "my-content"})
+  ;  (import-id-f {:content/id "my-content"})
   ;  =>
   ;  "my-content"
   ;
@@ -26,7 +26,7 @@
   ; @param (integer) content-count
   ;
   ; @example
-  ;  (selector.helpers/export-item-f "my-content" 1)
+  ;  (export-item-f "my-content" 1)
   ;  =>
   ;  {:content/id "my-content"}
   ;

@@ -9,39 +9,30 @@
 (defn preview-props-prototype
   ; @param (keyword) picker-id
   ; @param (map) picker-props
-  ;  {:disabled? (boolean)(opt)
-  ;   :multi-select? (boolean)(opt)
-  ;   :placeholder (metamorphic-content)(opt)
-  ;   :sortable? (boolean)(opt)
-  ;   :value-path (vector)}
+  ; @param (namespaced map) product-link
   ;
   ; @return (map)
-  ;  {:disabled? (boolean)
-  ;   :items (namespaced maps in vector)
-  ;   :indent (map)
-  ;   :placeholder (metamorphic-content)
-  ;   :sortable? (boolean)
-  ;   :value-path (vector)}
-  [_ {:keys [disabled? multi-select? placeholder sortable? value-path]}]
-  ; XXX#6071
-  ; A {:multi-select? false} beállítással használt product-selector value-path
-  ; Re-Frame adatbázis útvonalra írt kimenete, egy darab product-link térkép,
-  ; amit szükséges vektorba helyezni a product-preview/element komponensnek
-  ; items paraméterként történő átadása előtt!
-  (let [picked-products @(r/subscribe [:x.db/get-item value-path])]
-       {:disabled?   disabled?
-        :indent      {:top :m}
-        :items       (cond multi-select? picked-products picked-products [picked-products])
-        :placeholder placeholder
-        :sortable?   sortable?
-        :value-path  value-path}))
+  ;  {:item-link (namespaced map)}
+  [_ picker-props product-link]
+  (merge (select-keys picker-props [:disabled? :placeholder])
+         {:item-link product-link}))
 
 (defn picker-props-prototype
   ; @param (keyword) picker-id
   ; @param (map) picker-props
+  ;  {:multi-select? (boolean)(opt)}
   ;
   ; @return (map)
-  ;  {}
-  [_ picker-props]
-  (merge {}
-         (param picker-props)))
+  ;  {:export-filter-f (function)
+  ;   :import-id-f (function)
+  ;   :on-select (metamorphic-event)
+  ;   :toggle-label (metamorphic-content)
+  ;   :transfer-id (keyword)}
+  [_ {:keys [multi-select?] :as picker-props}]
+  (merge {:toggle-label    (if multi-select? :select-products! :select-product!)}
+         (param picker-props)
+         {:export-filter-f (fn [product-id] {:product/id product-id})
+          :import-id-f     :product/id
+          :items-path      [:products :picker/downloaded-items]
+          :on-select       [:products.selector/load-selector! :products.selector picker-props]
+          :transfer-id     :products.lister}))

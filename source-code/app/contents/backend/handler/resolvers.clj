@@ -1,43 +1,38 @@
 
 (ns app.contents.backend.handler.resolvers
-    (:require [app.common.backend.api                :as common]
-              [candy.api                             :refer [return]]
+    (:require [app.contents.backend.handler.helpers  :as handler.helpers]
               [com.wsscode.pathom3.connect.operation :refer [defresolver]]
-              [mongo-db.api                          :as mongo-db]
               [pathom.api                            :as pathom]
-              [x.user.api                         :as x.user]))
+              [x.user.api                            :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn get-content-f
+(defn get-content-body-f
   ; @param (map) env
   ;  {:request (map)}
   ; @param (map) resolver-props
   ;
-  ; @return (namespaced map)
+  ; @return (string)
   [{:keys [request] :as env} _]
-  (let [content-id (pathom/env->param env :content-id)
-        projection (common/get-document-projection :content)]
-       (if-let [{:content/keys [body visibility]} (mongo-db/get-document-by-id "contents" content-id projection)]
-               (case visibility :private (if (x.user/request->authenticated? request)
-                                             (return body))
-                                :public      (return body)))))
+  (if (x.user/request->authenticated? request)
+      (let [content-id (pathom/env->param env :content-id)]
+           (handler.helpers/get-content-body request {:content/id content-id}))))
 
-(defresolver get-content
+(defresolver get-content-body
              ; @param (map) env
              ; @param (map) resolver-props
              ;  {:content-id (string)}
              ;
              ; @return (map)
-             ;  {:contents.handler/get-content (namespaced map)}
+             ;  {:contents.handler/get-content-body (string)}
              [env resolver-props]
-             {:contents.handler/get-content (get-content-f env resolver-props)})
+             {:contents.handler/get-content-body (get-content-body-f env resolver-props)})
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 ; @constant (functions in vector)
-(def HANDLERS [get-content])
+(def HANDLERS [get-content-body])
 
 (pathom/reg-handlers! ::handlers HANDLERS)

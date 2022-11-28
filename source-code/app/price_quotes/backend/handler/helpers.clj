@@ -90,7 +90,7 @@
   ; Az árajánlatokban lehetséges módosítani a verziószámot, ezért mentéskor
   ; szükséges frissíteni a name tulajdonságot, ami tartalmazza az aktuális értékét.
   (let [index (format/leading-zeros index 4)]
-       (str "#"issue-year"/"index"-"version)))
+       (str "#"issue-year"/"index"n/a"version)))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -221,7 +221,7 @@
         template-item       (mongo-db/get-document-by-id "price_quote_templates" (-> price-quote-item :price-quote/template :template/id))
         model-item          (mongo-db/get-document-by-id "models" (-> price-quote-item :price-quote/model :model/id))
         type-item           (mongo-db/get-document-by-id "types"  (-> price-quote-item :price-quote/type  :type/id))
-        product-description (-> model-item :model/product-description string/lowercase)
+        product-description (-> model-item :model/product-description string/to-lowercase)
         body-subtitle       (:template/body-subtitle template-item)]
        (gestures/resolve-variable body-subtitle [[product-description                           "@modell-termek-megnevezese" "@model-product-description"]
                                                  [(:price-quote/vehicle-count price-quote-item) "@jarmu-darabszama"          "@vehicle-count"]

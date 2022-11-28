@@ -4,6 +4,7 @@
               [app.price-quotes.backend.editor.mutations]
               [app.price-quotes.backend.editor.resolvers]
               [app.price-quotes.backend.handler.resolvers]
+              [app.price-quotes.backend.installer]
               [app.price-quotes.backend.lister.lifecycles]
               [app.price-quotes.backend.lister.mutations]
               [app.price-quotes.backend.lister.resolvers]

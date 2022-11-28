@@ -9,7 +9,7 @@
   ;  {:model/id (string)}
   ;
   ; @example
-  ;  (selector.helpers/import-id-f {:model/id "my-model"})
+  ;  (import-id-f {:model/id "my-model"})
   ;  =>
   ;  "my-model"
   ;
@@ -26,7 +26,7 @@
   ; @param (integer) model-count
   ;
   ; @example
-  ;  (selector.helpers/export-item-f "my-model" {...} 1)
+  ;  (export-item-f "my-model" {...} 1)
   ;  =>
   ;  {:model/id "my-model"}
   ;

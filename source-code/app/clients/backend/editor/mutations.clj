@@ -3,7 +3,8 @@
     (:require [app.common.backend.api                :as common]
               [com.wsscode.pathom3.connect.operation :as pathom.co :refer [defmutation]]
               [mongo-db.api                          :as mongo-db]
-              [pathom.api                            :as pathom]))
+              [pathom.api                            :as pathom]
+              [x.user.api                            :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -16,8 +17,9 @@
   ;
   ; @return (namespaced map)
   [{:keys [request]} {:keys [item]}]
-  (let [prepare-f #(common/added-document-prototype request %)]
-       (mongo-db/save-document! "clients" item {:prepare-f prepare-f})))
+  (if (x.user/request->authenticated? request)
+      (let [prepare-f #(common/added-document-prototype request %)]
+           (mongo-db/save-document! "clients" item {:prepare-f prepare-f}))))
 
 (defmutation add-item!
              ; @param (map) env
@@ -42,8 +44,9 @@
   [{:keys [request]} {:keys [item]}]
   ; XXX#7601
   ; A :client/name virtális mezőt szükséges eltávolítani a dokumentumból!
-  (let [prepare-f #(common/updated-document-prototype request %)]
-       (mongo-db/save-document! "clients" (dissoc item :client/name) {:prepare-f prepare-f})))
+  (if (x.user/request->authenticated? request)
+      (let [prepare-f #(common/updated-document-prototype request %)]
+           (mongo-db/save-document! "clients" (dissoc item :client/name) {:prepare-f prepare-f}))))
 
 (defmutation save-item!
              ; @param (map) env

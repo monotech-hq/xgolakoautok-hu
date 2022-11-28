@@ -9,5 +9,8 @@
 (r/reg-event-fx :services.editor/load-editor!
   {:dispatch-n [[:x.gestures/init-view-handler! :services.editor
                                                 {:default-view-id :data}]
-                [:x.ui/render-surface! :services.editor/view
-                                       {:content #'editor.views/view}]]})
+                [:services.editor/render-editor!]]})
+
+(r/reg-event-fx :services.editor/render-editor!
+  [:x.ui/render-surface! :services.editor/view
+                         {:content #'editor.views/view}])

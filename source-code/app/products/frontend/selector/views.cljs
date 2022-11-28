@@ -3,7 +3,6 @@
     (:require [app.common.frontend.api     :as common]
               [app.components.frontend.api :as components]
               [elements.api                :as elements]
-              [engines.item-lister.api     :as item-lister]
               [layouts.popup-a.api         :as popup-a]
               [re-frame.api                :as r]))
 
@@ -11,7 +10,8 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- footer
-  []
+  ; @param (keyword) popup-id
+  [_]
   (let [selected-product-count @(r/subscribe [:item-lister/get-selected-item-count :products.selector])
         on-discard-selection [:item-lister/discard-selection! :products.selector]]
        [common/item-selector-footer :products.selector
@@ -21,49 +21,39 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- product-item-structure
-  [selector-id item-dex {:keys [id item-number modified-at name quantity-unit thumbnail]}]
-  (let [timestamp     @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
-        item-last?    @(r/subscribe [:item-lister/item-last? selector-id item-dex])
-        product-count @(r/subscribe [:item-selector/get-item-count selector-id id])
-        item-number    {:content :item-number-n :replacements [item-number]}
-        item-count     {:content (:value quantity-unit) :replacements [product-count]}]
-       [common/list-item-structure {:cells [[common/selector-item-counter  selector-id item-dex {:item-id id}]
-                                            [components/list-item-thumbnail    {:thumbnail (:media/uri thumbnail)}]
-                                            [components/list-item-cell {:rows [{:content name :placeholder :unnamed-product}
-                                                                               {:content item-number :font-size :xs :color :muted}
-                                                                               {:content item-count  :font-size :xs :color :muted}]
-                                                                        :width :stretch}]
-                                            [common/selector-item-marker   selector-id item-dex {:item-id id}]]
-                                    :separator (if-not item-last? :bottom)}]))
-
-(defn- product-item
-  [selector-id item-dex {:keys [id] :as product-item}]
-  [elements/toggle {:content     [product-item-structure selector-id item-dex product-item]
-                    :hover-color :highlight
-                    :on-click    [:item-selector/item-clicked :products.selector id]}])
+(defn- product-list-item
+  ; @param (keyword) selector-id
+  ; @param (map) selector-props
+  ;  {:countable? (boolean)(opt)}
+  ; @param (integer) item-dex
+  ; @param (map) product-item
+  [selector-id {:keys [countable?]} item-dex {:keys [id item-number name quantity-unit thumbnail]}]
+  (let [product-count @(r/subscribe [:item-selector/get-item-count selector-id id])
+        product-count  {:content (:value quantity-unit) :replacements [product-count]}
+        item-number    {:content :item-number-n :replacements [(or item-number "n/a")]}]
+       [components/item-list-row {:cells [[components/list-item-gap       {:width 12}]
+                                          (if countable? [common/selector-item-counter selector-id item-dex {:item-id id}])
+                                          (if countable? [components/list-item-gap {:width 12}])
+                                          [components/list-item-thumbnail {:thumbnail (:media/uri thumbnail)}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content name :placeholder :unnamed-product}
+                                                                                  {:content item-number :font-size :xs :color :muted}
+                                                                                  (if countable? {:content product-count :font-size :xs :color :muted})]}]
+                                          [components/list-item-gap {:width 6}]
+                                          [common/selector-item-marker selector-id item-dex {:item-id id}]
+                                          [components/list-item-gap {:width 6}]]
+                                  :border (if (not= item-dex 0) :top)}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn- product-list
-  []
-  (let [items @(r/subscribe [:item-lister/get-downloaded-items :products.selector])]
-       [common/item-list :products.selector {:item-element #'product-item :items items}]))
-
-(defn- product-lister
-  []
-  [item-lister/body :products.selector
-                    {:default-order-by :modified-at/descending
-                     :items-path       [:products :selector/downloaded-items]
-                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    [common/item-selector-ghost-element]
-                     :list-element     [product-list]}])
 
 (defn- body
-  []
-  [:<> [elements/horizontal-separator {:size :xs}]
-       [product-lister]])
+  ; @param (keyword) popup-id
+  [_]
+  [:<> [elements/horizontal-separator {:height :xs}]
+       [common/item-selector-body :products.selector
+                                  {:items-path        [:products :selector/downloaded-items]
+                                   :list-item-element #'product-list-item}]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -72,30 +62,28 @@
   []
   (let [selector-disabled? @(r/subscribe [:item-lister/lister-disabled? :products.selector])]
        [common/item-selector-control-bar :products.selector
-                                         {:disabled?        selector-disabled?
-                                          :order-by-options [:modified-at/ascending :modified-at/descending :name/ascending :name/descending]
+                                         {:disabled?                selector-disabled?
                                           :search-field-placeholder :search-in-products
-                                          :search-keys      [:item-number :name]}]))
+                                          :search-keys              [:item-number :name]}]))
 
 (defn- label-bar
   []
   (let [multi-select? @(r/subscribe [:item-lister/get-meta-item :products.selector :multi-select?])]
-       [components/popup-label-bar :products.selector/view
-                                   {:primary-button   {:label :save!   :on-click [:item-selector/save-selection! :products.selector]}
-                                    :secondary-button {:label :cancel! :on-click [:x.ui/remove-popup! :products.selector/view]}
-                                    :label            (if multi-select? :select-products! :select-product!)}]))
+       [common/item-selector-label-bar :products.selector
+                                       {:label    (if multi-select? :select-products! :select-product!)
+                                        :on-close [:x.ui/remove-popup! :products.selector/view]}]))
 
 (defn- header
-  []
+  ; @param (keyword) popup-id
+  [_]
   [:<> [label-bar]
-       (if-let [first-data-received? @(r/subscribe [:item-lister/first-data-received? :products.selector])]
-               [control-bar]
-               [elements/horizontal-separator {:size :xxl}])])
+       [control-bar]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn view
+  ; @param (keyword) popup-id
   [popup-id]
   [popup-a/layout popup-id
                   {:footer              #'footer

@@ -12,7 +12,7 @@
   ; @param (string) media-link
   ;
   ; @example
-  ;  (media-selector.helpers/import-id-f {:id "my-media" :uri "/.../my-media.txt"})
+  ;  (import-id-f {:id "my-media" :uri "/.../my-media.txt"})
   ;  =>
   ;  "my-media"
   ;
@@ -33,7 +33,7 @@
   ; @param (string) media-count
   ;
   ; @example
-  ;  (media-selector.helpers/export-item-f "my-media" {...} 1)
+  ;  (export-item-f "my-media" {...} 1)
   ;  =>
   ;  "/.../my-media.txt"
   ;

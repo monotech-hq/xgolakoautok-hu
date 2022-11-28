@@ -92,22 +92,22 @@
 
 (defn body
   [_]
-  [:<> [elements/horizontal-separator {:size :s}]
+  [:<> [elements/horizontal-separator {:height :s}]
        [user-profile-picture-block]
-       [elements/horizontal-separator {:size :s}]
+       [elements/horizontal-separator {:height :s}]
        [elements/horizontal-line      {:color :highlight}]
-       [elements/horizontal-separator {:size :l}]
+       [elements/horizontal-separator {:height :l}]
       [:div {:style {:width "100%"}}
        [user-name]
-       [elements/horizontal-separator {:size :l}]
+       [elements/horizontal-separator {:height :l}]
        [user-email-address]
-       [elements/horizontal-separator {:size :l}]
+       [elements/horizontal-separator {:height :l}]
        [user-phone-number]
-       [elements/horizontal-separator {:size :l}]
+       [elements/horizontal-separator {:height :l}]
        [user-password]
-       [elements/horizontal-separator {:size :l}]
+       [elements/horizontal-separator {:height :l}]
        [user-pin]
-       [elements/horizontal-separator {:size :l}]
+       [elements/horizontal-separator {:height :l}]
        [elements/button ::delete-user-account-button
                         {:label :delete-user-account!
                          :preset :secondary-button}]

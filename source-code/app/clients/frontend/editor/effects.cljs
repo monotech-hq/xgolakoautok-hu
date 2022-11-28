@@ -7,10 +7,10 @@
 ;; ----------------------------------------------------------------------------
 
 (r/reg-event-fx :clients.editor/load-editor!
-  [:clients.editor/render-editor!])
-
-(r/reg-event-fx :clients.editor/render-editor!
   {:dispatch-n [[:x.gestures/init-view-handler! :clients.editor
                                                 {:default-view-id :data}]
-                [:x.ui/render-surface! :clients.editor/view
-                                       {:content #'editor.views/view}]]})
+                [:clients.editor/render-editor!]]})
+
+(r/reg-event-fx :clients.editor/render-editor!
+  [:x.ui/render-surface! :clients.editor/view
+                         {:content #'editor.views/view}])

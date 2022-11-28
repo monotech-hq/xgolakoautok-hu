@@ -18,5 +18,5 @@
                                                        {:client-event   [:vehicle-categories.viewer/load-viewer! :models]
                                                         :js-build       :app
                                                         :restricted?    true
-                                                        :route-parent   "/@app-home/vehicle-categories"
+                                                        :parent-route   "/@app-home/vehicle-categories"
                                                         :route-template "/@app-home/vehicle-categories/:item-id/models"}]]}})

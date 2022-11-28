@@ -4,22 +4,25 @@
               [com.wsscode.pathom3.connect.operation    :refer [defresolver]]
               [pathom.api                               :as pathom]
               [templates.price-quotes.blank.api         :as blank]
-              [tools.pdf-generator.api                  :as pdf-generator]))
+              [tools.hiccuptopdf.api                    :as hiccuptopdf]
+              [x.user.api                               :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn download-pdf-f
   ; @param (map) env
+  ;  {:request (map)}
   ; @param (map) resolver-props
   ;
   ; @return (string)
-  [env _]
-  (let [page-props     (handler.helpers/env->page-props     env)
-        template-props (handler.helpers/env->template-props env)
-        template       (blank/template template-props)]
-       (try (pdf-generator/generate-base64-pdf! template page-props)
-            (catch Exception e (println e)))))
+  [{:keys [request] :as env} _]
+  (if (x.user/request->authenticated? request)
+      (let [page-props     (handler.helpers/env->page-props     env)
+            template-props (handler.helpers/env->template-props env)
+            template       (blank/template template-props)]
+           (try (hiccuptopdf/generate-base64-pdf! template page-props)
+                (catch Exception e (println e))))))
 
 (defresolver download-pdf
              ; @param (map) env

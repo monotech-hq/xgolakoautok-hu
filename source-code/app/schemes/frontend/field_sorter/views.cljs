@@ -7,7 +7,7 @@
               [re-frame.api            :as r]
               [vector.api              :as vector]
 
-              ; TEMP
+              ; TEMP#0880 (source-code/app/common/frontend/item_lister/views.cljs)
               [plugins.dnd-kit.api :as dnd-kit]))
 
 ;; ----------------------------------------------------------------------------
@@ -55,8 +55,8 @@
                           {:items            scheme-fields
                            :item-id-f        :field/field-id
                            :item-element     [field-sorter-item scheme-id]
-                           :on-order-changed (fn [_ _ %] (r/dispatch-sync [:schemes.field-sorter/reorder-fields! scheme-id %]))}]
-            [elements/horizontal-separator {:size :s}]]))
+                           :on-order-changed (fn [_ _ %3] (r/dispatch-sync [:schemes.field-sorter/reorder-fields! scheme-id %3]))}]
+            [elements/horizontal-separator {:height :s}]]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

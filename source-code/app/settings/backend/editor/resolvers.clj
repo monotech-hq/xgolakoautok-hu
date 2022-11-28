@@ -4,7 +4,7 @@
               [com.wsscode.pathom3.connect.operation :refer [defresolver]]
               [mongo-db.api                          :as mongo-db]
               [pathom.api                            :as pathom]
-              [x.user.api                         :as x.user]))
+              [x.user.api                            :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -16,9 +16,8 @@
   ;
   ; @return (namespaced map)
   [{:keys [request]} _]
-  (let [user-account-id (x.user/request->user-account-id request)
-        projection      (common/get-document-projection :user-settings)]
-       (mongo-db/get-document-by-id "user_settings" user-account-id projection)))
+  (let [user-account-id (x.user/request->user-account-id request)]
+       (mongo-db/get-document-by-id "user_settings" user-account-id)))
 
 (defresolver get-item
              ; @param (map) env

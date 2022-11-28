@@ -3,7 +3,6 @@
     (:require [app.common.frontend.api     :as common]
               [app.components.frontend.api :as components]
               [elements.api                :as elements]
-              [engines.item-lister.api     :as item-lister]
               [layouts.surface-a.api       :as surface-a]
               [re-frame.api                :as r]))
 
@@ -12,122 +11,88 @@
 
 (defn- footer
   []
-  (if-let [first-data-received? @(r/subscribe [:item-lister/first-data-received? :services.lister])]
-          [common/item-lister-download-info :services.lister {}]))
+  [common/item-lister-footer :services.lister {}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- service-item-structure
-  [lister-id item-dex {:keys [item-number modified-at name]}]
-  (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
-        item-last? @(r/subscribe [:item-lister/item-last? lister-id item-dex])]
-       [common/list-item-structure {:cells [[ {:icon :workspace_premium}]
-                                            [common/list-item-label     {:content name :stretch? true :placeholder :unnamed-service}]
-                                            [common/list-item-detail    {:content item-number :width "160px"}]
-                                            [common/list-item-detail    {:content timestamp :width "160px"}]
-                                            [components/list-item-marker    {:icon :navigate_next}]]
-                                    :separator (if-not item-last? :bottom)}]))
-
-(defn- service-item
-  [lister-id item-dex {:keys [id] :as service-item}]
-  [elements/toggle {:content     [service-item-structure lister-id item-dex service-item]
-                    :hover-color :highlight
-                    :on-click    [:x.router/go-to! (str "/@app-home/services/"id)]}])
+(defn- service-list-item
+  ; @param (keyword) lister-id
+  ; @param (map) body-props
+  ; @param (integer) item-dex
+  ; @param (map) service-item
+  [_ _ item-dex {:keys [id item-number modified-at name thumbnail]}]
+  (let [timestamp @(r/subscribe [:x.activities/get-actual-timestamp modified-at])]
+       [components/item-list-row {:cells [[components/list-item-gap       {:width 12}]
+                                          [components/list-item-thumbnail {:thumbnail (:media/uri thumbnail)}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content name :placeholder :unnamed-service}]}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content item-number :copyable? true :font-size :xs :color :muted}] :width 100}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content timestamp :font-size :xs :color :muted}] :width 100}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-button    {:label :open! :width 100 :on-click [:x.router/go-to! (str "/@app-home/services/"id)]}]
+                                          [components/list-item-gap       {:width 12}]]
+                                  :border (if (not= item-dex 0) :top)}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- service-list
+(defn- service-list-header
   []
-  (let [items @(r/subscribe [:item-lister/get-downloaded-items :services.lister])]
-       [common/item-list :services.lister {:item-element #'service-item :items items}]))
+  (let [current-order-by @(r/subscribe [:item-lister/get-current-order-by :services.lister])]
+       [components/item-list-header ::service-list-header
+                                    {:cells [{:width 12}
+                                             {:width 84}
+                                             {:width 12}
+                                             {:label :name :order-by-key :name
+                                              :on-click [:item-lister/order-items! :services.lister :name]}
+                                             {:width 12}
+                                             {:label :item-number :width 100 :order-by-key :item-number
+                                              :on-click [:item-lister/order-items! :services.lister :item-number]}
+                                             {:width 12}
+                                             {:label :modified :width 100 :order-by-key :modified-at
+                                              :on-click [:item-lister/order-items! :services.lister :modified-at]}
+                                             {:width 12}
+                                             {:width 100}
+                                             {:width 12}]
+                                     :border :bottom
+                                     :order-by current-order-by}]))
 
-(defn- service-lister-body
+(defn- service-lister
   []
-  [item-lister/body :services.lister
-                    {:default-order-by :modified-at/descending
-                     :items-path       [:services :lister/downloaded-items]
-                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    [common/item-lister-ghost-element]
-                     :list-element     [service-list]}])
-
-(defn- service-lister-header
-  []
-  [common/item-lister-header :services.lister
-                             {:cells [[common/item-lister-header-spacer :services.lister {:width "108px"}]
-                                      [common/item-lister-header-cell   :services.lister {:label :name          :order-by-key :name :stretch? true}]
-                                      [common/item-lister-header-cell   :products.lister {:label :item-number   :order-by-key :item-number :width "160px"}]
-                                      [common/item-lister-header-cell   :services.lister {:label :last-modified :order-by-key :modified-at :width "160px"}]
-                                      [common/item-lister-header-spacer :services.lister {:width "36px"}]]}])
+  [common/item-lister-body :services.lister
+                           {:list-item-element #'service-list-item
+                            :item-list-header  #'service-list-header
+                            :items-path        [:services :lister/downloaded-items]}])
 
 (defn- body
   []
-  [common/item-lister-wrapper :services.lister
-                              {:body   #'service-lister-body
-                               :header #'service-lister-header}])
+  [components/surface-box ::body
+                          {:content [:<> [service-lister]
+                                         [elements/horizontal-separator {:height :xxs}]]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn create-item-button
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :services.lister])
-        create-service-uri (str "/@app-home/services/create")]
-       [common/item-lister-create-item-button :services.lister
-                                              {:disabled?       lister-disabled?
-                                               :create-item-uri create-service-uri}]))
-
-(defn- search-field
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :services.lister])]
-       [common/item-lister-search-field :services.lister
-                                        {:disabled?   lister-disabled?
-                                         :placeholder :search-in-services
-                                         :search-keys [:item-number :name]}]))
-
-(defn- search-description
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :services.lister])]
-       [common/item-lister-search-description :services.lister
-                                              {:disabled? lister-disabled?}]))
-
-(defn- breadcrumbs
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :services.lister])]
-       [components/surface-breadcrumbs ::breadcrumbs
-                                       {:crumbs [{:label :app-home :route "/@app-home"}
-                                                 {:label :services}]
-                                        :disabled? lister-disabled?}]))
-
-(defn- label
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :services.lister])]
-       [components/surface-label ::label
-                                 {:disabled? lister-disabled?
-                                  :label     :services}]))
 
 (defn- header
   []
-  (if-let [first-data-received? @(r/subscribe [:item-lister/first-data-received? :services.lister])]
-          [:<> [:div {:style {:display "flex" :justify-content "space-between" :flex-wrap "wrap" :grid-row-gap "24px"}}
-                     [:div [label]
-                           [breadcrumbs]]
-                     [:div [create-item-button]]]
-               [search-field]
-               [search-description]]
-          [common/item-lister-ghost-header :services.lister {}]))
+  [common/item-lister-header :services.lister
+                             {:crumbs    [{:label :app-home :route "/@app-home"}
+                                          {:label :services}]
+                              :on-create [:x.router/go-to! "/@app-home/services/create"]
+                              :on-search [:item-lister/search-items! :services.lister {:search-keys [:item-number :name]}]
+                              :search-placeholder :search-in-services
+                              :label              :services}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn- view-structure
-  []
-  [:<> [header]
-       [body]
-       [footer]])
 
 (defn view
+  ; @param (keyword) surface-id
   [surface-id]
   [surface-a/layout surface-id
-                    {:content #'view-structure}])
+                    {:content [:<> [header]
+                                   [body]
+                                   [footer]]}])

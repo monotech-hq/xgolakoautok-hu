@@ -13,36 +13,24 @@
   ;   :icon-family (keyword)(opt)
   ;   :thumbnail (string)(opt)}
   [_ {:keys [icon icon-family thumbnail]}]
-  (cond icon-family [elements/icon      {:icon icon :icon-family icon-family :indent {:horizontal :m :vertical :xl}}]
-        icon        [elements/icon      {:icon icon                          :indent {:horizontal :m :vertical :xl}}]
-        thumbnail   [elements/thumbnail {:border-radius :s :height :s :indent {:horizontal :xxs :vertical :xs} :uri thumbnail :width :l}]
-        :return     [elements/thumbnail {:border-radius :s :height :s :indent {:horizontal :xxs :vertical :xs}                :width :l}]))
+  (cond icon-family      [:div {:style {:padding "24px 30px"}} [elements/icon {:icon icon :icon-family icon-family}]]
+        icon             [:div {:style {:padding "24px 30px"}} [elements/icon {:icon icon}]]
+        thumbnail        [elements/thumbnail {:border-radius :s :height :s :indent {:horizontal :xxs} :uri thumbnail :width :l}]
+        :empty-thumbnail [elements/thumbnail {:border-radius :s :height :s :indent {:horizontal :xxs}                :width :l}]))
 
 (defn- list-item-thumbnail
   ; @param (keyword) thumbnail-id
   ; @param (map) thumbnail-props
-  ;  {:class (keyword or keywords in vector)(opt)
-  ;   :disabled? (boolean)(opt)
-  ;   :indent (map)(opt)
-  ;   :style (map)(opt)}
-  [thumbnail-id {:keys [class disabled? indent style] :as thumbnail-props}]
-  [elements/blank thumbnail-id
-                  {:class     class
-                   :disabled? disabled?
-                   :indent    indent
-                   :content   [list-item-thumbnail-body thumbnail-id thumbnail-props]
-                   :style     style}])
+  [thumbnail-id thumbnail-props]
+  ; BUG#0781 (source-code/app/components/frontend/item_list_table/views.cljs)
+  [:td {:style {:width "84px"}}
+       [list-item-thumbnail-body thumbnail-id thumbnail-props]])
 
 (defn component
   ; @param (keyword)(opt) thumbnail-id
   ; @param (map) thumbnail-props
-  ;  {:class (keyword or keywords in vector)(opt)
-  ;   :disabled? (boolean)(opt)
-  ;    Default: false
-  ;   :icon (keyword)(opt)
+  ;  {:icon (keyword)(opt)
   ;   :icon-family (keyword)(opt)
-  ;   :indent (map)(opt)
-  ;   :style (map)(opt)}
   ;   :thumbnail (string)(opt)}
   ;
   ; @usage

@@ -4,29 +4,33 @@
               [candy.api                             :refer [return]]
               [com.wsscode.pathom3.connect.operation :as pathom.co :refer [defmutation]]
               [mongo-db.api                          :as mongo-db]
-              [pathom.api                            :as pathom]))
+              [pathom.api                            :as pathom]
+              [x.user.api                            :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn create-directory-f
   ; @param (map) env
+  ;  {:request (map)}
+  ;  {:request (map)}
   ; @param (map) mutation-props
   ;  {:alias (string)
   ;   :destination-id (string)}
   ;
   ; @return (namespaced map)
-  [env {:keys [alias destination-id]}]
-  (if-let [destination-item (mongo-db/get-document-by-id "storage" destination-id)]
-          (let [destination-path (get  destination-item :media/path [])
-                directory-path   (conj destination-path {:media/id destination-id})
-                directory-item {:media/alias alias :media/size 0 :media/description ""
-                                :media/items []    :media/path directory-path
-                                :media/mime-type "storage/directory"}]
-               (when-let [directory-item (core.side-effects/insert-item! env directory-item)]
-                         (core.side-effects/attach-item!             env destination-id directory-item)
-                         (core.side-effects/update-path-directories! env directory-item +)
-                         (return directory-item)))))
+  [{:keys [request] :as env} {:keys [alias destination-id]}]
+  (if (x.user/request->authenticated? request)
+      (if-let [destination-item (mongo-db/get-document-by-id "storage" destination-id)]
+              (let [destination-path (get  destination-item :media/path [])
+                    directory-path   (conj destination-path {:media/id destination-id})
+                    directory-item {:media/alias alias :media/size 0 :media/description ""
+                                    :media/items []    :media/path directory-path
+                                    :media/mime-type "storage/directory"}]
+                   (when-let [directory-item (core.side-effects/insert-item! env directory-item)]
+                             (core.side-effects/attach-item!             env destination-id directory-item)
+                             (core.side-effects/update-path-directories! env directory-item +)
+                             (return directory-item))))))
 
 (defmutation create-directory!
              ; @param (map) env

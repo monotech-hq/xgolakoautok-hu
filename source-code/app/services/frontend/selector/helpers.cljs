@@ -9,7 +9,7 @@
   ;  {:service/count (integer)}
   ;
   ; @example
-  ;  (selector.helpers/import-count-f {:service/count 3 :service/id "my-service"})
+  ;  (import-count-f {:service/count 3 :service/id "my-service"})
   ;  =>
   ;  3
   ;
@@ -22,7 +22,7 @@
   ;  {:service/id (string)}
   ;
   ; @example
-  ;  (selector.helpers/import-id-f {:service/count 3 :service/id "my-service"})
+  ;  (import-id-f {:service/count 3 :service/id "my-service"})
   ;  =>
   ;  "my-service"
   ;
@@ -39,7 +39,7 @@
   ; @param (integer) service-count
   ;
   ; @example
-  ;  (selector.helpers/export-item-f "my-service" {...} 1)
+  ;  (export-item-f "my-service" {...} 1)
   ;  =>
   ;  {:service/id "my-service" :service/count 1}
   ;

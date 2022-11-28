@@ -3,7 +3,6 @@
     (:require [app.common.frontend.api     :as common]
               [app.components.frontend.api :as components]
               [elements.api                :as elements]
-              [engines.item-lister.api     :as item-lister]
               [keyword.api                 :as keyword]
               [layouts.surface-a.api       :as surface-a]
               [re-frame.api                :as r]))
@@ -13,127 +12,90 @@
 
 (defn- footer
   []
-  (if-let [first-data-received? @(r/subscribe [:item-lister/first-data-received? :clients.lister])]
-          [common/item-lister-download-info :clients.lister {}]))
+  [common/item-lister-footer :clients.lister {}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- client-item-structure
-  [lister-id item-dex {:keys [colors email-address id modified-at phone-number]}]
+(defn- client-list-item
+  ; @param (keyword) lister-id
+  ; @param (map) body-props
+  ; @param (integer) item-dex
+  ; @param (map) client-item
+  [_ _ item-dex {:keys [colors first-name last-name email-address id modified-at phone-number]}]
   (let [timestamp   @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
-        item-last?  @(r/subscribe [:item-lister/item-last? lister-id item-dex])
         client-name @(r/subscribe [:clients.lister/get-client-name item-dex])]
-       [common/list-item-structure {:cells [[elements/color-marker       {:colors colors :indent {:left :xs :right :m :horizontal :xs} :size :m}]
-                                            [components/list-item-cell   {:rows [{:content client-name   :placeholder :unnamed-client}] :width :stretch}]
-                                            [components/list-item-cell   {:rows [{:content email-address :font-size :xs :color :muted}] :width "240px"}]
-                                            [components/list-item-cell   {:rows [{:content phone-number  :font-size :xs :color :muted}] :width "240px"}]
-                                            [components/list-item-cell   {:rows [{:content timestamp     :font-size :xs :color :muted}] :width "160px"}]
-                                            [components/list-item-marker {:icon :navigate_next}]]
-                                    :separator (if-not item-last? :bottom)}]))
-
-(defn- client-item
-  [lister-id item-dex {:keys [id] :as client-item}]
-  [elements/toggle {:content     [client-item-structure lister-id item-dex client-item]
-                    :hover-color :highlight
-                    :on-click    [:x.router/go-to! (str "/@app-home/clients/"id)]}])
+       [components/item-list-row {:cells [[components/list-item-avatar {:colors colors :first-name first-name :last-name last-name :size 42}]
+                                          [components/list-item-cell   {:rows [{:content client-name :placeholder :unnamed-client}]}]
+                                          [components/list-item-gap    {:width 12}]
+                                          [components/list-item-cell   {:rows [{:content email-address :copyable? true :font-size :xs :color :muted}] :width 160}]
+                                          [components/list-item-gap    {:width 12}]
+                                          [components/list-item-cell   {:rows [{:content phone-number :copyable? true :font-size :xs :color :muted}] :width 160}]
+                                          [components/list-item-gap    {:width 12}]
+                                          [components/list-item-cell   {:rows [{:content timestamp :font-size :xs :color :muted}] :width 100}]
+                                          [components/list-item-gap    {:width 12}]
+                                          [components/list-item-button {:label :open! :width 100 :on-click [:x.router/go-to! (str "/@app-home/clients/"id)]}]
+                                          [components/list-item-gap    {:width 12}]]
+                                  :border (if (not= item-dex 0) :top)}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- client-list
+(defn- client-list-header
   []
-  (let [items @(r/subscribe [:item-lister/get-downloaded-items :clients.lister])]
-       [common/item-list :clients.lister {:item-element #'client-item :items items}]))
+  (let [current-order-by @(r/subscribe [:item-lister/get-current-order-by :clients.lister])]
+       [components/item-list-header ::client-list-header
+                                    {:cells [{:width 78}
+                                             {:label :name :order-by-key :name
+                                              :on-click [:item-lister/order-items! :clients.lister :name]}
+                                             {:width 12}
+                                             {:label :email-address :width 160 :order-by-key :email-address
+                                              :on-click [:item-lister/order-items! :clients.lister :email-address]}
+                                             {:width 12}
+                                             {:label :phone-number :width 160 :order-by-key :phone-number
+                                              :on-click [:item-lister/order-items! :clients.lister :phone-number]}
+                                             {:width 12}
+                                             {:label :modified :width 100 :order-by-key :modified-at
+                                              :on-click [:item-lister/order-items! :clients.lister :modified-at]}
+                                             {:width 12}
+                                             {:width 100}
+                                             {:width 12}]
+                                     :border :bottom
+                                     :order-by current-order-by}]))
 
-(defn- client-lister-body
+(defn- client-lister
   []
-  [item-lister/body :clients.lister
-                    {:default-order-by :modified-at/descending
-                     :items-path       [:clients :lister/downloaded-items]
-                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    [common/item-lister-ghost-element]
-                     :list-element     [client-list]}])
-
-(defn- client-lister-header
-  []
-  [common/item-lister-header :clients.lister
-                             {:cells [[common/item-lister-header-spacer :clients.lister {:width "42px"}]
-                                      [common/item-lister-header-cell   :clients.lister {:label :name          :order-by-key :name          :stretch? true}]
-                                      [common/item-lister-header-cell   :clients.lister {:label :email-address :order-by-key :email-address :width "240px"}]
-                                      [common/item-lister-header-cell   :clients.lister {:label :phone-number  :order-by-key :phone-number  :width "240px"}]
-                                      [common/item-lister-header-cell   :clients.lister {:label :last-modified :order-by-key :modified-at   :width "160px"}]
-                                      [common/item-lister-header-spacer :clients.lister {:width "36px"}]]}])
+  [common/item-lister-body :clients.lister
+                           {:list-item-element #'client-list-item
+                            :item-list-header  #'client-list-header
+                            :items-path        [:clients :lister/downloaded-items]}])
 
 (defn- body
   []
-  [common/item-lister-wrapper :clients.lister
-                              {:body   #'client-lister-body
-                               :header #'client-lister-header}])
+  [components/surface-box ::body
+                          {:content [:<> [client-lister]
+                                         [elements/horizontal-separator {:height :xxs}]]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn create-item-button
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :clients.lister])
-        create-client-uri (str "/@app-home/clients/create")]
-       [common/item-lister-create-item-button :clients.lister
-                                              {:disabled?       lister-disabled?
-                                               :create-item-uri create-client-uri}]))
-
-(defn- search-field
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :clients.lister])]
-       [common/item-lister-search-field :clients.lister
-                                        {:disabled?   lister-disabled?
-                                         :placeholder :search-in-clients
-                                         :search-keys [:name :email-address :phone-number]}]))
-
-(defn- search-description
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :clients.lister])]
-       [common/item-lister-search-description :clients.lister
-                                              {:disabled? lister-disabled?}]))
-
-(defn- breadcrumbs
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :clients.lister])]
-       [components/surface-breadcrumbs ::breadcrumbs
-                                       {:crumbs [{:label :app-home :route "/@app-home"}
-                                                 {:label :clients}]
-                                        :disabled? lister-disabled?}]))
-
-(defn- label
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :clients.lister])]
-       [components/surface-label ::label
-                                 {:disabled? lister-disabled?
-                                  :label     :clients}]))
 
 (defn- header
   []
-  (if-let [first-data-received? @(r/subscribe [:item-lister/first-data-received? :clients.lister])]
-          [:<> [:div {:style {:display "flex" :justify-content "space-between" :flex-wrap "wrap" :grid-row-gap "24px"}}
-                     [:div [label]
-                           [breadcrumbs]]
-                     [:div [create-item-button]]]
-               [search-field]
-               [search-description]]
-          [common/item-lister-ghost-header :clients.lister {}]))
+  [common/item-lister-header :clients.lister
+                             {:crumbs    [{:label :app-home :route "/@app-home"}
+                                          {:label :clients}]
+                              :on-create [:x.router/go-to! "/@app-home/clients/create"]
+                              :on-search [:item-lister/search-items! :clients.lister {:search-keys [:email-address :name :phone-number]}]
+                              :search-placeholder :search-in-clients
+                              :label              :clients}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn- view-structure
-  ; @param (keyword) surface-id
-  [_]
-  [:<> [header]
-       [body]
-       [footer]])
 
 (defn view
   ; @param (keyword) surface-id
   [surface-id]
   [surface-a/layout surface-id
-                    {:content #'view-structure}])
+                    {:content [:<> [header]
+                                   [body]
+                                   [footer]]}])

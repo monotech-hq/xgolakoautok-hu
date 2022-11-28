@@ -3,7 +3,8 @@
     (:require [app.schemes.backend.form-handler.side-effects :as form-handler.side-effects]
               [com.wsscode.pathom3.connect.operation         :as pathom.co :refer [defmutation]]
               [mongo-db.api                                  :as mongo-db]
-              [pathom.api                                    :as pathom]))
+              [pathom.api                                    :as pathom]
+              [x.user.api                                    :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -15,9 +16,10 @@
       ;  {:reordered-fields (namespaced maps in vector)
       ;   :scheme-id (keyword)}
       [{:keys [request]} {:keys [reordered-fields scheme-id]}]
-      (if-let [scheme-item (mongo-db/get-document-by-query "schemes" {:scheme/scheme-id scheme-id})]
-              (let [updated-scheme (assoc scheme-item :scheme/fields reordered-fields)]
-                   (form-handler.side-effects/save-form! request scheme-id updated-scheme))))
+      (if (x.user/request->authenticated? request)
+          (if-let [scheme-item (mongo-db/get-document-by-query "schemes" {:scheme/scheme-id scheme-id})]
+                  (let [updated-scheme (assoc scheme-item :scheme/fields reordered-fields)]
+                       (form-handler.side-effects/save-form! request scheme-id updated-scheme)))))
 
 (defmutation reorder-fields!
              ; @param (map) env

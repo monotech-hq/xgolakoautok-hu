@@ -3,141 +3,95 @@
     (:require [app.common.frontend.api     :as common]
               [app.components.frontend.api :as components]
               [elements.api                :as elements]
-              [engines.item-lister.api     :as item-lister]
               [layouts.surface-a.api       :as surface-a]
-              [re-frame.api                :as r]
-
-              ; TEMP
-              [plugins.dnd-kit.api :as dnd-kit]))
+              [re-frame.api                :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn- footer
   []
-  (if-let [first-data-received? @(r/subscribe [:item-lister/first-data-received? :rental-vehicles.lister])]
-          [common/item-lister-download-info :rental-vehicles.lister {}]))
+  [common/item-lister-footer :rental-vehicles.lister {}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- vehicle-item-structure
-  [item-dex {:keys [modified-at name thumbnail]} {:keys [handle-attributes] :as drag-props}]
-  (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
-        item-last? @(r/subscribe [:item-lister/item-last? :rental-vehicles.lister item-dex])]
-       [common/list-item-structure {:cells [[components/list-item-drag-handle {:indent {:left :xs} :drag-attributes handle-attributes}]
-                                            [    {:thumbnail (:media/uri thumbnail)}]
-                                            [common/list-item-primary-cell {:label name :stretch? true :placeholder :unnamed-vehicle}]
-                                            [common/list-item-detail       {:content timestamp :width "160px"}]
-                                            [components/list-item-marker       {:icon :navigate_next}]]
-                                    :separator (if-not item-last? :bottom)}]))
-
-(defn vehicle-item
-  [item-dex {:keys [id] :as item} {:keys [dragging? item-attributes] :as drag-props}]
-  [:div item-attributes
-        [elements/toggle {:background-color (if dragging? :highlight)
-                          :content          [vehicle-item-structure item-dex item drag-props]
-                          :hover-color      :highlight
-                          :on-click         [:x.router/go-to! (str "/@app-home/rental-vehicles/"id)]}]])
+(defn- vehicle-list-item
+  ; @param (keyword) lister-id
+  ; @param (map) body-props
+  ; @param (integer) item-dex
+  ; @param (map) vehicle-item
+  [_ _ item-dex {:keys [id modified-at name thumbnail]} {:keys [handle-attributes item-attributes]}]
+  (let [timestamp @(r/subscribe [:x.activities/get-actual-timestamp modified-at])]
+       [components/item-list-row {:cells [[components/list-item-gap         {:width 12}]
+                                          [components/list-item-drag-handle {:indent {:left :xs} :drag-attributes handle-attributes}]
+                                          [components/list-item-gap         {:width 12}]
+                                          [components/list-item-thumbnail   {:thumbnail (:media/uri thumbnail)}]
+                                          [components/list-item-gap         {:width 12}]
+                                          [components/list-item-cell        {:rows [{:content name :placeholder :unnamed-rental-vehicle}]}]
+                                          [components/list-item-gap         {:width 12}]
+                                          [components/list-item-cell        {:rows [{:content timestamp :font-size :xs :color :muted}] :width 100}]
+                                          [components/list-item-gap         {:width 12}]
+                                          [components/list-item-button      {:label :open! :width 100 :on-click [:x.router/go-to! (str "/@app-home/rental-vehicles/"id)]}]
+                                          [components/list-item-gap         {:width 12}]]
+                                  :border (if (not= item-dex 0) :top)
+                                  :drag-attributes item-attributes}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- vehicle-list
+(defn- vehicle-list-header
   []
-  (let [items @(r/subscribe [:item-lister/get-downloaded-items :rental-vehicles.lister])]
-       [dnd-kit/body :rental-vehicles.lister
-                     {:items            items
-                      :item-id-f        :id
-                      :item-element     #'vehicle-item
-                      :on-order-changed (fn [_ _ %] (r/dispatch-sync [:item-lister/reorder-items! :rental-vehicles.lister %]))}]))
+  [components/item-list-header ::vehicle-list-header
+                               {:cells [{:width 12}
+                                        {:width 24}
+                                        {:width 12}
+                                        {:width 84}
+                                        {:width 12}
+                                        {:label :name}
+                                        {:width 12}
+                                        {:label :modified :width 100}
+                                        {:width 12}
+                                        {:width 100}
+                                        {:width 12}]
+                                :border :bottom}])
 
-(defn- vehicle-lister-body
+(defn- vehicle-lister
   []
-  [item-lister/body :rental-vehicles.lister
-                    {:default-order-by :order/ascending
-                     :order-key        :order
-                     :items-path       [:rental-vehicles :lister/downloaded-items]
-                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    [common/item-lister-ghost-element]
-                     :list-element     [vehicle-list]}])
-
-(defn- vehicle-lister-header
-  []
-  [common/item-lister-header :rental-vehicles.lister
-                             {:cells [[common/item-lister-header-spacer :rental-vehicles.lister {:width "144px"}]
-                                      [common/item-lister-header-cell   :rental-vehicles.lister {:label :name :stretch? true}]
-                                      [common/item-lister-header-cell   :rental-vehicles.lister {:label :last-modified :width "160px"}]
-                                      [common/item-lister-header-spacer :rental-vehicles.lister
-                                                                        {:width "36px"}]]}])
+  [common/item-lister-body :rental-vehicles.lister
+                           {:default-order-by  :order/ascending
+                            :list-item-element #'vehicle-list-item
+                            :item-list-header  #'vehicle-list-header
+                            :items-path        [:rental-vehicles :lister/downloaded-items]
+                            :on-order-changed  [:item-lister/reorder-items! :rental-vehicles.lister]
+                            :sortable?         true}])
 
 (defn- body
   []
-  [common/item-lister-wrapper :rental-vehicles.lister
-                              {:body   #'vehicle-lister-body
-                               :header #'vehicle-lister-header}])
+  [components/surface-box ::body
+                          {:content [:<> [vehicle-lister]
+                                         [elements/horizontal-separator {:height :xxs}]]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn create-item-button
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :rental-vehicles.lister])
-        create-vehicle-uri (str "/@app-home/rental-vehicles/create")]
-       [common/item-lister-create-item-button :rental-vehicles.lister
-                                              {:disabled?       lister-disabled?
-                                               :create-item-uri create-vehicle-uri}]))
-
-(defn- search-field
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :rental-vehicles.lister])]
-       [common/item-lister-search-field :rental-vehicles.lister
-                                        {:disabled?   lister-disabled?
-                                         :placeholder :search-in-rental-vehicles
-                                         :search-keys [:name]}]))
-
-(defn- search-description
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :rental-vehicles.lister])]
-       [common/item-lister-search-description :rental-vehicles.lister
-                                              {:disabled? lister-disabled?}]))
-
-(defn- breadcrumbs
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :rental-vehicles.lister])]
-       [components/surface-breadcrumbs ::breadcrumbs
-                                       {:crumbs [{:label :app-home :route "/@app-home"}
-                                                 {:label :rental-vehicles}]
-                                        :disabled? lister-disabled?}]))
-
-(defn- label
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :rental-vehicles.lister])]
-       [components/surface-label ::label
-                                 {:disabled? lister-disabled?
-                                  :label     :rental-vehicles}]))
 
 (defn- header
   []
-  (if-let [first-data-received? @(r/subscribe [:item-lister/first-data-received? :rental-vehicles.lister])]
-          [:<> [:div {:style {:display "flex" :justify-content "space-between" :flex-wrap "wrap" :grid-row-gap "24px"}}
-                     [:div [label]
-                           [breadcrumbs]]
-                     [:div [create-item-button]]]
-               [search-field]
-               [search-description]]
-          [common/item-lister-ghost-header :rental-vehicles.lister {}]))
+  [common/item-lister-header :rental-vehicles.lister
+                             {:crumbs    [{:label :app-home :route "/@app-home"}
+                                          {:label :rental-vehicles}]
+                              :on-create [:x.router/go-to! "/@app-home/rental-vehicles/create"]
+                              :on-search [:item-lister/search-items! :rental-vehicles.lister {:search-keys [:name]}]
+                              :search-placeholder :search-in-rental-vehicles
+                              :label              :rental-vehicles}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn- view-structure
-  []
-  [:<> [header]
-       [body]
-       [footer]])
 
 (defn view
+  ; @param (keyword) surface-id
   [surface-id]
   [surface-a/layout surface-id
-                    {:content #'view-structure}])
+                    {:content [:<> [header]
+                                   [body]
+                                   [footer]]}])

@@ -16,6 +16,6 @@
        (if-let [{:content/keys [body visibility]} (mongo-db/get-document-by-id "contents" content-id)]
                (case visibility :private (if (x.user/request->authenticated? request)
                                              (http/map-wrap   {:body body})
-                                             (http/error-wrap {:body :access-denied :status 403}))
+                                             (http/error-wrap {:body "access-denied" :status 403}))
                                 :public      (http/map-wrap   {:body body}))
-               (http/error-wrap {:error-message :content-not-found :status :404}))))
+               (http/error-wrap {:error-message "content-not-found" :status :404}))))

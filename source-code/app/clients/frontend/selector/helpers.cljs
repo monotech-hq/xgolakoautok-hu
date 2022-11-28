@@ -9,7 +9,7 @@
   ;  {:client/id (string)}
   ;
   ; @example
-  ;  (selector.helpers/import-id-f {:client/id "my-client"})
+  ;  (import-id-f {:client/id "my-client"})
   ;  =>
   ;  "my-client"
   ;
@@ -26,7 +26,7 @@
   ; @param (integer) client-count
   ;
   ; @example
-  ;  (selector.helpers/export-item-f "my-client" {...} 1)
+  ;  (export-item-f "my-client" {...} 1)
   ;  =>
   ;  {:client/id "my-client"}
   ;

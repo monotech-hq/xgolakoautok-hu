@@ -13,7 +13,7 @@
   ; @param (keyword) scheme-id
   ; @param (keyword) field-id
   [scheme-id field-id]
-  [components/popup-label-bar :schemes.field-deleter/consent
+  [components/popup-label-bar ::label-bar
                               {:primary-button   {:color :warning
                                                   :on-click [:schemes.field-deleter/delete-field! scheme-id field-id]
                                                   :label    :delete!
@@ -71,18 +71,18 @@
   ; @param (keyword) scheme-id
   ; @param (keyword) field-id
   [_ _]
-  [common/popup-progress-indicator :schemes.field-deleter/consent
-                                   {:color  :warning
-                                    :label  :failed-to-delete
-                                    :indent {:horizontal :xxl}}])
+  [components/popup-progress-indicator ::delete-failed-label
+                                       {:color  :warning
+                                        :label  :failed-to-delete
+                                        :indent {:horizontal :xxl}}])
 
 (defn- deleting-label
   ; @param (keyword) scheme-id
   ; @param (keyword) field-id
   [_ _]
-  [common/popup-progress-indicator :schemes.field-deleter/consent
-                                   {:label  :deleting-field...
-                                    :indent {:horizontal :xxl}}])
+  [components/popup-progress-indicator ::deleting-label
+                                       {:label  :deleting-field...
+                                        :indent {:horizontal :xxl}}])
 
 (defn- body
   ; @param (keyword) scheme-id

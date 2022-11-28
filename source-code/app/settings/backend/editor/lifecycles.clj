@@ -20,5 +20,5 @@
                                                        {:client-event   [:settings.editor/load-editor!]
                                                         :js-build       :app
                                                         :restricted?    true
-                                                        :route-parent   "/@app-home"
+                                                        :parent-route   "/@app-home"
                                                         :route-template "/@app-home/settings/:view-id"}]]}})

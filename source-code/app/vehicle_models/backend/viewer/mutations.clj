@@ -4,7 +4,8 @@
               [com.wsscode.pathom3.connect.operation :as pathom.co :refer [defmutation]]
               [mongo-db.api                          :as mongo-db]
               [pathom.api                            :as pathom]
-              [vector.api                            :as vector]))
+              [vector.api                            :as vector]
+              [x.user.api                            :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -14,7 +15,7 @@
   ;
   ; @return (?)
   [model-id]
-  (letfn [(f [document] (update document :category/models #(vector/remove-item document {:model/id model-id})))]
+  (letfn [(f [document] (update document :category/models #(vector/remove-item % {:model/id model-id})))]
          (mongo-db/apply-documents! "vehicle_categories" f {})))
 
 (defn remove-type-documents!
@@ -28,17 +29,19 @@
 
 (defn delete-item-f
   ; @param (map) env
+  ;  {:request (map)}
   ; @param (map) mutation-props
   ;  {:item-id (string)}
   ;
   ; @return (string)
-  [_ {:keys [item-id]}]
-  (do ; A törlendő járműmodell hivatkozásainak eltávolítása a kategóriák dokumentumaiból
-      (remove-model-links!                item-id)
-      ; A törlendő járműmodellhez tartozó járműtípusok törlése
-      (remove-type-documents!             item-id)
-      ; A törlendő járműmodell dokumentumának törlése
-      (mongo-db/remove-document! "vehicle_models" item-id)))
+  [{:keys [request]} {:keys [item-id]}]
+  (if (x.user/request->authenticated? request)
+          ; A törlendő járműmodell hivatkozásainak eltávolítása a kategóriák dokumentumaiból
+      (do (remove-model-links!                item-id)
+          ; A törlendő járműmodellhez tartozó járműtípusok törlése
+          (remove-type-documents!             item-id)
+          ; A törlendő járműmodell dokumentumának törlése
+          (mongo-db/remove-document! "vehicle_models" item-id))))
 
 (defmutation delete-item!
              ; @param (map) env
@@ -55,12 +58,14 @@
 
 (defn undo-delete-item-f
   ; @param (map) env
+  ;  {:request (map)}
   ; @param (map) mutation-props
   ;  {:item (namespaced map)}
   ;
   ; @return (namespaced map)
-  [_ {:keys [item]}]
-  (mongo-db/insert-document! "vehicle_models" item))
+  [{:keys [request]} {:keys [item]}]
+  (if (x.user/request->authenticated? request)
+      (mongo-db/insert-document! "vehicle_models" item)))
 
 (defmutation undo-delete-item!
              ; @param (map) env
@@ -79,8 +84,8 @@
   ; @param (string) model-id
   ; @param (string) copy-id
   [model-id copy-id]
-  (letfn [; A járműmodellről készült másolat azonosítójának hozzáadása a járműtípusról készült másolat dokumentumához
-          (prepare-f [document] (assoc document :type/model-id copy-id))
+  ; A járműmodellről készült másolat azonosítóit hozzáadja a járműtípusról készült másolat dokumentumához
+  (letfn [(prepare-f [document] (assoc document :type/model-id copy-id))
           (f [result {:type/keys [id] :as type-link}]
              (let [{:type/keys [id] :as copy} (mongo-db/duplicate-document! "vehicle_types" id {:prepare-f prepare-f})]
                   (conj result {:type/id id})))]
@@ -95,14 +100,14 @@
   ;
   ; @return (namespaced map)
   [{:keys [request]} {:keys [item-id]}]
-  (letfn [; A járműmodellhez tartozó típusokról készült másolatok hivatkozásainak hozzáadása a járműmodellről
-          ; készült másolat dokumentumához
-          (prepare-f [document] (let [copy-id (get document :model/id)
-                                      types   (duplicate-type-documents! item-id copy-id)
-                                      copy    (common/duplicated-document-prototype request document)]
-                                     (assoc copy :model/types types)))]
-         ; A duplikálandó járműmodell másolatának elkészítése
-         (mongo-db/duplicate-document! "vehicle_models" item-id {:prepare-f prepare-f})))
+  ; A járműmodellhez tartozó típusokról készült másolatok hivatkozásait
+  ; hozzáadja a járműmodellről készült másolat dokumentumához.
+  (if (x.user/request->authenticated? request)
+      (letfn [(prepare-f [document] (let [copy-id (get document :model/id)
+                                          types   (duplicate-type-documents! item-id copy-id)
+                                          copy    (common/duplicated-document-prototype request document)]
+                                         (assoc copy :model/types types)))]
+             (mongo-db/duplicate-document! "vehicle_models" item-id {:prepare-f prepare-f}))))
 
 (defmutation duplicate-item!
              ; @param (map) env

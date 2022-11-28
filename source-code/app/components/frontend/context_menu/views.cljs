@@ -32,7 +32,7 @@
   [menu-id {:keys [menu-items] :as menu-props}]
   (letfn [(f [menu-items menu-item] (conj menu-items [context-menu-item menu-id menu-props menu-item]))]
          [:<> (reduce f [:<>] menu-items)
-              [elements/horizontal-separator {:size :xs}]]))
+              [elements/horizontal-separator {:height :xs}]]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -92,6 +92,12 @@
   ;      :on-click (metamorphic-event)(opt)
   ;      :placeholder (metamorphic-content)(opt)}]
   ;   :placeholder (metamorphic-content)(opt)}
+  ;
+  ; @usage
+  ;  [context-menu {...}]
+  ;
+  ; @usage
+  ;  [context-menu :my-context-menu {...}]
   ([menu-props]
    [component (random/generate-keyword) menu-props])
 

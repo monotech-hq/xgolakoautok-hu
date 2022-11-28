@@ -35,6 +35,6 @@
 
 (defn body
   [_]
-  [:<> [elements/horizontal-separator {:size :xs}]
+  [:<> [elements/horizontal-separator {:height :xs}]
        [elements/text {:content :remove-stored-cookies? :font-weight :bold
                        :horizontal-align :center :icon :delete}]])

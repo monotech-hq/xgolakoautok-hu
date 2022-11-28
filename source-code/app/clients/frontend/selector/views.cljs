@@ -3,7 +3,6 @@
     (:require [app.common.frontend.api     :as common]
               [app.components.frontend.api :as components]
               [elements.api                :as elements]
-              [engines.item-lister.api     :as item-lister]
               [layouts.popup-a.api         :as popup-a]
               [re-frame.api                :as r]))
 
@@ -11,7 +10,8 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- footer
-  []
+  ; @param (keyword) popup-id
+  [_]
   (let [selected-client-count @(r/subscribe [:item-lister/get-selected-item-count :clients.selector])
         on-discard-selection [:item-lister/discard-selection! :clients.selector]]
        [common/item-selector-footer :clients.selector
@@ -21,46 +21,32 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- client-item-structure
-  [selector-id item-dex {:keys [colors company-name email-address id modified-at] :as client-item}]
-  (let [timestamp   @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
-        item-last?  @(r/subscribe [:item-lister/item-last? selector-id item-dex])
-        client-name @(r/subscribe [:clients.selector/get-client-name item-dex])]
-       [common/list-item-structure {:cells [[elements/color-marker {:colors colors :indent {:left :xs :right :m :horizontal :xs} :size :m}]
-                                            [components/list-item-cell {:rows [{:content client-name   :placeholder :unnamed-client}
-                                                                               {:content email-address :font-size :xs :color :muted}
-                                                                               {:content company-name  :font-size :xs :color :muted}]
-                                                                        :width :stretch}]
-                                            [common/selector-item-marker selector-id item-dex {:item-id id}]]
-                                    :separator (if-not item-last? :bottom)}]))
-
-(defn- client-item
-  [selector-id item-dex {:keys [id] :as client-item}]
-  [elements/toggle {:content     [client-item-structure selector-id item-dex client-item]
-                    :hover-color :highlight
-                    :on-click    [:item-selector/item-clicked :clients.selector id]}])
+(defn- client-list-item
+  ; @param (keyword) selector-id
+  ; @param (map) selector-props
+  ; @param (integer) item-dex
+  ; @param (map) client-item
+  [selector-id _ item-dex {:keys [colors company-name first-name email-address id last-name]}]
+  (let [client-name @(r/subscribe [:clients.selector/get-client-name item-dex])]
+       [components/item-list-row {:cells [[components/list-item-avatar {:colors colors :first-name first-name :last-name last-name :size 42}]
+                                          [components/list-item-cell   {:rows [{:content client-name :placeholder :unnamed-package}
+                                                                               (if email-address {:content email-address :font-size :xs :color :muted})
+                                                                               (if company-name  {:content company-name  :font-size :xs :color :muted})]}]
+                                          [components/list-item-gap    {:width 6}]
+                                          [common/selector-item-marker selector-id item-dex {:item-id id}]
+                                          [components/list-item-gap    {:width 6}]]
+                                  :border (if (not= item-dex 0) :top)}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn- client-list
-  []
-  (let [items @(r/subscribe [:item-lister/get-downloaded-items :clients.selector])]
-       [common/item-list :clients.selector {:item-element #'client-item :items items}]))
-
-(defn- client-lister
-  []
-  [item-lister/body :clients.selector
-                    {:default-order-by :modified-at/descending
-                     :items-path       [:clients :selector/downloaded-items]
-                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    [common/item-selector-ghost-element]
-                     :list-element     [client-list]}])
 
 (defn- body
-  []
-  [:<> [elements/horizontal-separator {:size :xs}]
-       [client-lister]])
+  ; @param (keyword) popup-id
+  [_]
+  [:<> [elements/horizontal-separator {:height :xs}]
+       [common/item-selector-body :clients.selector
+                                  {:items-path        [:clients :selector/downloaded-items]
+                                   :list-item-element #'client-list-item}]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -69,32 +55,28 @@
   []
   (let [selector-disabled? @(r/subscribe [:item-lister/lister-disabled? :clients.selector])]
        [common/item-selector-control-bar :clients.selector
-                                         {:disabled?        selector-disabled?
-                                          :order-by-options [:modified-at/ascending :modified-at/descending :name/ascending :name/descending]
+                                         {:disabled?                selector-disabled?
                                           :search-field-placeholder :search-in-clients
-                                          :search-keys      [:name :email-address :phone-number]}]))
+                                          :search-keys              [:name :email-address :phone-number]}]))
 
 (defn- label-bar
   []
   (let [multi-select? @(r/subscribe [:item-lister/get-meta-item :clients.selector :multi-select?])]
-       [components/popup-label-bar :clients.selector/view
-                                   {:primary-button   {:label :save! :on-click [:item-selector/save-selection! :clients.selector]}
-                                    :secondary-button (if-let [autosaving? @(r/subscribe [:item-selector/autosaving? :clients.selector])]
-                                                              {:label :abort!  :on-click [:item-selector/abort-autosave! :clients.selector]}
-                                                              {:label :cancel! :on-click [:x.ui/remove-popup! :clients.selector/view]})
-                                    :label            (if multi-select? :select-clients! :select-client!)}]))
+       [common/item-selector-label-bar :clients.selector
+                                       {:label    (if multi-select? :select-clients! :select-client!)
+                                        :on-close [:x.ui/remove-popup! :clients.selector/view]}]))
 
 (defn- header
-  []
+  ; @param (keyword) popup-id
+  [_]
   [:<> [label-bar]
-       (if-let [first-data-received? @(r/subscribe [:item-lister/first-data-received? :clients.selector])]
-               [control-bar]
-               [elements/horizontal-separator {:size :xxl}])])
+       [control-bar]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn view
+  ; @param (keyword) popup-id
   [popup-id]
   [popup-a/layout popup-id
                   {:footer              #'footer

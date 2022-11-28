@@ -1,22 +1,27 @@
 
 (ns app.storage.frontend.media-menu.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [io.api                  :as io]
-              [layouts.popup-a.api     :as popup-a]
-              [re-frame.api            :as r]))
+    (:require [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [io.api                      :as io]
+              [layouts.popup-a.api         :as popup-a]
+              [re-frame.api                :as r]))
 
 ;; -- Item-menu components ----------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn media-menu-header
+  ; @param (map) media-item
+  ;  {:alias (structure)}
   [{:keys [alias] :as media-item}]
-  [common/menu-header :storage.media-menu/view {:label alias}])
+  [components/popup-menu-header ::media-menu-header
+                                {:label alias
+                                 :on-close [:x.ui/remove-popup! :storage.media-menu/view]}])
 
 ;; -- Directory-item menu components ------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn directory-menu-body
+  ; @param (map) directory-item
   [directory-item]
   [:<> [elements/button ::open-directory-button
                         {:hover-color :highlight
@@ -65,6 +70,7 @@
                          :preset      :warning}]])
 
 (defn directory-menu
+  ; @param (map) directory-item
   [directory-item]
   [popup-a/layout :storage.media-menu/view
                   {:body      [directory-menu-body directory-item]
@@ -75,6 +81,8 @@
 ;; ----------------------------------------------------------------------------
 
 (defn file-menu-body
+  ; @param (map) file-item
+  ;  {:mime-type (string)}
   [{:keys [mime-type] :as file-item}]
   [:<> (if (or (io/mime-type->image? mime-type)
                (= mime-type "application/pdf"))
@@ -132,6 +140,7 @@
                          :preset      :warning}]])
 
 (defn file-menu
+  ; @param (map) file-item
   [file-item]
   [popup-a/layout :storage.media-menu/view
                   {:body      [file-menu-body    file-item]

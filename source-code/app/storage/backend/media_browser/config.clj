@@ -5,4 +5,4 @@
 ;; ----------------------------------------------------------------------------
 
 ; @constant (ms)
-(def PERMANENT-DELETE-AFTER 60000)
+(def PERMANENT-DELETE-TIMEOUT 60000)

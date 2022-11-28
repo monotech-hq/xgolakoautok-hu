@@ -22,7 +22,7 @@
   (let [field-name @(r/subscribe [:x.db/get-item [:schemes :field-editor/field-item :field/name]])]
        ; XXX#5561
        ;field-group @(r/subscribe [:x.db/get-item [:schemes :field-editor/field-item :field/group]])
-       [components/popup-label-bar :schemes.field-editor/view
+       [components/popup-label-bar ::label-bar
                                    {:primary-button   {:disabled? (empty? field-name)
                                                       ; XXX#5561
                                                       ;:disabled? (or (empty? field-name) (empty? field-group))
@@ -160,9 +160,9 @@
   ; @param (keyword) scheme-id
   ; @param (keyword or nil) field-id
   [_ field-id]
-  [common/popup-progress-indicator :schemes.field-editor/view
-                                   {:label  (if field-id :saving-field... :adding-field...)
-                                    :indent {:horizontal :xxl}}])
+  [components/popup-progress-indicator ::saving-label
+                                       {:label  (if field-id :saving-field... :adding-field...)
+                                        :indent {:horizontal :xxl}}])
 
 (defn- body
   ; @param (keyword) scheme-id

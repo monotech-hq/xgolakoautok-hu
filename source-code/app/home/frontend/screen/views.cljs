@@ -124,14 +124,14 @@
   ; tulajdonságuk szerinti kisebb csoportokban vannak felsorolva.
   (let [group-items @(r/subscribe [:home.screen/get-menu-group-items name])]
        (if (vector/nonempty? group-items)
-           [common/surface-box {:content [:div {:style {:display "grid" :grid-row-gap "12px" :padding "12px 0"
-                                                        :grid-template-columns "repeat(auto-fill, minmax(260px, 1fr))"}}
-                                               (let [weight-groups (group-by :horizontal-weight group-items)]
-                                                    (letfn [(f [group-list horizontal-weight]
-                                                               (conj group-list [weight-group horizontal-weight (get weight-groups horizontal-weight)]))]
-                                                           (reduce f [:<>] (-> weight-groups keys sort))))]
-                                :indent {:top :m}
-                                :label  name}])))
+           [components/surface-box {:content [:div {:style {:display "grid" :grid-row-gap "12px" :padding "12px 0"
+                                                            :grid-template-columns "repeat(auto-fill, minmax(260px, 1fr))"}}
+                                                   (let [weight-groups (group-by :horizontal-weight group-items)]
+                                                        (letfn [(f [group-list horizontal-weight]
+                                                                   (conj group-list [weight-group horizontal-weight (get weight-groups horizontal-weight)]))]
+                                                               (reduce f [:<>] (-> weight-groups keys sort))))]
+                                    :indent {:top :m}
+                                    :label  name}])))
 
 (defn- menu-groups
   []
@@ -141,6 +141,16 @@
   (letfn [(f [group-list group-props]
              (conj group-list [menu-group group-props]))]
          (reduce f [:<>] handler.config/GROUP-ORDER)))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn- head-box
+  []
+  [components/surface-box ::head-box
+                          {:background-color "#bad3e6"
+                           :content [:div {:style {:height "160px"}}]
+                           :indent  {:top :m}}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -168,16 +178,11 @@
   (if-let [screen-loaded? @(r/subscribe [:x.db/get-item [:home :screen/screen-loaded?]])]
           [:<> [label]
                [breadcrumbs]
-               ;[elements/horizontal-separator {:size :xxl}]
-               [elements/card {:background-color "#bad3e6"
-                               :content [:div {:style {:color "white" :font-weight "500"}} ""]
-                               :border-radius :m
-                               :style {:height "160px"}
-                               :indent {:top :m}}]
-
+               ;[elements/horizontal-separator {:height :xxl}]
+               [head-box]
                [menu-groups]
                [last-login-label]]
-          [common/surface-box-layout-ghost-view :home.screen/view {:breadcrumb-count 1}]))
+          [components/ghost-view {:breadcrumb-count 1 :layout :box-surface}]))
 
 (defn view
   ; @param (keyword) surface-id

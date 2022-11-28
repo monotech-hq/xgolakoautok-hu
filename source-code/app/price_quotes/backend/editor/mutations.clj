@@ -6,7 +6,8 @@
               [candy.api                                  :refer [return]]
               [com.wsscode.pathom3.connect.operation      :as pathom.co :refer [defmutation]]
               [mongo-db.api                               :as mongo-db]
-              [pathom.api                                 :as pathom]))
+              [pathom.api                                 :as pathom]
+              [x.user.api                                 :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -19,11 +20,12 @@
   ;
   ; @return (namespaced map)
   [{:keys [request]} {:keys [item]}]
-  (letfn [(prepare-f [document] (->> document (common/added-document-prototype request)
-                                              (editor.prototypes/added-price-quote-item-prototype)))]
-         (when-let [item (mongo-db/save-document! "price_quotes" item {:prepare-f prepare-f})]
-                   (handler.helpers/increase-annual-count!)
-                   (return item))))
+  (if (x.user/request->authenticated? request)
+      (letfn [(prepare-f [document] (->> document (common/added-document-prototype request)
+                                                  (editor.prototypes/added-document-prototype)))]
+             (when-let [item (mongo-db/save-document! "price_quotes" item {:prepare-f prepare-f})]
+                       (handler.helpers/increase-annual-count!)
+                       (return item)))))
 
 (defmutation add-item!
              ; @param (map) env
@@ -46,9 +48,10 @@
   ;
   ; @return (namespaced map)
   [{:keys [request]} {:keys [item]}]
-  (letfn [(prepare-f [document] (->> document (common/updated-document-prototype request)
-                                              (editor.prototypes/updated-price-quote-item-prototype)))]
-         (mongo-db/save-document! "price_quotes" item {:prepare-f prepare-f})))
+  (if (x.user/request->authenticated? request)
+      (letfn [(prepare-f [document] (->> document (common/updated-document-prototype request)
+                                                  (editor.prototypes/updated-document-prototype)))]
+             (mongo-db/save-document! "price_quotes" item {:prepare-f prepare-f}))))
 
 (defmutation save-item!
              ; @param (map) env

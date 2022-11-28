@@ -4,23 +4,26 @@
               [app.common.backend.api                :as common]
               [com.wsscode.pathom3.connect.operation :refer [defresolver]]
               [mongo-db.api                          :as mongo-db]
-              [pathom.api                            :as pathom]))
+              [pathom.api                            :as pathom]
+              [x.user.api                            :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn get-items-f
   ; @param (map) env
+  ;  {:request (map)}
   ; @param (map) resolver-props
   ;
   ; @return (map)
   ;  {:document-count (integer)
   ;   :documents (namespaced maps in vector)}
-  [env _]
-  (let [get-pipeline   (lister.helpers/env->get-pipeline   env)
-        count-pipeline (lister.helpers/env->count-pipeline env)]
-       {:items          (mongo-db/get-documents-by-pipeline   "clients" get-pipeline)
-        :all-item-count (mongo-db/count-documents-by-pipeline "clients" count-pipeline)}))
+  [{:keys [request] :as env} _]
+  (if (x.user/request->authenticated? request)
+      (let [get-pipeline   (lister.helpers/env->get-pipeline   env)
+            count-pipeline (lister.helpers/env->count-pipeline env)]
+           {:items          (mongo-db/get-documents-by-pipeline   "clients" get-pipeline)
+            :all-item-count (mongo-db/count-documents-by-pipeline "clients" count-pipeline)})))
 
 (defresolver get-items
              ; @param (map) env

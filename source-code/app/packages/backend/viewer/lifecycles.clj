@@ -18,5 +18,5 @@
                                                        {:client-event   [:packages.viewer/load-viewer! :products]
                                                         :js-build       :app
                                                         :restricted?    true
-                                                        :route-parent   "/@app-home/packages"
+                                                        :parent-route   "/@app-home/packages"
                                                         :route-template "/@app-home/packages/:item-id/products"}]]}})

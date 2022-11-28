@@ -9,35 +9,30 @@
 (defn preview-props-prototype
   ; @param (keyword) picker-id
   ; @param (map) picker-props
-  ;  {:disabled? (boolean)(opt)
-  ;   :multi-select? (boolean)(opt)
-  ;   :placeholder (metamorphic-content)(opt)
-  ;   :sortable? (boolean)(opt)
-  ;   :value-path (vector)}
+  ; @param (namespaced map) package-link
   ;
   ; @return (map)
-  ;  {:disabled? (boolean)
-  ;   :items (namespaced maps in vector)
-  ;   :indent (map)
-  ;   :placeholder (metamorphic-content)
-  ;   :sortable? (boolean)
-  ;   :value-path (vector)}
-  [_ {:keys [disabled? multi-select? placeholder sortable? value-path]}]
-  ; XXX#6071 (app.products.frontend.picker.prototypes)
-  (let [picked-packages @(r/subscribe [:x.db/get-item value-path])]
-       {:disabled?   disabled?
-        :indent      {:top :m}
-        :items       (cond multi-select? picked-packages picked-packages [picked-packages])
-        :placeholder placeholder
-        :sortable?   sortable?
-        :value-path  value-path}))
+  ;  {:item-link (namespaced map)}
+  [_ picker-props package-link]
+  (merge (select-keys picker-props [:disabled? :placeholder])
+         {:item-link package-link}))
 
 (defn picker-props-prototype
   ; @param (keyword) picker-id
   ; @param (map) picker-props
+  ;  {:multi-select? (boolean)(opt)}
   ;
   ; @return (map)
-  ;  {}
-  [_ picker-props]
-  (merge {}
-         (param picker-props)))
+  ;  {:export-filter-f (function)
+  ;   :import-id-f (function)
+  ;   :on-select (metamorphic-event)
+  ;   :toggle-label (metamorphic-content)
+  ;   :transfer-id (keyword)}
+  [_ {:keys [multi-select?] :as picker-props}]
+  (merge {:toggle-label    (if multi-select? :select-packages! :select-package!)}
+         (param picker-props)
+         {:export-filter-f (fn [package-id] {:package/id package-id})
+          :import-id-f     :package/id
+          :items-path      [:packages :picker/downloaded-items]
+          :on-select       [:packages.selector/load-selector! :packages.selector picker-props]
+          :transfer-id     :packages.lister}))

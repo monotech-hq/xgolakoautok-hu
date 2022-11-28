@@ -4,7 +4,6 @@
               [app.components.frontend.api      :as components]
               [app.storage.frontend.core.config :as core.config]
               [elements.api                     :as elements]
-              [engines.item-browser.api         :as item-browser]
               [format.api                       :as format]
               [io.api                           :as io]
               [layouts.popup-a.api              :as popup-a]
@@ -16,7 +15,8 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- footer
-  []
+  ; @param (keyword) popup-id
+  [_]
   (let [selected-item-count            @(r/subscribe [:item-browser/get-selected-item-count        :storage.media-selector])
         all-downloaded-media-selected? @(r/subscribe [:item-browser/all-downloaded-items-selected? :storage.media-selector])
         any-downloaded-media-selected? @(r/subscribe [:item-browser/any-downloaded-item-selected?  :storage.media-selector])
@@ -30,74 +30,92 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- directory-item-structure
-  [selector-id item-dex {:keys [alias size items modified-at]}]
+(defn- open-directory-icon-button
+  ; @param (integer) item-dex
+  ; @param (map) media-item
+  [_ {:keys [id]}]
+  [:th {:style {:width "72px"}}
+       [elements/icon-button {:icon        :navigate_next
+                              :on-click    [:item-browser/browse-item! :storage.media-selector id]
+                              :hover-color :highlight}]])
+
+(defn- directory-list-item
+  ; @param (keyword) selector-id
+  ; @param (map) selector-props
+  ; @param (integer) item-dex
+  ; @param (map) media-item
+  [selector-id _ item-dex {:keys [alias size items modified-at] :as media-item}]
   (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
-        item-last? @(r/subscribe [:item-lister/item-last? selector-id item-dex])
         size        (str (-> size io/B->MB format/decimals (str " MB\u00A0\u00A0\u00A0|\u00A0\u00A0\u00A0"))
                          (x.components/content {:content :n-items :replacements [(count items)]}))
         icon-family (if (empty? items) :material-icons-outlined :material-icons-filled)]
-       [common/list-item-structure {:cells [[    {:icon :folder :icon-family icon-family}]
-                                            [common/list-item-primary-cell {:label alias :description size :timestamp timestamp :stretch? true}]
-                                            [components/list-item-marker       {:icon :navigate_next}]]
-                                    :separator (if-not item-last? :bottom)}]))
+       [components/item-list-row {:cells [[components/list-item-gap       {:width 12}]
+                                          [components/list-item-thumbnail {:icon :folder :icon-family icon-family}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content alias :placeholder :unnamed-file}
+                                                                                  {:content size :font-size :xs :color :muted}
+                                                                                  {:content timestamp :font-size :xs :color :muted}]}]
+                                          [components/list-item-gap       {:width 6}]
+                                          [open-directory-icon-button item-dex media-item]
+                                          [components/list-item-gap       {:width 6}]]
+                                  :border (if (not= item-dex 0) :top)}]))
 
-(defn- directory-item
-  [selector-id item-dex {:keys [id] :as directory-item}]
-  [elements/toggle {:content     [directory-item-structure selector-id item-dex directory-item]
-                    :hover-color :highlight
-                    :on-click    [:item-browser/browse-item! :storage.media-selector id]}])
+(defn- file-list-item
+  ; @param (keyword) selector-id
+  ; @param (map) selector-props
+  ; @param (integer) item-dex
+  ; @param (map) media-item
+  [selector-id _ item-dex {:keys [alias id modified-at filename size] :as media-item}]
+  (let [file-selectable? @(r/subscribe [:storage.media-selector/file-selectable? media-item])
+        timestamp        @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+        size              (-> size io/B->MB format/decimals (str " MB"))]
+       [components/item-list-row {:cells [[components/list-item-gap       {:width 12}]
+                                          ; XXX#6690 (source-code/app/storage/media_browser/views.cljs)
+                                          (cond (io/filename->audio? alias)
+                                                [components/list-item-thumbnail {:icon :audio_file :icon-family :material-icons-outlined}]
+                                                (io/filename->image? alias)
+                                                [components/list-item-thumbnail {:thumbnail (x.media/filename->media-thumbnail-uri filename)}]
+                                                (io/filename->text?  alias)
+                                                [components/list-item-thumbnail {:icon :insert_drive_file :icon-family :material-icons-outlined}]
+                                                (io/filename->video? alias)
+                                                [components/list-item-thumbnail {:icon :video_file :icon-family :material-icons-outlined}]
+                                                :else
+                                                [components/list-item-thumbnail {:icon :insert_drive_file :icon-family :material-icons-outlined}])
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content alias :placeholder :unnamed-file}
+                                                                                  {:content size :font-size :xs :color :muted}
+                                                                                  {:content timestamp :font-size :xs :color :muted}]}]
+                                          [components/list-item-gap {:width 6}]
+                                          [common/selector-item-marker selector-id item-dex {:item-id id :disabled? (not file-selectable?)}]
+                                          [components/list-item-gap {:width 6}]]
+                                  :border    (if (not= item-dex 0) :top)
+                                  :disabled? (not file-selectable?)}]))
 
-(defn- file-item-structure
-  [selector-id item-dex {:keys [alias id modified-at filename size]}]
-  (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
-        item-last? @(r/subscribe [:item-lister/item-last? selector-id item-dex])
-        size        (-> size io/B->MB format/decimals (str " MB"))]
-       [common/list-item-structure {:cells [[ (if (io/filename->image? alias)
-                                                                            {:thumbnail (x.media/filename->media-thumbnail-uri filename)}
-                                                                            {:icon :insert_drive_file :icon-family :material-icons-outlined})]
-                                            [common/list-item-primary-cell {:label alias :description size :timestamp timestamp :stretch? true}]
-                                            [common/selector-item-marker   selector-id item-dex {:item-id id}]]
-                                    :separator (if-not item-last? :bottom)}]))
-
-(defn- file-item
-  [selector-id item-dex {:keys [id] :as file-item}]
-  (let [file-selectable? @(r/subscribe [:storage.media-selector/file-selectable? file-item])]
-       [elements/toggle {:content     [file-item-structure selector-id item-dex file-item]
-                         :disabled?   (not file-selectable?)
-                         :hover-color :highlight
-                         :on-click    [:item-selector/item-clicked :storage.media-selector id]}]))
-(defn- media-item
-  [selector-id item-dex {:keys [mime-type] :as media-item}]
-  (case mime-type "storage/directory" [directory-item selector-id item-dex media-item]
-                                      [file-item      selector-id item-dex media-item]))
+(defn- media-list-item
+  ; @param (keyword) selector-id
+  ; @param (map) selector-props
+  ; @param (integer) item-dex
+  ; @param (map) media-item
+  [selector-id selector-props item-dex {:keys [mime-type] :as media-item}]
+  (case mime-type "storage/directory" [directory-list-item selector-id selector-props item-dex media-item]
+                                      [file-list-item      selector-id selector-props item-dex media-item]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn- media-list
-  []
-  (let [items @(r/subscribe [:item-browser/get-downloaded-items :storage.media-selector])]
-       [common/item-list :storage.media-selector {:item-element #'media-item :items items}]))
-
-(defn- media-browser
-  []
-  [item-browser/body :storage.media-selector
-                     {:default-item-id  core.config/ROOT-DIRECTORY-ID
-                      :default-order-by :modified-at/descending
-                      :item-path        [:storage :media-selector/browsed-item]
-                      :items-path       [:storage :media-selector/downloaded-items]
-                      :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
-                      :ghost-element    [common/item-selector-ghost-element]
-                      :list-element     [media-list]
-                      :items-key        :items
-                      :label-key        :alias
-                      :path-key         :path}])
 
 (defn- body
-  []
-  [:<> [elements/horizontal-separator {:size :xs}]
-       [media-browser]])
+  ; @param (keyword) popup-id
+  [_]
+  [:<> [elements/horizontal-separator {:height :xs}]
+       [common/item-selector-body :storage.media-selector
+                                  {:default-item-id   core.config/ROOT-DIRECTORY-ID
+                                   :item-path         [:storage :media-selector/browsed-item]
+                                   :items-path        [:storage :media-selector/downloaded-items]
+                                   :list-item-element #'media-list-item
+                                   :engine            :item-browser
+                                   :items-key         :items
+                                   :label-key         :alias
+                                   :path-key          :path}]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -165,35 +183,38 @@
 
 (defn- control-bar
   []
-  [:div {:style {:display "flex"}}
-        [:div {:style {:display "flex"}}
-              [go-up-icon-button]
-              [go-home-icon-button]
-              [order-by-icon-button]
-              [elements/button-separator {:indent {:vertical :xxs}}]
-              [create-folder-icon-button]
-              [upload-files-icon-button]]
-        [:div {:style {:flex-grow "1"}}
-              [search-items-field]]])
+  (if-let [first-data-received? @(r/subscribe [:item-browser/first-data-received? :storage.media-selector])]
+          [:div {:style {:display "flex"}}
+                [:div {:style {:display "flex"}}
+                      [go-up-icon-button]
+                      [go-home-icon-button]
+                      [order-by-icon-button]
+                      [elements/button-separator {:indent {:vertical :xxs}}]
+                      [create-folder-icon-button]
+                      [upload-files-icon-button]]
+                [:div {:style {:flex-grow "1"}}
+                      [search-items-field]]]
+          [elements/horizontal-separator {:height :xxl}]))
+
+(defn- label-bar
+  []
+  (let [header-label @(r/subscribe [:item-browser/get-current-item-label :storage.media-selector])]
+       [common/item-selector-label-bar :services.selector
+                                       {:label    header-label
+                                        :on-close [:x.ui/remove-popup! :storage.media-selector/view]}]))
 
 (defn- header
-  [selector-id]
-  (let [header-label @(r/subscribe [:item-browser/get-current-item-label :storage.media-selector])]
-       [:<> [components/popup-label-bar :storage.media-selector/view
-                                        {:primary-button   {:label :save! :on-click [:item-selector/save-selection! :storage.media-selector]}
-                                         :secondary-button (if-let [autosaving? @(r/subscribe [:item-selector/autosaving? :storage.media-selector])]
-                                                                   {:label :abort!  :on-click [:item-selector/abort-autosave! :storage.media-selector]}
-                                                                   {:label :cancel! :on-click [:x.ui/remove-popup! :storage.media-selector/view]})
-                                         :label header-label}]
-            (if-let [first-data-received? @(r/subscribe [:item-browser/first-data-received? :storage.media-selector])]
-                    [control-bar]
-                    [elements/horizontal-separator {:size :xxl}])]))
+  ; @param (keyword) popup-id
+  [_]
+  [:<> [label-bar]
+       [control-bar]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn view
-  [selector-id]
+  ; @param (keyword) popup-id
+  [popup-id]
   [popup-a/layout :storage.media-selector/view
                   {:body                #'body
                    :header              #'header

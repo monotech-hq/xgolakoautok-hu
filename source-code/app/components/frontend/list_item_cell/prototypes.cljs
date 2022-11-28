@@ -9,6 +9,6 @@
   ; @param (map) cell-props
   ;
   ; @return (map)
-  [{:keys [] :as cell-props}]
+  [cell-props]
   (merge {}
          (param cell-props)))

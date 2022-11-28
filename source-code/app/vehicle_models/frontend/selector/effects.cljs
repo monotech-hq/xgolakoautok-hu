@@ -17,6 +17,8 @@
   ; @param (map) selector-props
   ;  {:autosave? (boolean)(opt)
   ;    Default: false
+  ;   :countable? (boolean)(opt)
+  ;    Default: false
   ;   :max-count (integer)(opt)
   ;    Default: 8
   ;   :multi-select? (boolean)(opt)
@@ -33,9 +35,10 @@
   ; @usage
   ;  [:vehicle-models.selector/load-selector! :my-selector {...}]
   [r/event-vector<-id]
-  (fn [_ [_ _ {:keys [autosave? multi-select? on-change on-save value-path]}]]
+  (fn [_ [_ _ {:keys [autosave? countable? multi-select? on-change on-save value-path]}]]
       {:dispatch-n [[:item-selector/load-selector! :vehicle-models.selector
                                                    {:autosave?     autosave?
+                                                    :countable?    countable?
                                                     :export-item-f selector.helpers/export-item-f
                                                     :import-id-f   selector.helpers/import-id-f
                                                     :multi-select? multi-select?

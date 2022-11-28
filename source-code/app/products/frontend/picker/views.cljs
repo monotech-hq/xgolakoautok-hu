@@ -1,6 +1,8 @@
 
 (ns app.products.frontend.picker.views
-    (:require [app.products.frontend.picker.prototypes :as picker.prototypes]
+    (:require [app.common.frontend.api                 :as common]
+              [app.components.frontend.api             :as components]
+              [app.products.frontend.picker.prototypes :as picker.prototypes]
               [app.products.frontend.preview.views     :as preview.views]
               [elements.api                            :as elements]
               [random.api                              :as random]
@@ -9,78 +11,90 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- product-picker-previews
+(defn- product-list-item
   ; @param (keyword) picker-id
   ; @param (map) picker-props
-  [picker-id picker-props]
-  ; BUG#0889
-  ; Ha egy felületen több product-picker komponens van megjelenítve és az általuk
-  ; megjelenített product-preview komponensek megegyező azonosítóval rendelkeznek,
-  ; akkor a product-preview komponensek által megjelenített dnd-kit/body komponensek
-  ; is megegyező azonosítót kapnának, ami hibás működéshez vezethet!
-  ; Pl.: A 0.1.7.8 verzióban a types.editor szerkesztő "Images" és "Files" felületén
-  ;      is megjelenik egy-egy media-picker komponens (különböző azonosítókkal),
-  ;      de a media-picker komponensek által megjelenített media-preview komponensek
-  ;      megegyező azonosítókkal rendelkeznek (::media-picker-previews), ami miatt
-  ;      ha az egyik felületen (pl. "Images") a dnd-kit/body komponens használatával
-  ;      a felhasználó módosítja az elemek sorrendjét, majd a másik felületen (pl. "Files")
-  ;      is módosítja az ott megjelenített elemek sorrendjét, akkor a megegyező azonosítóval
-  ;      rendelkező dnd-kit/body komponensek a második módosításnál ("Files" felületen)
-  ;      az első módosításkor ("Images" felületen) használt elem-azonosítókat használják
-  ;      a drag-end-f függvény event paraméterének "over" kulcsához tartozó térképben!
-  (let [preview-props (picker.prototypes/preview-props-prototype picker-id picker-props)]
-      ;[preview.views/element ::product-picker-previews preview-props]
+  ;  {:countable? (boolean)(opt)
+  ;   :sortable? (boolean)(opt)}
+  ; @param (integer) item-dex
+  ; @param (namespaced map) product-link
+  ;  {:product/count (integer)(opt)
+  ;   :product/id (string)}
+  ; @param (map)(opt) drag-props
+  ;  {:handle-attributes (map)
+  ;   :item-attributes (map)}
+  ([picker-id picker-props item-dex product-link]
+   [product-list-item picker-id picker-props item-dex product-link {}])
+
+  ([picker-id {:keys [countable? sortable?]} item-dex {:product/keys [count id]} {:keys [handle-attributes item-attributes]}]
+   (let [{:keys [item-number modified-at name quantity-unit thumbnail]} @(r/subscribe [:item-lister/get-item picker-id id])
+         timestamp   @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
+         picked-count {:content (:value quantity-unit) :replacements [count]}]
+        [components/item-list-row {:drag-attributes item-attributes
+                                   :cells [(if sortable? [components/list-item-drag-handle {:drag-attributes handle-attributes}])
+                                           (if sortable? [components/list-item-gap         {:width 12}])
+                                           [components/list-item-thumbnail {:thumbnail (:media/uri thumbnail)}]
+                                           [components/list-item-gap       {:width 12}]
+                                           [components/list-item-cell      {:rows [{:content name :placeholder :unnamed-product}]}]
+                                           [components/list-item-gap       {:width 12}]
+                                           (if countable? [components/list-item-cell {:rows [{:content picked-count :font-size :xs :color :muted}] :width 100}])
+                                           (if countable? [components/list-item-gap  {:width 12}])
+                                           [components/list-item-cell      {:rows [{:content item-number :font-size :xs :color :muted}] :width 100}]
+                                           [components/list-item-gap       {:width 12}]
+                                           [components/list-item-cell      {:rows [{:content timestamp :font-size :xs :color :muted}] :width 100}]]
+                                   :border (if (not= item-dex 0) :top)}])))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn- product-item
+  ; @param (keyword) picker-id
+  ; @param (map) picker-props
+  ; @param (namespaced map) product-link
+  [picker-id picker-props product-link]
+  (let [preview-props (picker.prototypes/preview-props-prototype picker-id picker-props product-link)]
        [preview.views/element picker-id preview-props]))
 
-(defn- product-picker-button
-  ; @param (keyword) picker-id
-  ; @param (map) picker-props
-  ;  {:disabled? (boolean)(opt)
-  ;   :multi-select? (boolean)(opt)}
-  [picker-id {:keys [disabled? multi-select?] :as picker-props}]
-  (let [on-click [:products.selector/load-selector! :products.selector picker-props]]
-       [:div {:style {:display :flex}}
-             [elements/button {:color     :muted
-                               :disabled? disabled?
-                               :font-size :xs
-                               :label     (if multi-select? :select-products! :select-product!)
-                               :on-click  on-click}]]))
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 
-(defn- product-picker-label
+(defn- product-list-header
   ; @param (keyword) picker-id
   ; @param (map) picker-props
-  ;  {:disabled? (boolean)(opt)
-  ;   :info-text (metamorphic-content)(opt)
-  ;   :label (metamorphic-content)(opt)
-  ;   :required? (boolean)(opt)}
-  [_ {:keys [disabled? info-text label required?]}]
-  (if label [elements/label {:content     label
-                             :disabled?   disabled?
-                             :info-text   info-text
-                             :line-height :block
-                             :required?   required?}]))
+  ;  {:countable? (boolean)(opt)
+  ;   :sortable? (boolean)(opt)}
+  [_ {:keys [countable? sortable?]}]
+  [components/item-list-header ::product-list-header
+                               {:cells [(if sortable? {:width 24})
+                                        (if sortable? {:width 12})
+                                        {:width 84}
+                                        {:width 12}
+                                        {:label :product-description-short}
+                                        {:width 12}
+                                        (if countable? {:label :quantity :width 100})
+                                        (if countable? {:width 12})
+                                        {:label :item-number :width 100}
+                                        {:width 12}
+                                        {:label :modified :width 100}]
+                                :border :bottom}])
 
-(defn- product-picker-body
-  ; @param (keyword) picker-id
-  ; @param (map) picker-props
-  [picker-id picker-props]
-  [:<> [product-picker-label    picker-id picker-props]
-       [product-picker-button   picker-id picker-props]
-       [product-picker-previews picker-id picker-props]])
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 
 (defn- product-picker
   ; @param (keyword) picker-id
   ; @param (map) picker-props
-  ;  {:indent (map)(opt)}
-  [picker-id {:keys [indent] :as picker-props}]
-  [elements/blank picker-id
-                  {:content [product-picker-body picker-id picker-props]
-                   :indent  indent}])
+  [picker-id picker-props]
+  [common/item-picker picker-id (assoc picker-props :item-element      #'product-item
+                                                    :list-item-element #'product-list-item
+                                                    :item-list-header  #'product-list-header)])
 
 (defn element
   ; @param (keyword)(opt) picker-id
   ; @param (map) picker-props
   ;  {:autosave? (boolean)(opt)
+  ;    Default: false
+  ;   :countable? (boolean)(opt)
   ;    Default: false
   ;   :disabled? (boolean)(opt)
   ;    Default: false
@@ -89,24 +103,27 @@
   ;   :label (metamorphic-content)(opt)
   ;   :max-count (integer)(opt)
   ;    Default: 8
+  ;    W/ {:multi-select? true}
   ;   :multi-select? (boolean)(opt)
   ;    Default: false
   ;   :on-change (metamorphic-event)(opt)
   ;    Az esemény utolsó paraméterként megkapja a kiválasztott elemet.
   ;   :on-save (metamorphic-event)(opt)
   ;    Az esemény utolsó paraméterként megkapja a kiválasztott elemet.
+  ;   :placeholder (metamorphic-content)(opt)
   ;   :required? (boolean)(opt)
   ;    Default: false
-  ;   :placeholder (metamorphic-content)(opt)
   ;   :sortable? (boolean)(opt)
   ;    Default: false
+  ;    W/ {:multi-select? true}
+  ;   :toggle-label (metamorphic-content)(opt)
   ;   :value-path (vector)}
   ;
   ; @usage
   ;  [product-picker {...}]
   ;
   ; @usage
-  ;  [product-picker :my-picker {...}]
+  ;  [product-picker :my-product-picker {...}]
   ([picker-props]
    [element (random/generate-keyword) picker-props])
 

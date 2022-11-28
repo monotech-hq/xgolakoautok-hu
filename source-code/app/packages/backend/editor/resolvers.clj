@@ -4,22 +4,25 @@
               [app.packages.backend.handler.helpers  :as handler.helpers]
               [com.wsscode.pathom3.connect.operation :refer [defresolver]]
               [mongo-db.api                          :as mongo-db]
-              [pathom.api                            :as pathom]))
+              [pathom.api                            :as pathom]
+              [x.user.api                            :as x.user]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn get-item-f
   ; @param (map) env
+  ;  {:request (map)}
   ; @param (map) resolver-props
   ;
   ; @return (namespaced map)
-  [env _]
-  (let [item-id    (pathom/env->param env :item-id)
-        projection (common/get-document-projection :package)]
-       (if-let [item (mongo-db/get-document-by-id "packages" item-id projection)]
-               (let [automatic-price (handler.helpers/get-package-price item-id)]
-                    (assoc item :package/automatic-price automatic-price)))))
+  [{:keys [request] :as env} _]
+  (if (x.user/request->authenticated? request)
+      (let [item-id      (pathom/env->param env :item-id)
+            prototype-f #(common/get-document-prototype request %)]
+           (if-let [item (mongo-db/get-document-by-id "packages" item-id {:prototype-f prototype-f})]
+                   (let [automatic-price (handler.helpers/get-package-price item-id)]
+                        (assoc item :package/automatic-price automatic-price))))))
 
 (defresolver get-item
              ; @param (map) env

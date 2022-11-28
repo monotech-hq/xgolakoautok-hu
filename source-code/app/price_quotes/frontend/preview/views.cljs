@@ -1,6 +1,7 @@
 
 (ns app.price-quotes.frontend.preview.views
     (:require [app.common.frontend.api                 :as common]
+              [app.components.frontend.api             :as components]
               [app.price-quotes.frontend.handler.state :as handler.state]
               [css.api                                 :as css]
               [elements.api                            :as elements]
@@ -42,9 +43,9 @@
 
 (defn- preview-pdf
   []
-  [common/pdf-preview ::price-quote-preview-pdf {:src @handler.state/PDF-OBJECT-URL
-                                                 :height (css/calc "100vh - 96px")
-                                                 :width  (css/calc "100vw - 96px")}])
+  [components/pdf-preview ::price-quote-preview-pdf {:src @handler.state/PDF-OBJECT-URL
+                                                     :height (css/calc "100vh - 96px")
+                                                     :width  (css/calc "100vw - 96px")}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

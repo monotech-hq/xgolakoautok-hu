@@ -9,5 +9,8 @@
 (r/reg-event-fx :vehicle-types.editor/load-editor!
   {:dispatch-n [[:x.gestures/init-view-handler! :vehicle-types.editor
                                                 {:default-view-id :data}]
-                [:x.ui/render-surface! :vehicle-types.editor/view
-                                       {:content #'editor.views/view}]]})
+                [:vehicle-types.editor/render-editor!]]})
+
+(r/reg-event-fx :vehicle-types.editor/render-editor!
+  [:x.ui/render-surface! :vehicle-types.editor/view
+                         {:content #'editor.views/view}])

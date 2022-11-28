@@ -1,14 +1,11 @@
 
 (ns app.vehicle-models.frontend.editor.views
-    (:require [app.common.frontend.api     :as common]
-              [app.components.frontend.api :as components]
-              [app.storage.frontend.api    :as storage]
-              [elements.api                :as elements]
-              [engines.item-editor.api     :as item-editor]
-              [engines.item-lister.api     :as item-lister]
-              [forms.api                   :as forms]
-              [layouts.surface-a.api       :as surface-a]
-              [re-frame.api                :as r]))
+    (:require [app.common.frontend.api                  :as common]
+              [app.components.frontend.api              :as components]
+              [app.vehicle-models.frontend.editor.boxes :as editor.boxes]
+              [elements.api                             :as elements]
+              [layouts.surface-a.api                    :as surface-a]
+              [re-frame.api                             :as r]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -19,196 +16,68 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- model-thumbnail-picker
+(defn- footer
   []
-  (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :vehicle-models.editor])]
-       [storage/media-picker ::model-thumbnail-picker
-                             {:autosave?     true
-                              :disabled?     editor-disabled?
-                              :extensions    ["bmp" "jpg" "jpeg" "png" "webp"]
-                              :indent        {:vertical :s}
-                              :multi-select? false
-                              :placeholder   "-"
-                              :toggle-label  :select-image!
-                              :thumbnail     {:height :3xl :width :5xl}
-                              :value-path    [:vehicle-models :editor/edited-item :thumbnail]}]))
-
-(defn- model-thumbnail-box
-  []
-  (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :vehicle-models.editor])]
-       [common/surface-box ::model-thumbnail-box
-                           {:content [:<> [:div (forms/form-row-attributes)
-                                                [:div (forms/form-block-attributes {:ratio 100})
-                                                      [model-thumbnail-picker]]]
-                                          [elements/horizontal-separator {:size :s}]]
-                            :disabled? editor-disabled?
-                            :label     :thumbnail}]))
+  [common/item-editor-footer :vehicle-models.editor {}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
+
+(defn- model-vehicle-types
+  []
+  [:<> [editor.boxes/model-vehicle-types-box]])
 
 (defn- model-thumbnail
   []
-  [:<> [model-thumbnail-box]])
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
-(defn- model-description-field
-  []
-  (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :vehicle-models.editor])]
-       [elements/multiline-field ::model-description-field
-                                 {:disabled?   editor-disabled?
-                                  :indent      {:top :m :vertical :s}
-                                  :label       :description
-                                  :placeholder :vehicle-model-description-placeholder
-                                  :value-path  [:vehicle-models :editor/edited-item :description]}]))
-
-(defn- model-tags-field
-  []
-  (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :vehicle-models.editor])]
-       [elements/multi-combo-box ::model-tags-field
-                                 {:disabled?    editor-disabled?
-                                  :indent       {:top :m :vertical :s}
-                                  :label        :tags
-                                  :options-path [:vehicle-models :editor/suggestions :tags]
-                                  :placeholder  :vehicle-model-tags-placeholder
-                                  :value-path   [:vehicle-models :editor/edited-item :tags]}]))
-
-(defn- model-name-field
-  []
-  (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :vehicle-models.editor])]
-       [elements/combo-box ::model-name-field
-                           {:autofocus?   true
-                            :disabled?    editor-disabled?
-                            :emptiable?   false
-                            :indent       {:top :m :vertical :s}
-                            :label        :name
-                            :options-path [:vehicle-models :editor/suggestions :name]
-                            :placeholder  :vehicle-model-name-placeholder
-                            :required?    true
-                            :value-path   [:vehicle-models :editor/edited-item :name]}]))
-
-(defn- model-product-description-field
-  []
-  (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :vehicle-models.editor])]
-       [elements/combo-box ::model-product-description-field
-                           {:disabled?    editor-disabled?
-                            :emptiable?   false
-                            :indent       {:top :m :vertical :s}
-                            :label        :product-description
-                            :options-path [:vehicle-models :editor/suggestions :product-description]
-                            :placeholder  :vehicle-model-product-description-placeholder
-                            :required?    true
-                            :value-path   [:vehicle-models :editor/edited-item :product-description]}]))
-
-(defn- model-data-box
-  []
-  (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :vehicle-models.editor])]
-       [common/surface-box ::model-data-box
-                           {:content [:<> [:div (forms/form-row-attributes)
-                                                [:div (forms/form-block-attributes {:ratio 100})
-                                                      [model-name-field]]
-                                                [:div (forms/form-block-attributes {:ratio 100})
-                                                      [model-product-description-field]]]
-                                          [:div (forms/form-row-attributes)
-                                                [:div (forms/form-block-attributes {:ratio 100})
-                                                      [model-tags-field]]]
-                                          [:div (forms/form-row-attributes)
-                                                [:div (forms/form-block-attributes {:ratio 100})
-                                                      [model-description-field]]]
-                                          [elements/horizontal-separator {:size :s}]]
-                            :disabled? editor-disabled?
-                            :label     :data}]))
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
+  [:<> [editor.boxes/model-thumbnail-box]])
 
 (defn- model-data
   []
-  [:<> [model-data-box]])
+  [:<> [editor.boxes/model-data-box]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
+
+(defn- view-selector
+  []
+  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :vehicle-models.editor])]
+       (case current-view-id :data          [model-data]
+                             :thumbnail     [model-thumbnail]
+                             :vehicle-types [model-vehicle-types])))
 
 (defn- body
   []
-  (let [current-view-id @(r/subscribe [:x.gestures/get-current-view-id :vehicle-models.editor])]
-       (case current-view-id :data      [model-data]
-                             :thumbnail [model-thumbnail])))
+  [common/item-editor-body :vehicle-models.editor
+                           {:form-element     [view-selector]
+                            :item-path        [:vehicle-models :editor/edited-item]
+                            :suggestion-keys  [:name :product-description :tags]
+                            :suggestions-path [:vehicle-models :editor/suggestions]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn- menu-bar
-  []
-  (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :vehicle-models.editor])]
-       [common/item-editor-menu-bar :vehicle-models.editor
-                                    {:disabled?  editor-disabled?
-                                     :menu-items [{:label :data      :change-keys [:name :product-description :tags :description]}
-                                                  {:label :thumbnail :change-keys [:thumbnail]}]}]))
-
-(defn- controls
-  []
-  (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :vehicle-models.editor])]
-       [common/item-editor-controls :vehicle-models.editor
-                                    {:disabled? editor-disabled?}]))
-
-(defn- breadcrumbs
-  []
-  (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :vehicle-models.editor])
-        model-name       @(r/subscribe [:x.db/get-item [:vehicle-models :editor/edited-item :name]])
-        model-id         @(r/subscribe [:x.router/get-current-route-path-param :item-id])
-        model-uri         (str "/@app-home/vehicle-models/" model-id)]
-       [components/surface-breadcrumbs ::breadcrumbs
-                                       {:crumbs (if model-id [{:label :app-home       :route "/@app-home"}
-                                                              {:label :vehicle-models :route "/@app-home/vehicle-models"}
-                                                              {:label model-name      :route model-uri :placeholder :unnamed-vehicle-model}
-                                                              {:label :edit!}]
-                                                             [{:label :app-home       :route "/@app-home"}
-                                                              {:label :vehicle-models :route "/@app-home/vehicle-models"}
-                                                              {:label :add!}])
-                                        :disabled? editor-disabled?}]))
-
-(defn- label
-  []
-  (let [editor-disabled? @(r/subscribe [:item-editor/editor-disabled? :vehicle-models.editor])
-        model-name       @(r/subscribe [:x.db/get-item [:vehicle-models :editor/edited-item :name]])]
-       [components/surface-label ::label
-                                 {:disabled?   editor-disabled?
-                                  :label       model-name
-                                  :placeholder :unnamed-vehicle-model}]))
 
 (defn- header
   []
-  [:<> [:div {:style {:display "flex" :justify-content "space-between" :flex-wrap "wrap" :grid-row-gap "48px"}}
-             [:div [label]
-                   [breadcrumbs]]
-             [:div [controls]]]
-       [elements/horizontal-separator {:size :xxl}]
-       [menu-bar]])
+  (let [model-name  @(r/subscribe [:x.db/get-item [:vehicle-models :editor/edited-item :name]])
+        model-id    @(r/subscribe [:x.router/get-current-route-path-param :item-id])
+        model-route @(r/subscribe [:item-editor/get-item-route :vehicle-models.editor model-id])]
+       [common/item-editor-header :vehicle-models.editor
+                                  {:label       model-name
+                                   :placeholder :unnamed-vehicle-model
+                                   :crumbs      [{:label :app-home       :route "/@app-home"}
+                                                 {:label :vehicle-models :route "/@app-home/vehicle-models"}
+                                                 {:label model-name      :route model-route :placeholder :unnamed-vehicle-model}]
+                                   :menu-items  [{:label :data      :change-keys [:name :product-description :tags :description]}
+                                                 {:label :thumbnail :change-keys [:thumbnail]}
+                                                 {:label :vehicle-types}]}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn- view-structure
-  []
-  [:<> [header]
-       [body]])
-
-(defn- model-editor
-  []
-  [item-editor/body :vehicle-models.editor
-                    {:auto-title?      true
-                     :form-element     #'view-structure
-                     :error-element    [components/error-content {:error :the-item-you-opened-may-be-broken}]
-                     :ghost-element    #'common/item-editor-ghost-element
-                     :item-path        [:vehicle-models :editor/edited-item]
-                     :label-key        :name
-                     :suggestion-keys  [:name :product-description :tags]
-                     :suggestions-path [:vehicle-models :editor/suggestions]}])
 
 (defn view
+  ; @param (keyword) surface-id
   [surface-id]
   [surface-a/layout surface-id
-                    {:content #'model-editor}])
+                    {:content [:<> [header]
+                                   [body]
+                                   [footer]]}])

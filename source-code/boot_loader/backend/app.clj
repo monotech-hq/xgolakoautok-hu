@@ -7,7 +7,7 @@
               [layouts.popup-a.api]
               [layouts.surface-a.api]
               [pathom.api]
-              [tools.pdf-generator.api]
+              [tools.hiccuptopdf.api]
 
               ; App modules
               [app.api]))

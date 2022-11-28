@@ -1,10 +1,11 @@
 
 (ns app.schemes.frontend.scheme-data.views
-    (:require [app.common.frontend.api :as common]
-              [elements.api            :as elements]
-              [map.api                 :as map]
-              [re-frame.api            :as r]
-              [vector.api              :as vector]))
+    (:require [app.common.frontend.api     :as common]
+              [app.components.frontend.api :as components]
+              [elements.api                :as elements]
+              [map.api                     :as map]
+              [re-frame.api                :as r]
+              [vector.api                  :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -29,16 +30,17 @@
   ; @param (keyword) field-id
   [scheme-id {:keys [disabled? value-path]} field-id]
   ; BUG#3007 (source-code/app/schemes/frontend/scheme_form/views.cljs)
-  (let [field-props @(r/subscribe [:components.scheme-table/get-scheme-field scheme-id field-id])
+  (let [field-props @(r/subscribe [:schemes.form-handler/get-scheme-field scheme-id field-id])
         field-value @(r/subscribe [:x.db/get-item (vector/conj-item value-path field-id)])
         field-value (letfn [(f [value] (if-let [unit (:field/unit field-props)]
                                                {:content value :suffix (str " " unit)}
                                                {:content value}))]
                            (vector/->items field-value f))]
-       [common/data-element {:indent      {:top :m :vertical :s}
-                             :label       (:field/name field-props)
-                             :placeholder "-"
-                             :value       field-value}]))
+       [components/data-element {:disabled?   disabled?
+                                 :indent      {:top :m :vertical :s}
+                                 :label       (:field/name field-props)
+                                 :placeholder "n/a"
+                                 :value       field-value}]))
 
 (defn- scheme-data
   ; @param (keyword) scheme-id

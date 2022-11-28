@@ -3,7 +3,6 @@
     (:require [app.common.frontend.api     :as common]
               [app.components.frontend.api :as components]
               [elements.api                :as elements]
-              [engines.item-lister.api     :as item-lister]
               [layouts.surface-a.api       :as surface-a]
               [re-frame.api                :as r]))
 
@@ -12,122 +11,88 @@
 
 (defn- footer
   []
-  (if-let [first-data-received? @(r/subscribe [:item-lister/first-data-received? :products.lister])]
-          [common/item-lister-download-info :products.lister {}]))
+  [common/item-lister-footer :products.lister {}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- product-item-structure
-  [lister-id item-dex {:keys [item-number modified-at name thumbnail]}]
-  (let [timestamp  @(r/subscribe [:x.activities/get-actual-timestamp modified-at])
-        item-last? @(r/subscribe [:item-lister/item-last? lister-id item-dex])]
-       [common/list-item-structure {:cells [[ {:thumbnail (:media/uri thumbnail)}]
-                                            [common/list-item-label     {:content name :stretch? true}]
-                                            [common/list-item-detail    {:content item-number :width "160px"}]
-                                            [common/list-item-detail    {:content timestamp :width "160px"}]
-                                            [components/list-item-marker    {:icon :navigate_next}]]
-                                    :separator (if-not item-last? :bottom)}]))
-
-(defn- product-item
-  [lister-id item-dex {:keys [id] :as product-item}]
-  [elements/toggle {:content     [product-item-structure lister-id item-dex product-item]
-                    :hover-color :highlight
-                    :on-click    [:x.router/go-to! (str "/@app-home/products/"id)]}])
+(defn- product-list-item
+  ; @param (keyword) lister-id
+  ; @param (map) body-props
+  ; @param (integer) item-dex
+  ; @param (map) product-item
+  [_ _ item-dex {:keys [id item-number modified-at name thumbnail]}]
+  (let [timestamp @(r/subscribe [:x.activities/get-actual-timestamp modified-at])]
+       [components/item-list-row {:cells [[components/list-item-gap       {:width 12}]
+                                          [components/list-item-thumbnail {:thumbnail (:media/uri thumbnail)}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content name :placeholder :unnamed-product}]}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content item-number :copyable? true :font-size :xs :color :muted}] :width 100}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-cell      {:rows [{:content timestamp :font-size :xs :color :muted}] :width 100}]
+                                          [components/list-item-gap       {:width 12}]
+                                          [components/list-item-button    {:label :open! :width 100 :on-click [:x.router/go-to! (str "/@app-home/products/"id)]}]
+                                          [components/list-item-gap       {:width 12}]]
+                                  :border (if (not= item-dex 0) :top)}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- product-list
+(defn- product-list-header
   []
-  (let [items @(r/subscribe [:item-lister/get-downloaded-items :products.lister])]
-       [common/item-list :products.lister {:item-element #'product-item :items items}]))
+  (let [current-order-by @(r/subscribe [:item-lister/get-current-order-by :products.lister])]
+       [components/item-list-header ::product-list-header
+                                    {:cells [{:width 12}
+                                             {:width 84}
+                                             {:width 12}
+                                             {:label :name :order-by-key :name
+                                              :on-click [:item-lister/order-items! :products.lister :name]}
+                                             {:width 12}
+                                             {:label :item-number :width 100 :order-by-key :item-number
+                                              :on-click [:item-lister/order-items! :products.lister :item-number]}
+                                             {:width 12}
+                                             {:label :modified :width 100 :order-by-key :modified-at
+                                              :on-click [:item-lister/order-items! :products.lister :modified-at]}
+                                             {:width 12}
+                                             {:width 100}
+                                             {:width 12}]
+                                     :border :bottom
+                                     :order-by current-order-by}]))
 
-(defn- product-lister-body
+(defn- product-lister
   []
-  [item-lister/body :products.lister
-                    {:default-order-by :modified-at/descending
-                     :items-path       [:products :lister/downloaded-items]
-                     :error-element    [components/error-content {:error :the-content-you-opened-may-be-broken}]
-                     :ghost-element    [common/item-lister-ghost-element]
-                     :list-element     [product-list]}])
-
-(defn- product-lister-header
-  []
-  [common/item-lister-header :products.lister
-                             {:cells [[common/item-lister-header-spacer :products.lister {:width "108px"}]
-                                      [common/item-lister-header-cell   :products.lister {:label :name          :order-by-key :name :stretch? true}]
-                                      [common/item-lister-header-cell   :products.lister {:label :item-number   :order-by-key :item-number :width "160px"}]
-                                      [common/item-lister-header-cell   :products.lister {:label :last-modified :order-by-key :modified-at :width "160px"}]
-                                      [common/item-lister-header-spacer :products.lister {:width "36px"}]]}])
+  [common/item-lister-body :products.lister
+                           {:list-item-element #'product-list-item
+                            :item-list-header  #'product-list-header
+                            :items-path        [:products :lister/downloaded-items]}])
 
 (defn- body
   []
-  [common/item-lister-wrapper :products.lister
-                              {:body   #'product-lister-body
-                               :header #'product-lister-header}])
+  [components/surface-box ::body
+                          {:content [:<> [product-lister]
+                                         [elements/horizontal-separator {:height :xxs}]]}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn create-item-button
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :products.lister])
-        create-product-uri (str "/@app-home/products/create")]
-       [common/item-lister-create-item-button :products.lister
-                                              {:disabled?       lister-disabled?
-                                               :create-item-uri create-product-uri}]))
-
-(defn- search-field
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :products.lister])]
-       [common/item-lister-search-field :products.lister
-                                        {:disabled?   lister-disabled?
-                                         :placeholder :search-in-products
-                                         :search-keys [:item-number :name]}]))
-
-(defn- search-description
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :products.lister])]
-       [common/item-lister-search-description :products.lister
-                                              {:disabled? lister-disabled?}]))
-
-(defn- breadcrumbs
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :products.lister])]
-       [components/surface-breadcrumbs ::breadcrumbs
-                                       {:crumbs [{:label :app-home :route "/@app-home"}
-                                                 {:label :products}]
-                                        :disabled? lister-disabled?}]))
-
-(defn- label
-  []
-  (let [lister-disabled? @(r/subscribe [:item-lister/lister-disabled? :products.lister])]
-       [components/surface-label ::label
-                                 {:disabled? lister-disabled?
-                                  :label     :products}]))
 
 (defn- header
   []
-  (if-let [first-data-received? @(r/subscribe [:item-lister/first-data-received? :products.lister])]
-          [:<> [:div {:style {:display "flex" :justify-content "space-between" :flex-wrap "wrap" :grid-row-gap "24px"}}
-                     [:div [label]
-                           [breadcrumbs]]
-                     [:div [create-item-button]]]
-               [search-field]
-               [search-description]]
-          [common/item-lister-ghost-header :products.lister {}]))
+  [common/item-lister-header :products.lister
+                             {:crumbs    [{:label :app-home :route "/@app-home"}
+                                          {:label :products}]
+                              :on-create [:x.router/go-to! "/@app-home/products/create"]
+                              :on-search [:item-lister/search-items! :products.lister {:search-keys [:item-number :name]}]
+                              :search-placeholder :search-in-products
+                              :label              :products}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
-
-(defn- view-structure
-  []
-  [:<> [header]
-       [body]
-       [footer]])
 
 (defn view
+  ; @param (keyword) surface-id
   [surface-id]
   [surface-a/layout surface-id
-                    {:content #'view-structure}])
+                    {:content [:<> [header]
+                                   [body]
+                                   [footer]]}])
