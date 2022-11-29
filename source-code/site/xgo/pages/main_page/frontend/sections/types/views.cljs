@@ -52,8 +52,18 @@
                                    :scheme-id   :vehicle-types.technical-data
                                    :value-path  [:site :types id]}]])
 
+(defn- type-file [file-name file-size]
+ [:a {:href "/" :class "xgo-type--file-container"}
+   [:i {:class "xgo-type--file-icon fas fa-file-pdf"}]
+   [:div {:class "xgo-type--file-data"}
+     [:span {:class "xgo-type--file-name"} file-name]
+     [:span {:class "xgo-type--file-size"} file-size " kB"]]]) 
+    
+
 (defn- type-files []
-  [:div {:class "xgo-type--files"}])
+  [:div {:class "xgo-type--files-container"}
+    [type-file "árslista 2022" "220.21"]
+    [type-file "teszt file 2021" "320.21"]])
 
 (defn- type-back-button []
   [:div {:id "xgo-type--back-button-container"}
@@ -76,6 +86,7 @@
         [:div {:id "xgo-type--layout"} 
           [type-images images]
           [type-table id]]
+        [type-files]
         [type-back-button]])}))
 
 (defn- types [{:keys [types-data selected-type] :as view-props}]

@@ -371,6 +371,36 @@
   background-color: rgba(51, 51, 51, 0.202);
 }
 
+.xgo-type--files-container {
+  margin: 0 auto;
+  width: fit-content;
+  display: flex;
+  gap: 15px;
+  flex-direction: column;
+}
+
+.xgo-type--file-container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.xgo-type--file-icon {
+  font-size: 28px;
+}
+
+.xgo-type--file-data {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.xgo-type--file-name {}
+
+.xgo-type--file-size {
+  color: var( --grey-dark );
+}
+
 #xgo-type--back-button-container {
   display: flex;
   justify-content: center;
