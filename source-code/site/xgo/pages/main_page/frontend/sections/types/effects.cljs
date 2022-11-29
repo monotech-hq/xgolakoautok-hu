@@ -1,8 +1,7 @@
 
 (ns site.xgo.pages.main-page.frontend.sections.types.effects
     (:require [re-frame.api  :as r]
-              [normalize.api :as normalize]
-              [x.router.api  :as x.router]))
+              [normalize.api :as normalize]))
 
 (r/reg-event-fx
  :types/select!
