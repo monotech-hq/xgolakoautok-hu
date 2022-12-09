@@ -18,3 +18,15 @@
     {:category-name (:name category) 
      :model-name    (:name model)
      :type-name     (:name type)}))
+
+(r/reg-sub 
+ :price-quote.item.quantity/get
+ (fn [db [_ [tab-id item-id]]]
+   (get-in db [:price-quote tab-id item-id] 0)))
+
+(r/reg-sub 
+ :price-quote.overview.accessories/get
+ (fn [db [_ [accessory-id items]]]
+    (-> db 
+        (get-in [:site accessory-id])
+        (select-keys (keys items)))))
