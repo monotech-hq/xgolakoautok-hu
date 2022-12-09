@@ -37,10 +37,10 @@
 ;; -----------------------------------------------------------------------------
 
 (def categories-projection
-     #:category{:name        1
-                :order       1
-                :models      1
-                :description 1})
+     {:projection #:category{:name        1
+                             :order       1
+                             :models      1
+                             :description 1}})
 
 (defn transfer-categories-f
   [_]
@@ -56,8 +56,9 @@
 ;; -----------------------------------------------------------------------------
 
 (def models-projection
-    #:model{:name  1
-            :types 1})
+    {:projection #:model{:name      1
+                         :types     1
+                         :thumbnail 1}})
 
 (defn transfer-models-f
   [request]
@@ -72,10 +73,10 @@
 ;; -----------------------------------------------------------------------------
 
 (def types-projection
-    #:type{:added-at    0
-           :added-by    0
-           :modifeid-at 0
-           :modified-by 0})
+    {:projection #:type{:added-at    0
+                        :added-by    0
+                        :modified-at 0
+                        :modified-by 0}})
 
 (defn transfer-types-f
   [request]
@@ -85,4 +86,58 @@
 (x.core/reg-transfer! ::transfer-types!
   {:data-f      transfer-types-f
    :target-path [:site :types]})
-;; -----------------------------------------------------------------------------;; -----------------------------------------------------------------------------(def products-projection  {:projection #:product{:added-at    0                         :added-by    0                         :modified-at 0                         :modified-by 0}})            (defn transfer-products-f  [request]  (let [data (mongo-db/get-collection "products" products-projection)]       (convert #(-> % :product/id) data)))(x.core/reg-transfer! ::transfer-products!                      {:data-f      transfer-products-f                       :target-path [:site :products]});; -----------------------------------------------------------------------------;; -----------------------------------------------------------------------------(def packages-projection  {:projection #:package{:added-at    0                         :added-by    0                         :modified-at 0                         :modified-by 0}})(defn transfer-packages-f  [request]  (let [data (mongo-db/get-collection "packages" packages-projection)]       (convert #(-> % :package/id) data)))(x.core/reg-transfer! ::transfer-packgaes!                      {:data-f      transfer-packages-f                       :target-path [:site :packages]});; -----------------------------------------------------------------------------;; -----------------------------------------------------------------------------(def services-projection  {:projection #:service{:added-at    0                         :added-by    0                         :modified-at 0                         :modified-by 0}})(defn transfer-services-f  [request]  (let [data (mongo-db/get-collection "services" services-projection)]       (convert #(-> % :service/id) data)))(x.core/reg-transfer! ::transfer-services!                      {:data-f      transfer-services-f                       :target-path [:site :services]})
+
+
+;; -----------------------------------------------------------------------------
+;; -----------------------------------------------------------------------------
+
+(def products-projection
+  {:projection #:product{:added-at    0
+                         :added-by    0
+                         :modified-at 0
+                         :modified-by 0}})
+            
+(defn transfer-products-f
+  [request]
+  (let [data (mongo-db/get-collection "products" products-projection)]
+       (convert #(-> % :product/id) data)))
+
+(x.core/reg-transfer! ::transfer-products!
+                      {:data-f      transfer-products-f
+                       :target-path [:site :products]})
+
+;; -----------------------------------------------------------------------------
+;; -----------------------------------------------------------------------------
+
+(def packages-projection
+  {:projection #:package{:added-at    0
+                         :added-by    0
+                         :modified-at 0
+                         :modified-by 0}})
+
+(defn transfer-packages-f
+  [request]
+  (let [data (mongo-db/get-collection "packages" packages-projection)]
+       (convert #(-> % :package/id) data)))
+
+(x.core/reg-transfer! ::transfer-packgaes!
+                      {:data-f      transfer-packages-f
+                       :target-path [:site :packages]})
+
+;; -----------------------------------------------------------------------------
+;; -----------------------------------------------------------------------------
+
+(def services-projection
+  {:projection #:service{:added-at    0
+                         :added-by    0
+                         :modified-at 0
+                         :modified-by 0}})
+
+(defn transfer-services-f
+  [request]
+  (let [data (mongo-db/get-collection "services" services-projection)]
+       (convert #(-> % :service/id) data)))
+
+(x.core/reg-transfer! ::transfer-services!
+                      {:data-f      transfer-services-f
+                       :target-path [:site :services]})
