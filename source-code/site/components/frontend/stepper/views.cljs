@@ -63,16 +63,19 @@
 
 (defn- back-button [step-index]
   (if (< 0 step-index)
-     [x.elements/button {:on-click #(r/dispatch [:stepper/back!])
-                         :background-color "lightgray"
-                         :label    "Vissza"}]))
+     [x.elements/button {:label            "Vissza"
+                         :on-click         #(r/dispatch [:stepper/back!])
+                         :variant          :outlined
+                         :style            {:padding "15px"}
+                         :background-color :muted}]))
 
 (defn- next-button [{:keys [] [_ {:keys [valid?]}] :current-step}]
-  [x.elements/button {:disabled?        (not valid?)
-                      :label            "Következő"
-                      :background-color :primary
+  [x.elements/button {:label            "Következő"
+                      :on-click         #(r/dispatch [:stepper/next!])
+                      :disabled?        (not valid?)
                       :variant          :outlined
-                      :on-click         #(r/dispatch [:stepper/next!])}])
+                      :style            {:padding "15px"}
+                      :background-color :primary}])
 
 (defn- finish-button [{:keys [steps current-step config]}]
   (let [[_ {:keys [valid? on-click]}] current-step

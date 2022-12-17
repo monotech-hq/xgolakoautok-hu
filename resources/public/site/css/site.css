@@ -521,15 +521,19 @@
   align-items: center;
   border-radius: 6px;
   padding: 8px 16px;
-}
-
-.mt-stepper--step-label[data-selected="true"] {
-  background-color: rgb(167 229 247);
+  cursor: auto;
 }
 
 .mt-stepper--step-label[data-done="true"] {
   background-color: rgb(168 247 196);
+  cursor: pointer;
 }
+
+.mt-stepper--step-label[data-selected="true"] {
+  background-color: rgb(167 229 247);
+  cursor: auto;
+}
+
 
 #mt-stepper--footer {
   display: flex;
