@@ -19,7 +19,8 @@
               [site.components.frontend.slider.views             :as slider.views]
               
               [site.components.frontend.stepper.api              :as stepper]
-              [site.components.frontend.tabs.views              :as tabs]))
+              [site.components.frontend.tabs.views               :as tabs]
+              [site.components.frontend.table.views              :as table.views]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -65,3 +66,6 @@
 
 ; site.components.frontend.tabs.views
 (def tabs tabs/component)
+
+; site.components.frontend.tabs.views
+(def table table.views/component)

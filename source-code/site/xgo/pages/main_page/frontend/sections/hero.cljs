@@ -5,12 +5,29 @@
 ;; -----------------------------------------------------------------------------
 ;; -----------------------------------------------------------------------------
 
+(defn- logo []
+  [:div {:id "xgo-hero--logo"}])
+
+(defn- slogan []
+  [:div {:id "xgo-hero--slogan"}
+    "Örökké mozgásban"])
+
+(defn- header []
+ [:div {:id "xgo-hero--header"}
+   [logo]
+   [slogan]])
+
+(defn- background []
+  [:div {:id "xgo-hero--background"}])
+
 (defn- hero
   []
-  [:div {:class "xgo-section--body"}
-        [components/scroll-icon {:style {:position "absolute" :bottom "0" :left "0"}}]])
+  [:div {:class "xgo-section--body"}])
 
 (defn view
   []
   [:section {:id "xgo-hero"}
-            [hero]])
+        [header]
+        [background]
+        [components/scroll-icon {:style {:position "absolute" :bottom "0" :left "0"}}]])
+   

@@ -1,8 +1,12 @@
 
-/******************************************************************************/
+/*******************************************3***********************************/
 /***** Website *****/
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;1,100;1,200&display=swap');
+
+/* body {
+  --app-background-color: rgb(45, 41, 37) !important;
+} */
 
 #xgo {
   background-color: #f4f7f6;
@@ -175,9 +179,59 @@
 /***** Hero *****/
 
 #xgo-hero {
-  background-image: linear-gradient(45deg, #99acad, transparent);
+  background-color: #000;
+  background-image: linear-gradient(30deg, rgba(200, 200, 200, .1), transparent, transparent, rgba(200, 200, 200, .1));
   height: 95vh;
-  overflow: hidden
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#xgo-hero--header {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 32px;
+  margin: 80px 0 10px;
+  width: 100%;
+}
+
+#xgo-hero--logo {
+  aspect-ratio: 1/1;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url("/xgo/logo/logo.png");
+  width: 100px;
+}
+
+#xgo-hero--slogan {
+  color: #fff;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 5px;
+  line-height: var( --line-height-xl );
+  text-transform: uppercase;
+  text-align: center;
+}
+
+#xgo-hero--background {
+  background-image: url("/xgo/img/hero.jpg");
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 500px;
+  aspect-ratio: 1/1;
+}
+
+.xgo-hero--glow {
+  background-image: linear-gradient(30deg, rgba(200, 200, 200, .1), transparent, transparent, rgba(200, 200, 200, .1));
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 
 /***** Hero *****/
@@ -207,6 +261,7 @@
 #xgo-categories {
   display: flex;
   justify-content: center;
+  background-color: #000;
   border-bottom: 2px solid var( --grey-dark );
 }
 
@@ -214,6 +269,7 @@
   display: flex;
   justify-content: center;
   white-space: nowrap;
+  color: #fff;
   font-weight: 500;
   font-size: var( --font-size-l );
   height: 62px;
@@ -233,6 +289,7 @@
 }
 
 #xgo-categories--description {
+  background-color: #292929;
   color: var( --grey-dark );
   display: flex;
   flex-direction: row;
@@ -454,6 +511,26 @@
 
 /*** Lister ***/
 
+.mt-price-quote--list-title {
+  margin: 40px 0 25px;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.mt-price-quote--list-title::before,
+.mt-price-quote--list-title::after {
+  content: '';
+  display: block;
+  height: 1px;
+  width: 100%;
+  background-color: gray;
+}
+
+.mt-price-quote--list-title::before {
+  width: 25px;
+}
+
 .mt-price-quote--lister-container {
   display: flex; 
   gap: 25px;
@@ -466,7 +543,7 @@
   align-items: center;
   justify-content: space-between;
   background-color: #fbfbfb;
-  padding: 6px;
+  padding: 12px;
   border-radius: 6px;
   box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.05);
   user-select: none;

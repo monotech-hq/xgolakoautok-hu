@@ -2,12 +2,11 @@
 {:source-paths ["source-code" "monoset/source-code" "submodules"]
 
  :builds
- {:site        {:asset-path "/site/core"
-                :devtools {;:watch-dir  "resources"
-                           :watch-dir "site"
-                           :after-load boot-loader.frontend.site/render-site!}
-                :modules {:site {:init-fn boot-loader.frontend.site/start-site!}}
-                :output-dir "resources/public/js/core"
+ {:site        {:output-dir "resources/public/js/core"
+                :devtools   {:watch-dir  "resources/public"
+                             :after-load boot-loader.frontend.site/render-site!}
+                :modules    {:site {:init-fn boot-loader.frontend.site/start-site!}}
+                
                 ; BUG#0012
                 ; A CKEditor miatt szükséges az {:output-feature-set :es-next} beállítás!
                 ; Cannot convert ECMASCRIPT_2018 feature "RegExp unicode property escape" to targeted output language.

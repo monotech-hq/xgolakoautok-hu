@@ -3,10 +3,7 @@
     (:require [re-frame.api                 :as r]
               [site.components.frontend.api :as components]
               [elements.api                 :as elements]
-              [x.components.api          :as x.components]
-              [app.products.frontend.api :as products]
-              [app.packages.frontend.api :as packages]
-              [lorem-ipsum.api :as lorem-ipsum]))
+              [x.components.api             :as x.components]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -61,6 +58,14 @@
     [:p.mt-price-quote--list-item-name name]
     [:p.mt-price-quote--list-item-description description]])
 
+(defn- list-item-price [{:keys [automatic-price unit-price]}]
+  [:p {:style {:white-space "nowrap"}} 
+    (str automatic-price unit-price " Ft")])
+ 
+(defn- list-item-price-unit [{:keys [automatic-price unit-price quantity-unit]}]
+  [:p {:style {:white-space "nowrap"}}
+    (str automatic-price unit-price " Ft/" (x.components/content (:label quantity-unit)))])
+
 ;; ----------------------------------------------------------------------------
 ;; --- Parts ---
 
@@ -69,7 +74,7 @@
          :class "mt-price-quote--list-item"}
    [list-item-thumbnail thumbnail]
    [list-item-name-description name description]
-   [:p unit-price "Ft/" (x.components/content (:label quantity-unit))]
+   [list-item-price-unit props]
    [quantity-buttons [:products id]]])
 
 (defn- parts []
@@ -86,10 +91,10 @@
 (defn- service-item [[id {:keys [name description thumbnail unit-price quantity-unit] :as props}]]
   [:div {:key   id
          :class "mt-price-quote--list-item"}
-   [list-item-thumbnail thumbnail]
-   [list-item-name-description name description]
-   [:p unit-price "Ft/" (x.components/content (:label quantity-unit))]
-   [quantity-buttons [:services id]]])
+    [list-item-thumbnail thumbnail]
+    [list-item-name-description name description]
+    [list-item-price-unit props]
+    [quantity-buttons [:services id]]])
 
 (defn- services []
   (let [services-data @(r/subscribe [:x.db/get-item [:site :services]])]
@@ -107,7 +112,8 @@
          :class "mt-price-quote--list-item"}
     [list-item-thumbnail thumbnail]
     [list-item-name-description name description]
-    [:p automatic-price unit-price "Ft/" (x.components/content (:label quantity-unit))]
+    [list-item-price-unit props]
+    ;; [:p automatic-price unit-price "Ft/" (x.components/content (:label quantity-unit))]
     [quantity-buttons [:packages id]]])
 
 (defn- packages []
@@ -162,23 +168,39 @@
 ;; ----------------------------------------------------------------------------
 ;; --- Overview ---
 
-(defn- overview-item [[id qty]]
-  [:div {:key id}
-    [:p.mt-price-quote--list-item-name name]
-    [:p qty]])
+(defn- overview-item [[id {:keys [thumbnail description] :as props}]]
+  [:div {:style {:display "flex" :align-items "center" :gap "16px"}}
+    ;; [:p {:style {:font-size "16px" :width "16px" :height "16px"}} "X"]   
+    [:div {:key   id
+           :class "mt-price-quote--list-item"
+           :style {:width "100%"}}
+      [list-item-thumbnail thumbnail]
+      [list-item-name-description name description]
+      [list-item-price props]]
+    [elements/icon {:icon :close :size :xs}]
+    [:p {:style {:font-size "24px" :width "24px" :height "24px"}} "2"]])
+
+(defn- overview-section [label [id items]]
+  (if-not (empty? items)
+    [:<>
+      [:h3 {:class "mt-price-quote--list-title"} label]
+      [lister overview-item @(r/subscribe [:price-quote.overview.accessories/get [id items]])]]))
 
 (defn- accessories-overview [{:keys [products services packages]}]
   [:div
-    [:h3 "Tartozékok"]
-    [:p (str @(r/subscribe [:price-quote.overview.accessories/get [:products products]]))]
-    [:p (str @(r/subscribe [:price-quote.overview.accessories/get [:services services]]))]
-    [:p (str @(r/subscribe [:price-quote.overview.accessories/get [:packages packages]]))]])
-    
+    [overview-section "Tartozékok" [:products products]]
+    [overview-section "Szolgáltatások" [:services services]]
+    [overview-section "Csomagok" [:packages packages]]])
 
 (defn- overview []
-  (let [price-quote-data @(r/subscribe [:x.db/get-item [:price-quote]])]
+  (let [price-quote-data @(r/subscribe [:x.db/get-item [:price-quote]])
+        selected-model       @(r/subscribe [:models/selected])
+        selected-type       @(r/subscribe [:types/selected])]
     [:div {:class "mt-price-quote--box"}
-      [:h2 "Áttekintés"]
+      [:h2 {:style {:margin-bottom "15px"}} "Áttekintés"]
+      [:div 
+        ;; [:img {:src (:media/uri thumbnail) :width "100px"}]
+        [:p (:name selected-model) " / " (:name selected-type)]]
       [accessories-overview price-quote-data]]))
 
 ;; --- Overviews ---

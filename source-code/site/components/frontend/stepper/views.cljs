@@ -63,7 +63,7 @@
 
 (defn- back-button [step-index]
   (if (< 0 step-index)
-     [x.elements/button {:label            "Vissza"
+     [x.elements/button {:label            "Elöző"
                          :on-click         #(r/dispatch [:stepper/back!])
                          :variant          :outlined
                          :style            {:padding "15px"}
@@ -85,6 +85,8 @@
     [x.elements/button {:disabled disable?
                         :background-color :primary
                         :on-click #(on-click)
+                        :style    {:padding "15px"}
+
                         :label    (get config :finish-step-label "Finish")}]))
 
 (defn- footer [{:keys [index steps] :as view-props}]
@@ -99,7 +101,7 @@
 ;; -----------------------------------------------------------------------------
 
 (defn- stepper [config args]
-  (let [step-index @(r/subscribe [:x.db/get-item [:stepper] 0])
+  (let [step-index @(r/subscribe [:x.db/get-item [:stepper] 2])
         steps      (partition 2 args)
         view-props {:index        step-index
                     :steps        steps
