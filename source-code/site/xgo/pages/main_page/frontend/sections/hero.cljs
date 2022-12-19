@@ -17,9 +17,6 @@
    [logo]
    [slogan]])
 
-(defn- background []
-  [:div {:id "xgo-hero--background"}])
-
 (defn- hero
   []
   [:div {:class "xgo-section--body"}])
@@ -28,6 +25,5 @@
   []
   [:section {:id "xgo-hero"}
         [header]
-        [background]
         [components/scroll-icon {:style {:position "absolute" :bottom "0" :left "0"}}]])
    

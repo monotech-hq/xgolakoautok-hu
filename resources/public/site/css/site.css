@@ -179,23 +179,24 @@
 /***** Hero *****/
 
 #xgo-hero {
-  background-color: #000;
-  background-image: linear-gradient(30deg, rgba(200, 200, 200, .1), transparent, transparent, rgba(200, 200, 200, .1));
-  height: 95vh;
+  background-image: url(/xgo/img/hero.jpg);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
   overflow: hidden;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  height: 95vh;
 }
 
 #xgo-hero--header {
-  align-items: center;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   gap: 32px;
-  margin: 80px 0 10px;
   width: 100%;
+  flex-direction: column;
+  align-items: center;
+  top: 10%;
+  z-index: 1;
 }
 
 #xgo-hero--logo {
@@ -214,24 +215,6 @@
   line-height: var( --line-height-xl );
   text-transform: uppercase;
   text-align: center;
-}
-
-#xgo-hero--background {
-  background-image: url("/xgo/img/hero.jpg");
-  background-position: center;
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 500px;
-  aspect-ratio: 1/1;
-}
-
-.xgo-hero--glow {
-  background-image: linear-gradient(30deg, rgba(200, 200, 200, .1), transparent, transparent, rgba(200, 200, 200, .1));
-  height: 100%;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 100%;
 }
 
 /***** Hero *****/
@@ -261,7 +244,6 @@
 #xgo-categories {
   display: flex;
   justify-content: center;
-  background-color: #000;
   border-bottom: 2px solid var( --grey-dark );
 }
 
@@ -269,7 +251,6 @@
   display: flex;
   justify-content: center;
   white-space: nowrap;
-  color: #fff;
   font-weight: 500;
   font-size: var( --font-size-l );
   height: 62px;
@@ -289,7 +270,6 @@
 }
 
 #xgo-categories--description {
-  background-color: #292929;
   color: var( --grey-dark );
   display: flex;
   flex-direction: row;
